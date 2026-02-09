@@ -1,0 +1,314 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Client;
+use App\Models\File;
+use App\Services\GoogleDriveService;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class FileController extends Controller
+{
+    protected $driveService;
+
+    public function __construct(GoogleDriveService $driveService)
+    {
+        $this->driveService = $driveService;
+    }
+
+    public function index(Request $request)
+    {
+        $user = auth()->user();
+        
+        // --- 1. Navigation Logic ---
+        
+        // Level 3: Files List (Final Depth)
+        if ($request->has('client_id') && $request->has('folder')) {
+            $viewMode = 'files';
+            $client = Client::findOrFail($request->client_id);
+            $folderName = $request->folder;
+            
+            $query = File::with(['uploader'])
+                ->where('client_id', $client->id)
+                ->where('description', $folderName)
+                ->latest();
+                
+            $items = $query->paginate(50);
+            
+            $breadcrumbs = [
+                ['label' => 'Home', 'url' => route('files.index')],
+                ['label' => ucfirst($client->category), 'url' => route('files.index', ['category' => $client->category])],
+                ['label' => $client->name, 'url' => route('files.index', ['client_id' => $client->id])],
+                ['label' => $folderName, 'url' => '#'],
+            ];
+            
+            return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'client', 'folderName'));
+        }
+
+        // Level 2: Folders (Descriptions) List for a Client
+        if ($request->has('client_id')) {
+            $viewMode = 'folders';
+            $client = Client::findOrFail($request->client_id);
+            
+            // Authorization Check
+            if (!$user->isAdmin() && !$user->clients()->where('clients.id', $client->id)->exists()) {
+                abort(403, 'Unauthorized access to this client.');
+            }
+
+            // Get unique descriptions (Folders)
+            $items = File::where('client_id', $client->id)
+                ->select('description', DB::raw('count(*) as count'))
+                ->groupBy('description')
+                ->orderBy('description')
+                ->get();
+                
+            $breadcrumbs = [
+                ['label' => 'Home', 'url' => route('files.index')],
+                ['label' => ucfirst($client->category), 'url' => route('files.index', ['category' => $client->category])],
+                ['label' => $client->name, 'url' => '#'],
+            ];
+
+            // Also get clients for the upload modal (dropdown)
+            $uploadClients = $user->isAdmin() ? Client::all() : $user->clients;
+            // Get all unique descriptions for the datalist suggestions
+            $suggestions = File::select('description')->distinct()->pluck('description');
+
+            return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'client', 'uploadClients', 'suggestions'));
+        }
+
+        // Level 1: Clients List for a Category
+        if ($request->has('category')) {
+            $viewMode = 'clients';
+            $category = $request->category;
+            
+            $query = Client::where('category', $category);
+            
+            // Filter by assignment if not admin
+            if (!$user->isAdmin()) {
+                $query->whereHas('users', function($q) use ($user) {
+                    $q->where('users.id', $user->id);
+                });
+            }
+            
+            $items = $query->withCount('files')->get();
+            
+            $breadcrumbs = [
+                ['label' => 'Home', 'url' => route('files.index')],
+                ['label' => ucfirst($category), 'url' => '#'],
+            ];
+            
+            return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'category'));
+        }
+
+        // Level 0: Root (Categories)
+        $viewMode = 'categories';
+        
+        $fixedCategories = ['Retainer', 'Perorangan', 'Kantor Narasumber Hukum'];
+        $dbCategories = Client::select('category')->distinct()->pluck('category')->toArray();
+        
+        // Merge
+        $all = array_merge($fixedCategories, $dbCategories);
+        
+        // Normalize everything to Title Case (ucfirst) to deduplicate 'retainer' vs 'Retainer'
+        $allNormalized = array_map(function($c) {
+            return ucfirst($c);
+        }, $all);
+        
+        $items = array_unique($allNormalized);
+        
+        $breadcrumbs = [];
+
+        // Fetch recent files for this view
+        $recentFiles = File::with(['client', 'uploader'])->latest()->take(10)->get();
+        
+        return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'recentFiles'));
+    }
+
+    public function store(Request $request)
+    {
+        $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'files' => 'required|array|max:100', // Max 100 files
+            'files.*' => 'required|file|max:1048576', // Max 1GB (1048576 KB)
+            'description' => 'nullable|string|max:255',
+        ]);
+
+        $clientId = $request->client_id;
+        $description = $request->description;
+        
+        // Check permission if user is not admin
+        if (!auth()->user()->isAdmin()) {
+             if (!auth()->user()->clients()->where('clients.id', $clientId)->exists()) {
+                 abort(403, 'You do not have access to this client.');
+             }
+        }
+
+        $client = Client::find($clientId);
+        
+        // Determine Target Drive Path
+        // /OfficeApp/Retainer/{Nama Perusahaan}/Berkas
+        // /OfficeApp/Klien/{Nama Klien}/Berkas
+        $rootParams = 'OfficeApp';
+        $typeParam = ($client->category === 'Retainer' || $client->category === 'retainer') ? 'Retainer' : 'Klien';
+        // Sanitize client name for folder usage
+        $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
+        
+        $drivePath = "{$rootParams}/{$typeParam}/{$safeClientName}/Berkas";
+        
+        if ($description) {
+            // Include description as subfolder if provided (matches "Folder" view logic)
+            $drivePath .= "/" . preg_replace('/[^A-Za-z0-9 _-]/', '', $description);
+        }
+
+        $uploadedCount = 0;
+
+        DB::beginTransaction();
+        try {
+            // Ensure folder exists recursively
+            $targetFolderId = $this->driveService->ensureFolderExists($drivePath);
+
+            foreach ($request->file('files') as $file) {
+                // Upload to Drive (Streamed) with specific folder ID
+                $driveFileId = $this->driveService->uploadFile($file, $targetFolderId);
+
+                // Save to DB
+                File::create([
+                    'client_id' => $clientId,
+                    'uploaded_by' => auth()->id(),
+                    'name' => $file->getClientOriginalName(),
+                    'mime_type' => $file->getMimeType(),
+                    'size' => $file->getSize(),
+                    'drive_file_id' => $driveFileId,
+                    'description' => $description,
+                ]);
+
+                $uploadedCount++;
+            }
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Upload failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Upload failed: ' . $e->getMessage());
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => "$uploadedCount files uploaded successfully.",
+                'count' => $uploadedCount
+            ], 200);
+        }
+
+        return redirect()->route('files.index')->with('success', "$uploadedCount files uploaded successfully.");
+    }
+
+    public function view(File $file)
+    {
+        $this->authorizeFileAccess($file);
+
+        try {
+            $url = $this->driveService->getFileWebLink($file->drive_file_id);
+            return redirect()->away($url);
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Could not open file in Drive: ' . $e->getMessage());
+        }
+    }
+
+    public function download(File $file)
+    {
+        $this->authorizeFileAccess($file);
+
+        // Log download
+        Log::info('File downloaded: ' . $file->id . ' by User: ' . auth()->id());
+
+        $response = $this->driveService->getFileStream($file->drive_file_id);
+        $stream = $response->getBody();
+
+        return response()->streamDownload(function() use ($stream) {
+            while (!$stream->eof()) {
+                echo $stream->read(1024 * 8);
+            }
+        }, $file->name, ['Content-Type' => $file->mime_type]);
+    }
+
+    public function bulkDownload(Request $request)
+    {
+        $request->validate([
+            'file_ids' => 'required|array',
+            'file_ids.*' => 'required|exists:files,id',
+        ]);
+
+        $files = File::whereIn('id', $request->file_ids)->get();
+
+        // Authorization check
+        foreach ($files as $file) {
+            $this->authorizeFileAccess($file);
+        }
+
+        // Create ZIP file
+        $zipFileName = 'files_' . date('Y-m-d_His') . '.zip';
+        $zipPath = storage_path('app/temp/' . $zipFileName);
+        
+        // Ensure temp directory exists
+        if (!file_exists(storage_path('app/temp'))) {
+            mkdir(storage_path('app/temp'), 0755, true);
+        }
+
+        $zip = new \ZipArchive();
+        if ($zip->open($zipPath, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            return redirect()->back()->with('error', 'Could not create ZIP file.');
+        }
+
+        try {
+            foreach ($files as $file) {
+                $response = $this->driveService->getFileStream($file->drive_file_id);
+                $stream = $response->getBody();
+                
+                // Add file to ZIP
+                $zip->addFromString($file->name, $stream->getContents());
+            }
+            
+            $zip->close();
+
+            // Return ZIP and delete after sending
+            return response()->download($zipPath, $zipFileName)->deleteFileAfterSend(true);
+        } catch (\Exception $e) {
+            $zip->close();
+            if (file_exists($zipPath)) {
+                unlink($zipPath);
+            }
+            Log::error('Bulk download failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Bulk download failed: ' . $e->getMessage());
+        }
+    }
+
+    public function destroy(File $file)
+    {
+        $this->authorizeFileAccess($file);
+        
+        // Admin only or owner/uploader? Requirement says "Admin: kelola user, klien, semua file", "User: upload & lihat". 
+        // Assuming Users shouldn't delete, or maybe they can? Safest is Admin only or Uploader.
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Only admin can delete files.');
+        }
+
+        try {
+            $this->driveService->deleteFile($file->drive_file_id);
+            $file->delete();
+            return redirect()->back()->with('success', 'File deleted.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Delete failed: ' . $e->getMessage());
+        }
+    }
+
+    private function authorizeFileAccess(File $file)
+    {
+        $user = auth()->user();
+        if ($user->isAdmin()) return true;
+
+        if (!$user->clients()->where('clients.id', $file->client_id)->exists()) {
+            abort(403, 'Unauthorized access to this file.');
+        }
+    }
+}
