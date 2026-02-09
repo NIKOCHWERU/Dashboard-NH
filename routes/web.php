@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('files/{file}/view', [FileController::class, 'view'])->name('files.view');
     Route::get('files/{file}/download', [FileController::class, 'download'])->name('files.download');
     Route::post('files/bulk-download', [FileController::class, 'bulkDownload'])->name('files.bulk-download');
+    Route::delete('files/folder', [FileController::class, 'destroyFolder'])->name('files.destroyFolder')->middleware(['role:admin']);
     
     // Clients - Read access for all, write for admin only
     Route::get('clients', [ClientController::class, 'index'])->name('clients.index');

@@ -153,18 +153,70 @@
 @if($viewMode == 'folders')
 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
     @foreach($items as $folder)
-    <a href="{{ route('files.index', ['client_id' => $client->id, 'folder' => $folder->description]) }}" class="block group">
-        <div class="bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow p-4 text-center border border-gray-100 hover:border-primary">
-            <div class="mx-auto w-16 h-16 mb-2">
-                <!-- Folder Icon -->
-                <svg class="w-full h-full text-yellow-500" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+    <div class="relative group">
+        <a href="{{ route('files.index', ['client_id' => $client->id, 'folder' => $folder->description]) }}" class="block">
+            <div class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all p-5 text-center border border-gray-100 hover:border-primary group-hover:-translate-y-1">
+                <div class="mx-auto w-16 h-16 mb-3">
+                    <svg class="w-full h-full text-yellow-400" fill="currentColor" viewBox="0 0 20 20"><path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path></svg>
+                </div>
+                <h5 class="font-bold text-gray-800 truncate px-2 text-sm" title="{{ $folder->description }}">{{ $folder->description ?: 'Tanpa Keterangan' }}</h5>
+                <span class="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-[10px] font-bold text-gray-500 rounded-full">{{ $folder->count }} Berkas</span>
             </div>
-            <h5 class="font-medium text-gray-800 truncate" title="{{ $folder->description }}">{{ $folder->description ?: 'Tanpa Keterangan' }}</h5>
-            <span class="text-xs text-gray-500">{{ $folder->count }} Items</span>
-        </div>
-    </a>
+        </a>
+        @if(auth()->user()->isAdmin())
+        <button onclick="confirmDeleteFolder('{{ $folder->description }}', {{ $folder->count }}, {{ $client->id }})" 
+                class="absolute -top-2 -right-2 bg-white text-red-500 hover:bg-red-500 hover:text-white p-1.5 rounded-full shadow-lg border border-red-100 opacity-0 group-hover:opacity-100 transition-opacity z-10" 
+                title="Hapus Folder">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+        </button>
+        @endif
+    </div>
     @endforeach
 </div>
+
+<!-- Delete Folder Modal -->
+<div id="deleteFolderModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[70] backdrop-blur-sm p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <div class="p-6 text-center">
+            <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
+                <svg class="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Hapus Folder Keterangan?</h3>
+            <p class="text-sm text-gray-500 mb-6">
+                Anda akan menghapus folder <span id="delFolderName" class="font-bold text-gray-800"></span> yang berisi <span id="delFileCount" class="font-bold text-gray-800"></span> berkas. <br>
+                <span class="text-red-600 font-semibold italic">Tindakan ini tidak dapat dibatalkan dan semua berkas di Drive akan terhapus.</span>
+            </p>
+            <form id="deleteFolderForm" action="{{ route('files.destroyFolder') }}" method="POST">
+                @csrf
+                @method('DELETE')
+                <input type="hidden" name="client_id" id="delClientId">
+                <input type="hidden" name="folder" id="delFolderNameInput">
+                <div class="flex flex-col gap-3">
+                    <button type="submit" class="w-full px-4 py-2.5 bg-red-600 text-white rounded-lg text-sm font-bold hover:bg-red-700 shadow-lg shadow-red-200 transition-all">
+                        Ya, Hapus Semua
+                    </button>
+                    <button type="button" onclick="closeDeleteFolderModal()" class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all">
+                        Batalkan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDeleteFolder(folderName, count, clientId) {
+    document.getElementById('delFolderName').textContent = folderName || 'Tanpa Keterangan';
+    document.getElementById('delFileCount').textContent = count;
+    document.getElementById('delClientId').value = clientId;
+    document.getElementById('delFolderNameInput').value = folderName;
+    document.getElementById('deleteFolderModal').classList.remove('hidden');
+}
+
+function closeDeleteFolderModal() {
+    document.getElementById('deleteFolderModal').classList.add('hidden');
+}
+</script>
 @if($items->isEmpty())
     <div class="text-center py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
@@ -179,47 +231,89 @@
 @endif
 
 <!-- Upload Modal with Datalist -->
-<div id="uploadModal" class="hidden fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-    <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="flex justify-between items-center mb-4">
-             <h3 class="text-lg font-bold">Upload ke {{ $client->name }}</h3>
-             <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="text-gray-500 hover:text-gray-800">&times;</button>
+<div id="uploadModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity duration-300 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-gray-800">Upload Berkas: {{ $client->name }}</h3>
+            <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
         </div>
         
-        <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
             @csrf
             <input type="hidden" name="client_id" value="{{ $client->id }}">
             
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Keterangan Folder</label>
-                <!-- Datalist for Creatable Select -->
-                <input list="descriptions-list" name="description" class="w-full rounded-md border-gray-300 shadow-sm p-2 border" placeholder="Pilih atau Buat Baru..." autocomplete="off">
-                <datalist id="descriptions-list">
-                    @foreach($suggestions as $s)
-                        @if($s) <option value="{{ $s }}"> @endif
-                    @endforeach
-                </datalist>
-                <p class="text-xs text-gray-500 mt-1">Ketik untuk membuat folder baru.</p>
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Keterangan Folder / Sub-Folder</label>
+                    <input list="descriptions-list" name="description" class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 p-2.5 border transition-all text-sm" placeholder="Pilih yang ada atau ketik untuk buat baru..." autocomplete="off">
+                    <datalist id="descriptions-list">
+                        @foreach($suggestions as $s)
+                            @if($s) <option value="{{ $s }}"> @endif
+                        @endforeach
+                    </datalist>
+                    <p class="mt-1 text-[10px] text-gray-400 italic">Gunakan keterangan yang sama untuk menyatukan berkas dalam satu folder.</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pilih File (Bisa Banyak)</label>
+                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer relative" onclick="document.getElementById('file-input').click()">
+                        <div class="space-y-1 text-center">
+                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                            </svg>
+                            <div class="flex text-sm text-gray-600">
+                                <span class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary-dark">Upload a file</span>
+                                <p class="pl-1">or drag and drop</p>
+                            </div>
+                            <p class="text-xs text-gray-500">PNG, JPG, PDF, DOCX up to 1GB per file</p>
+                        </div>
+                        <input id="file-input" name="files[]" type="file" class="sr-only" multiple required>
+                    </div>
+                    <div id="file-list" class="mt-2 space-y-1"></div>
+                </div>
             </div>
 
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Pilih File (Max 100GB)</label>
-                <input type="file" name="files[]" multiple required class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-hover">
-            </div>
-
-            <div id="progress-container" class="mt-4 hidden">
-                <h4 class="text-sm font-bold text-gray-700 mb-2">Upload Progress:</h4>
-                <div id="progress-list" class="space-y-2 max-h-40 overflow-y-auto">
+            <div id="progress-container" class="mt-6 hidden">
+                <div class="flex items-center justify-between mb-2">
+                    <h4 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Progress Unggah</h4>
+                    <span id="overall-status" class="text-xs font-bold text-primary">0/0 Berhasil</span>
+                </div>
+                <div id="progress-list" class="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
                     <!-- Progress Items will be added here -->
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded mt-4" id="uploadBtn">
-                Upload Sekarang
-            </button>
+            <div class="mt-8 flex justify-end gap-3">
+                <button type="button" onclick="document.getElementById('uploadModal').classList.add('hidden')" class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all">Batal</button>
+                <button type="submit" class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all" id="uploadBtn">
+                    Mulai Unggah
+                </button>
+            </div>
         </form>
         
         <script>
+            const fileInput = document.getElementById('file-input');
+            const fileList = document.getElementById('file-list');
+            
+            fileInput.addEventListener('change', function() {
+                fileList.innerHTML = '';
+                if (this.files.length > 0) {
+                    for (let i = 0; i < Math.min(this.files.length, 5); i++) {
+                        const div = document.createElement('div');
+                        div.className = 'text-[10px] text-gray-500 flex items-center gap-1';
+                        div.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${this.files[i].name}`;
+                        fileList.appendChild(div);
+                    }
+                    if (this.files.length > 5) {
+                        const more = document.createElement('div');
+                        more.className = 'text-[10px] text-gray-400 italic';
+                        more.textContent = `... dan ${this.files.length - 5} file lainnya`;
+                        fileList.appendChild(more);
+                    }
+                }
+            });
             // 1. File Size Validation
             const fileInput = document.querySelector('input[type="file"]');
             const uploadBtn = document.getElementById('uploadBtn');
@@ -268,51 +362,53 @@
 
                 // Process function
                 const processQueue = async () => {
+                    const overallStatus = document.getElementById('overall-status');
                     for (let i = 0; i < totalFiles; i++) {
                         const file = queue[i];
                         
                         // Create Progress Element
                         const progressId = 'prog-' + i;
                         const item = document.createElement('div');
-                        item.className = 'text-xs text-gray-600';
+                        item.className = 'text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 mb-2';
                         item.innerHTML = `
                             <div class="flex justify-between mb-1">
-                                <span class="truncate w-1/2">${file.name}</span>
-                                <span id="${progressId}-status">Waiting...</span>
+                                <span class="truncate w-1/2 font-medium">${file.name}</span>
+                                <span id="${progressId}-status" class="font-bold text-primary">Menunggu...</span>
                             </div>
-                            <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                <div id="${progressId}-bar" class="bg-primary h-1.5 rounded-full" style="width: 0%"></div>
+                            <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                <div id="${progressId}-bar" class="bg-primary h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
                             </div>
                         `;
                         progressList.appendChild(item);
+                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
                         // Upload Single File
                         await uploadSingleFile(file, i, progressId);
                         completedCount++;
+                        overallStatus.textContent = `${completedCount}/${totalFiles} Berhasil`;
                     }
 
                     // All done
-                    alert('Semua file berhasil diupload!');
-                    window.location.reload();
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
                 };
 
                 const uploadSingleFile = (file, index, progressId) => {
-                    return new Promise((resolve, reject) => {
+                    return new Promise((resolve) => {
                         const formData = new FormData();
-                        // Add other form fields
                         const clientId = form.querySelector('input[name="client_id"]').value;
                         const description = form.querySelector('input[name="description"]').value;
                         
                         formData.append('client_id', clientId);
                         formData.append('description', description);
-                        formData.append('files[]', file); // Controller expects array
+                        formData.append('files[]', file);
                         formData.append('_token', '{{ csrf_token() }}');
 
                         const xhr = new XMLHttpRequest();
                         const progressBar = document.getElementById(progressId + '-bar');
                         const statusText = document.getElementById(progressId + '-status');
 
-                        // Progress
                         xhr.upload.addEventListener('progress', function(e) {
                             if (e.lengthComputable) {
                                 const percent = Math.round((e.loaded / e.total) * 100);
@@ -320,31 +416,28 @@
                                 statusText.innerText = percent + '%';
                                 
                                 if (percent === 100) {
-                                    statusText.innerText = 'Processing...'; // Server is sending to Drive
+                                    statusText.innerText = 'Memproses...';
                                 }
                             }
                         });
 
-                        // Completion
                         xhr.addEventListener('load', function() {
                             if (xhr.status >= 200 && xhr.status < 300) {
-                                progressBar.classList.remove('bg-primary');
-                                progressBar.classList.add('bg-green-500');
-                                statusText.innerText = 'Done';
+                                progressBar.classList.replace('bg-primary', 'bg-green-500');
+                                statusText.innerText = 'Selesai';
+                                statusText.className = 'font-bold text-green-600';
                                 resolve();
                             } else {
-                                progressBar.classList.remove('bg-primary');
-                                progressBar.classList.add('bg-red-500');
-                                statusText.innerText = 'Failed';
-                                console.error(xhr.responseText);
-                                // Resolve anyway to continue queue, or reject to stop?
-                                // Let's resolve to try next files
-                                resolve(); 
+                                progressBar.classList.replace('bg-primary', 'bg-red-500');
+                                statusText.innerText = 'Gagal';
+                                statusText.className = 'font-bold text-red-600';
+                                resolve();
                             }
                         });
 
                         xhr.addEventListener('error', function() {
                             statusText.innerText = 'Error';
+                            statusText.className = 'font-bold text-red-600';
                             resolve();
                         });
 

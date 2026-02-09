@@ -302,6 +302,51 @@ class FileController extends Controller
         }
     }
 
+    public function destroyFolder(Request $request)
+    {
+        // Admin only
+        if (!auth()->user()->isAdmin()) {
+            abort(403, 'Only admin can delete folders.');
+        }
+
+        $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'folder' => 'required|string',
+        ]);
+
+        $clientId = $request->client_id;
+        $folderName = $request->folder;
+
+        // Find all files in this folder
+        $files = File::where('client_id', $clientId)
+            ->where('description', $folderName)
+            ->get();
+
+        if ($files->isEmpty()) {
+            return redirect()->back()->with('error', 'Folder not found or already empty.');
+        }
+
+        $fileCount = $files->count();
+
+        DB::beginTransaction();
+        try {
+            foreach ($files as $file) {
+                // Delete from Google Drive
+                $this->driveService->deleteFile($file->drive_file_id);
+                // Delete from database
+                $file->delete();
+            }
+            DB::commit();
+            
+            return redirect()->route('files.index', ['client_id' => $clientId])
+                ->with('success', "Folder '$folderName' and $fileCount file(s) deleted successfully.");
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error('Folder deletion failed: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Folder deletion failed: ' . $e->getMessage());
+        }
+    }
+
     private function authorizeFileAccess(File $file)
     {
         $user = auth()->user();

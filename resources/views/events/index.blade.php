@@ -281,11 +281,128 @@
     </div>
 </div>
 
+<!-- Date Detail Modal -->
+<div id="dateDetailModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity duration-300 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gradient-to-r from-primary to-primary-dark flex justify-between items-center">
+            <div>
+                <h3 class="text-lg font-bold text-white" id="dateDetailTitle">Detail Tanggal</h3>
+                <p class="text-xs text-white/80 mt-0.5" id="dateDetailSubtitle"></p>
+            </div>
+            <button onclick="closeDateDetailModal()" class="text-white/80 hover:text-white">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <div class="p-6 max-h-[60vh] overflow-y-auto">
+            <!-- Holiday Section -->
+            <div id="holidaySection" class="hidden mb-6">
+                <div class="bg-red-50 border-l-4 border-red-500 p-4 rounded-r-lg">
+                    <div class="flex items-center gap-2">
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <h4 class="font-bold text-red-800" id="holidayName">Hari Libur Nasional</h4>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Events Section -->
+            <div id="eventsSection">
+                <h4 class="text-sm font-bold text-gray-700 mb-3 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path></svg>
+                    Agenda Hari Ini
+                </h4>
+                <div id="eventsList" class="space-y-3">
+                    <!-- Events will be inserted here -->
+                </div>
+                <div id="noEvents" class="hidden text-center py-8">
+                    <svg class="w-12 h-12 mx-auto text-gray-300 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <p class="text-sm text-gray-400">Tidak ada agenda pada tanggal ini</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+            <button onclick="closeDateDetailModal()" class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all">Tutup</button>
+            @if($canManage)
+            <button onclick="addEventFromDateDetail()" class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Tambah Agenda
+            </button>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div id="eventModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity duration-300 p-4">
+    <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
+        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+            <h3 class="text-lg font-bold text-gray-800">Buat Agenda Baru</h3>
+            <button onclick="closeEventModal()" class="text-gray-400 hover:text-gray-600">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        <form action="{{ route('events.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
+            @csrf
+            <div class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Judul Agenda</label>
+                    <input type="text" name="title" required placeholder="Contoh: Sidang di PN Jakarta Pusat" class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 p-2.5 border transition-all text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Kategori</label>
+                    <select id="categorySelect" name="category_id" class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 p-2.5 border transition-all text-sm">
+                        <option value="">Pilih Kategori</option>
+                        @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                        <option value="new">+ Tambah Kategori Baru</option>
+                    </select>
+                </div>
+                <div id="newCategoryFields" class="hidden space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Nama Kategori Baru</label>
+                        <input type="text" id="newCategoryName" name="new_category_name" placeholder="Contoh: Konsultasi Klien" class="block w-full rounded-lg border-gray-200 shadow-sm p-2 border text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Warna</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="newCategoryColor" name="new_category_color" value="#3b82f6" class="h-10 w-16 rounded border border-gray-200">
+                            <input type="text" id="colorHex" value="#3b82f6" class="flex-1 rounded-lg border-gray-200 p-2 border text-sm font-mono" readonly>
+                        </div>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Waktu Mulai</label>
+                        <input type="datetime-local" id="event-start" name="start" required class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 p-2.5 border transition-all text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Waktu Selesai</label>
+                        <input type="datetime-local" name="end" class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 p-2.5 border transition-all text-sm">
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Lampiran Foto (Opsional)</label>
+                    <input type="file" name="photo" accept="image/*" class="mt-1 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-primary file:text-white hover:file:bg-primary-dark">
+                    <p class="mt-1 text-[10px] text-gray-400 italic">PNG, JPG, GIF max 10MB</p>
+                </div>
+            </div>
+            <div class="mt-8 flex justify-end gap-3">
+                <button type="button" onclick="closeEventModal()" class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all">Batal</button>
+                <button type="submit" class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all">Simpan Agenda</button>
+            </div>
+        </form>
+    </div>
+</div>
+
 <!-- FullCalendar -->
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
 <script>
 const canManage = {{ $canManage ? 'true' : 'false' }};
+let selectedDate = null;
+const allEvents = @json($calendarEvents);
 
 // Category dropdown handler
 document.getElementById('categorySelect')?.addEventListener('change', function() {
@@ -303,6 +420,78 @@ document.getElementById('categorySelect')?.addEventListener('change', function()
 document.getElementById('newCategoryColor')?.addEventListener('input', function() {
     document.getElementById('colorHex').value = this.value;
 });
+
+function showDateDetail(dateStr) {
+    selectedDate = dateStr;
+    const date = new Date(dateStr + 'T00:00:00');
+    const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+    const formattedDate = date.toLocaleDateString('id-ID', options);
+    
+    document.getElementById('dateDetailTitle').textContent = formattedDate;
+    document.getElementById('dateDetailSubtitle').textContent = dateStr;
+    
+    const eventsOnDay = allEvents.filter(e => e.start.startsWith(dateStr));
+    const holiday = eventsOnDay.find(e => e.extendedProps && e.extendedProps.isHoliday);
+    const regularEvents = eventsOnDay.filter(e => !e.extendedProps || !e.extendedProps.isHoliday);
+    
+    const holidaySection = document.getElementById('holidaySection');
+    if (holiday) {
+        document.getElementById('holidayName').textContent = holiday.title;
+        holidaySection.classList.remove('hidden');
+    } else {
+        holidaySection.classList.add('hidden');
+    }
+    
+    const eventsList = document.getElementById('eventsList');
+    const noEvents = document.getElementById('noEvents');
+    
+    if (regularEvents.length > 0) {
+        eventsList.innerHTML = '';
+        regularEvents.forEach(event => {
+            const eventDiv = document.createElement('div');
+            eventDiv.className = 'border-l-4 pl-4 py-2 hover:bg-gray-50 rounded-r transition-colors';
+            eventDiv.style.borderColor = event.extendedProps.categoryColor || event.backgroundColor;
+            
+            const startTime = new Date(event.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+            const endTime = event.end ? new Date(event.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : '';
+            
+            eventDiv.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                        <h5 class="font-bold text-gray-900 text-sm">${event.title}</h5>
+                        <p class="text-xs text-gray-500 mt-1">
+                            <svg class="w-3 h-3 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            ${startTime}${endTime ? ' - ' + endTime : ''}
+                        </p>
+                        ${event.extendedProps.categoryName ? `
+                            <span class="inline-block mt-1 px-2 py-0.5 text-[10px] rounded-full" style="background-color: ${event.extendedProps.categoryColor}20; color: ${event.extendedProps.categoryColor}">
+                                ${event.extendedProps.categoryName}
+                            </span>
+                        ` : ''}
+                    </div>
+                </div>
+            `;
+            eventsList.appendChild(eventDiv);
+        });
+        eventsList.classList.remove('hidden');
+        noEvents.classList.add('hidden');
+    } else {
+        eventsList.classList.add('hidden');
+        noEvents.classList.remove('hidden');
+    }
+    
+    document.getElementById('dateDetailModal').classList.remove('hidden');
+}
+
+function closeDateDetailModal() {
+    document.getElementById('dateDetailModal').classList.add('hidden');
+    selectedDate = null;
+}
+
+function addEventFromDateDetail() {
+    closeDateDetailModal();
+    openEventModal(selectedDate);
+}
 
 function openEventModal(dateStr = null) {
     const modal = document.getElementById('eventModal');
@@ -335,23 +524,21 @@ document.addEventListener('DOMContentLoaded', function() {
             month: 'Bulan',
             list: 'List'
         },
-        events: @json($calendarEvents),
+        events: allEvents,
         dayMaxEvents: false,
         eventDisplay: 'none', // Hide event bars
         dateClick: function(info) {
-            if (canManage) {
-                openEventModal(info.dateStr);
-            }
+            showDateDetail(info.dateStr);
         },
         eventClick: function(info) {
             if (!info.event.extendedProps.isHoliday) {
-                const categoryName = info.event.extendedProps.categoryName || 'Umum';
-                alert('Agenda: ' + info.event.title + '\nKategori: ' + categoryName);
+                const dateStr = info.event.start.toISOString().split('T')[0];
+                showDateDetail(dateStr);
             }
         },
         dayCellDidMount: function(info) {
             const dateStr = info.date.toISOString().split('T')[0];
-            const eventsOnDay = @json($calendarEvents).filter(e => e.start.startsWith(dateStr));
+            const eventsOnDay = allEvents.filter(e => e.start.startsWith(dateStr));
             const holiday = eventsOnDay.find(e => e.extendedProps && e.extendedProps.isHoliday);
             const regularEvents = eventsOnDay.filter(e => !e.extendedProps || !e.extendedProps.isHoliday);
             
