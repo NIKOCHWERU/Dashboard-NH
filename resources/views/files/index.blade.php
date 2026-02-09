@@ -429,7 +429,13 @@ function closeDeleteFolderModal() {
                                 resolve();
                             } else {
                                 progressBar.classList.replace('bg-primary', 'bg-red-500');
-                                statusText.innerText = 'Gagal';
+                                let errorMsg = 'Gagal';
+                                try {
+                                    const resp = JSON.parse(xhr.responseText);
+                                    if (resp.error) errorMsg = resp.error;
+                                    else if (resp.message) errorMsg = resp.message;
+                                } catch(e) {}
+                                statusText.innerText = errorMsg;
                                 statusText.className = 'font-bold text-red-600';
                                 resolve();
                             }

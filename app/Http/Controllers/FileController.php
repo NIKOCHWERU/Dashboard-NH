@@ -187,9 +187,17 @@ class FileController extends Controller
                 $uploadedCount++;
             }
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             DB::rollBack();
-            Log::error('Upload failed: ' . $e->getMessage());
+            Log::error('Upload failed for client ' . $clientId . ': ' . $e->getMessage(), [
+                'exception' => $e,
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'Upload failed: ' . $e->getMessage()], 500);
+            }
+            
             return redirect()->back()->with('error', 'Upload failed: ' . $e->getMessage());
         }
 
@@ -223,7 +231,9 @@ class FileController extends Controller
         Log::info('File downloaded: ' . $file->id . ' by User: ' . auth()->id());
 
         $response = $this->driveService->getFileStream($file->drive_file_id);
-        $stream = $response->getBody();
+        
+        // If response is a Guzzle Response, get the body stream
+        $stream = ($response instanceof \Psr\Http\Message\ResponseInterface) ? $response->getBody() : $response;
 
         return response()->streamDownload(function() use ($stream) {
             while (!$stream->eof()) {
@@ -263,7 +273,7 @@ class FileController extends Controller
         try {
             foreach ($files as $file) {
                 $response = $this->driveService->getFileStream($file->drive_file_id);
-                $stream = $response->getBody();
+                $stream = ($response instanceof \Psr\Http\Message\ResponseInterface) ? $response->getBody() : $response;
                 
                 // Add file to ZIP
                 $zip->addFromString($file->name, $stream->getContents());

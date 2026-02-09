@@ -79,11 +79,15 @@ class GoogleDriveService
             $status = $media->nextChunk($chunk);
         }
         
-        // Reset defer to false so subsequent calls (like quota check) work normally
+        // Reset defer to false so subsequent calls work normally
         $this->service->getClient()->setDefer(false);
         fclose($handle);
 
-        return $status->id;
+        if ($status instanceof DriveFile || (is_object($status) && isset($status->id))) {
+            return $status->id;
+        }
+
+        throw new \Exception("Upload to Google Drive failed or returned invalid response.");
     }
 
     /**
@@ -94,7 +98,10 @@ class GoogleDriveService
      */
     public function getFileStream($fileId)
     {
-        return $this->service->files->get($fileId, ['alt' => 'media']);
+        // Ensure defer is off for downloads
+        $this->service->getClient()->setDefer(false);
+        $response = $this->service->files->get($fileId, ['alt' => 'media']);
+        return $response;
     }
 
     /**
