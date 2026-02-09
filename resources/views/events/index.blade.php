@@ -404,6 +404,15 @@ const canManage = {{ $canManage ? 'true' : 'false' }};
 let selectedDate = null;
 const allEvents = @json($calendarEvents);
 
+// Helper to get local YYYY-MM-DD
+function getLocalDateStr(date) {
+    const d = new Date(date);
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+}
+
 // Category dropdown handler
 document.getElementById('categorySelect')?.addEventListener('change', function() {
     const newCategoryFields = document.getElementById('newCategoryFields');
@@ -532,12 +541,12 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         eventClick: function(info) {
             if (!info.event.extendedProps.isHoliday) {
-                const dateStr = info.event.start.toISOString().split('T')[0];
+                const dateStr = getLocalDateStr(info.event.start);
                 showDateDetail(dateStr);
             }
         },
         dayCellDidMount: function(info) {
-            const dateStr = info.date.toISOString().split('T')[0];
+            const dateStr = getLocalDateStr(info.date);
             const eventsOnDay = allEvents.filter(e => e.start.startsWith(dateStr));
             const holiday = eventsOnDay.find(e => e.extendedProps && e.extendedProps.isHoliday);
             const regularEvents = eventsOnDay.filter(e => !e.extendedProps || !e.extendedProps.isHoliday);

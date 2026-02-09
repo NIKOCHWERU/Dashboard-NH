@@ -85,6 +85,11 @@ class EventController extends Controller
             return back()->with('error', 'You do not have permission to create events.');
         }
 
+        // Pre-handle 'new' category selection
+        if ($request->category_id === 'new') {
+            $request->merge(['category_id' => null]);
+        }
+
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'start' => 'required|date',
