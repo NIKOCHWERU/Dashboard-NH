@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Event;
+use App\Models\EventCategory;
 use App\Services\GoogleDriveService;
 
 class EventController extends Controller
@@ -17,21 +18,26 @@ class EventController extends Controller
 
     public function index(\App\Services\GoogleCalendarService $calendarService)
     {
-        $events = Event::with('user')->latest()->get();
+        $events = Event::with(['user', 'category'])->latest()->get();
+        $categories = EventCategory::orderBy('name')->get();
         
         // Fetch holidays from Google Calendar (cached)
         $holidays = $calendarService->getIndonesianHolidays(2026);
         
         // Format for FullCalendar
         $calendarEvents = $events->map(function($event) {
+            $color = $event->category ? $event->category->color : $this->getColorByType($event->type);
             return [
                 'id' => $event->id,
                 'title' => $event->title,
                 'start' => $event->start->toIso8601String(),
                 'end' => $event->end ? $event->end->toIso8601String() : null,
-                'backgroundColor' => $this->getColorByType($event->type),
+                'backgroundColor' => $color,
+                'borderColor' => $color,
                 'extendedProps' => [
                     'type' => $event->type,
+                    'categoryName' => $event->category ? $event->category->name : 'Umum',
+                    'categoryColor' => $color,
                     'photo' => $event->photo,
                 ]
             ];
@@ -53,7 +59,7 @@ class EventController extends Controller
 
         $canManage = auth()->user()->canManageEvents();
 
-        return view('events.index', compact('events', 'calendarEvents', 'canManage'));
+        return view('events.index', compact('events', 'calendarEvents', 'canManage', 'categories'));
     }
 
     public function storeFromDate(Request $request)
@@ -83,9 +89,22 @@ class EventController extends Controller
             'title' => 'required|string|max:255',
             'start' => 'required|date',
             'end' => 'nullable|date|after_or_equal:start',
-            'type' => 'required|string',
+            'category_id' => 'nullable|exists:event_categories,id',
+            'new_category_name' => 'nullable|string|max:255',
+            'new_category_color' => 'nullable|string|max:7',
+            'type' => 'nullable|string',
             'photo' => 'nullable|image|max:10240', // Max 10MB
         ]);
+
+        // Handle new category creation
+        if ($request->filled('new_category_name')) {
+            $category = EventCategory::create([
+                'name' => $request->new_category_name,
+                'color' => $request->new_category_color ?? '#3b82f6',
+                'created_by' => auth()->id(),
+            ]);
+            $validated['category_id'] = $category->id;
+        }
 
         $validated['user_id'] = auth()->id();
 

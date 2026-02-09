@@ -9,7 +9,7 @@ class Event extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['title', 'start', 'end', 'type', 'photo', 'user_id'];
+    protected $fillable = ['title', 'start', 'end', 'type', 'photo', 'user_id', 'category_id'];
 
     protected $casts = [
         'start' => 'datetime',
@@ -19,5 +19,10 @@ class Event extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(EventCategory::class, 'category_id');
     }
 }

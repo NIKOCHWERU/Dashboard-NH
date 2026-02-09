@@ -37,16 +37,21 @@ class DashboardController extends Controller
         ];
         
         // 2. Calendar Events for Mini Calendar
-        $events = \App\Models\Event::with('user')->get();
+        $events = \App\Models\Event::with(['user', 'category'])->get();
         $holidays = $calendarService->getIndonesianHolidays(date('Y'));
         
         $calendarEvents = $events->map(function($event) {
+            $color = $event->category ? $event->category->color : $this->getColorByType($event->type);
             return [
                 'title' => $event->title,
                 'start' => $event->start->toIso8601String(),
                 'end' => $event->end ? $event->end->toIso8601String() : null,
-                'backgroundColor' => $this->getColorByType($event->type),
-                'extendedProps' => ['type' => $event->type]
+                'backgroundColor' => $color,
+                'borderColor' => $color,
+                'extendedProps' => [
+                    'type' => $event->type,
+                    'categoryColor' => $color
+                ]
             ];
         });
 
@@ -61,7 +66,7 @@ class DashboardController extends Controller
         }
 
         // 3. Upcoming Events & Info
-        $upcomingEvents = \App\Models\Event::with('user')
+        $upcomingEvents = \App\Models\Event::with(['user', 'category'])
             ->whereBetween('start', [now(), now()->addDays(7)])
             ->orderBy('start')
             ->get();
@@ -72,7 +77,7 @@ class DashboardController extends Controller
             ->orderBy('retainer_contract_end')
             ->get();
 
-        $infos = \App\Models\Info::with('creator')->latest()->take(3)->get();
+        $infos = \App\Models\Info::with('creator')->active()->latest()->take(3)->get();
 
         return view('dashboard', compact('stats', 'contractDeadlines', 'upcomingEvents', 'infos', 'calendarEvents'));
     }

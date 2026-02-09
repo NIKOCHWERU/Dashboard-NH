@@ -208,17 +208,17 @@
                 center: 'title',
                 right: 'next'
             },
-            height: 'auto',
+            height: window.innerWidth < 768 ? 'auto' : 450,
             locale: 'id',
             events: @json($calendarEvents),
             dayMaxEvents: false,
-            eventDisplay: 'none', // Don't show titles in mini
+            eventDisplay: 'none', // Don't show event bars, only dots
             dayCellDidMount: function(info) {
                 // Highlight days with events/holidays
                 const dateStr = info.date.toISOString().split('T')[0];
                 const eventsOnDay = @json($calendarEvents).filter(e => e.start.startsWith(dateStr));
                 const holiday = eventsOnDay.find(e => e.extendedProps && e.extendedProps.isHoliday);
-                const hasEvent = eventsOnDay.some(e => !e.extendedProps || !e.extendedProps.isHoliday);
+                const regularEvents = eventsOnDay.filter(e => !e.extendedProps || !e.extendedProps.isHoliday);
                 
                 if (holiday) {
                     info.el.classList.add('holiday-bg');
@@ -230,14 +230,42 @@
                     info.el.title = holiday.title; // Tooltip
                 } 
                 
-                if (hasEvent) {
-                    const dot = document.createElement('div');
-                    dot.className = 'mx-auto w-1.5 h-1.5 bg-primary rounded-full mt-1';
-                    info.el.querySelector('.fc-daygrid-day-top').appendChild(dot);
+                // Add color dots for events
+                if (regularEvents.length > 0) {
+                    const dayTop = info.el.querySelector('.fc-daygrid-day-top');
+                    if (dayTop) {
+                        const dotsContainer = document.createElement('div');
+                        dotsContainer.style.cssText = 'display:flex;flex-wrap:wrap;justify-content:center;gap:2px;margin-top:2px;';
+                        
+                        regularEvents.slice(0, 3).forEach(event => {
+                            const dot = document.createElement('div');
+                            dot.style.cssText = `width:5px;height:5px;border-radius:50%;background-color:${event.extendedProps.categoryColor || event.backgroundColor}`;
+                            dot.title = event.title;
+                            dotsContainer.appendChild(dot);
+                        });
+                        
+                        if (regularEvents.length > 3) {
+                            const moreDot = document.createElement('span');
+                            moreDot.style.cssText = 'font-size:8px;color:#6b7280;font-weight:bold;';
+                            moreDot.textContent = '+' + (regularEvents.length - 3);
+                            dotsContainer.appendChild(moreDot);
+                        }
+                        
+                        dayTop.appendChild(dotsContainer);
+                    }
                 }
             }
         });
         calendar.render();
+        
+        // Responsive resize
+        window.addEventListener('resize', function() {
+            if (window.innerWidth < 768) {
+                calendar.setOption('height', 'auto');
+            } else {
+                calendar.setOption('height', 450);
+            }
+        });
     });
 </script>
 @endsection

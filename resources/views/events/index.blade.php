@@ -13,6 +13,22 @@
         font-weight: 600 !important;
         color: #374151;
     }
+    
+    /* Mobile responsive toolbar */
+    @media (max-width: 640px) {
+        .fc-toolbar-title {
+            font-size: 1rem !important;
+        }
+        .fc .fc-toolbar {
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        .fc .fc-toolbar-chunk {
+            display: flex;
+            justify-content: center;
+        }
+    }
+    
     .fc-button-primary {
         background-color: transparent !important;
         border: 1px solid #d1d5db !important;
@@ -20,6 +36,8 @@
         text-transform: capitalize !important;
         box-shadow: none !important;
         font-weight: 500 !important;
+        font-size: 0.875rem !important;
+        padding: 0.375rem 0.75rem !important;
     }
     .fc-button-primary:hover {
         background-color: #f3f4f6 !important;
@@ -59,35 +77,35 @@
         margin-top: 4px;
     }
     
-    /* Event Styles */
-    .fc-v-event, .fc-h-event {
-        border: none !important;
-        padding: 1px 4px !important;
-        border-radius: 4px !important;
+    /* Hide event titles, show only dots */
+    .fc-event-title {
+        display: none !important;
     }
-    .event-holiday {
+    
+    /* Event dots */
+    .event-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        display: inline-block;
+        margin: 2px;
+    }
+    
+    .event-dots-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        padding: 2px;
+        gap: 2px;
+    }
+    
+    /* Holiday styling */
+    .holiday-bg {
         background-color: #fee2e2 !important;
-        border: none !important;
-        cursor: pointer !important;
     }
     .holiday-text {
         color: #dc2626 !important;
         font-weight: 800 !important;
-    }
-    .event-meeting {
-        background-color: #dcfce7 !important;
-        color: #15803d !important;
-        border-left: 3px solid #22c55e !important;
-    }
-    .event-deadline {
-        background-color: #fef9c3 !important;
-        color: #a16207 !important;
-        border-left: 3px solid #eab308 !important;
-    }
-    .event-general {
-        background-color: #dbeafe !important;
-        color: #1d4ed8 !important;
-        border-left: 3px solid #3b82f6 !important;
     }
 
     /* Custom Scrollbar */
@@ -103,6 +121,14 @@
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #9ca3af;
+    }
+    
+    /* Category select with add new */
+    #categorySelect:focus {
+        outline: none;
+        border-color: #D4AF37;
+        ring: 2px;
+        ring-color: rgba(212, 175, 55, 0.2);
     }
 </style>
 
@@ -124,7 +150,7 @@
 <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
     <!-- Main Calendar (3/4) -->
     <div class="xl:col-span-3">
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-4">
+        <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-2 md:p-4">
             <div id="calendar"></div>
         </div>
     </div>
@@ -140,11 +166,16 @@
             <div class="p-5">
                 <div class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
                     @forelse($events->sortBy('start')->take(10) as $event)
-                    <div class="group relative pl-4 border-l-2 {{ $event->type == 'meeting' ? 'border-green-500' : ($event->type == 'deadline' ? 'border-yellow-500' : 'border-blue-500') }}">
+                    <div class="group relative pl-4 border-l-2" style="border-color: {{ $event->category ? $event->category->color : '#3b82f6' }}">
                         <div class="flex justify-between items-start">
                             <div>
                                 <h4 class="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors">{{ $event->title }}</h4>
                                 <p class="text-xs text-gray-500 mt-0.5">{{ $event->start->format('d M, H:i') }}</p>
+                                @if($event->category)
+                                <span class="inline-block mt-1 px-2 py-0.5 text-[10px] rounded-full" style="background-color: {{ $event->category->color }}20; color: {{ $event->category->color }}">
+                                    {{ $event->category->name }}
+                                </span>
+                                @endif
                             </div>
                             @if($canManage)
                             <form action="{{ route('events.destroy', $event) }}" method="POST" onsubmit="return confirm('Hapus agenda ini?');">
@@ -176,25 +207,19 @@
                     <span class="w-3 h-3 rounded-full bg-red-600"></span>
                     <span class="text-xs text-gray-600">Libur Nasional / Cuti</span>
                 </div>
+                @foreach($categories as $category)
                 <div class="flex items-center gap-3">
-                    <span class="w-3 h-3 rounded-full bg-green-500"></span>
-                    <span class="text-xs text-gray-600">Meeting Klien</span>
+                    <span class="w-3 h-3 rounded-full" style="background-color: {{ $category->color }}"></span>
+                    <span class="text-xs text-gray-600">{{ $category->name }}</span>
                 </div>
-                <div class="flex items-center gap-3">
-                    <span class="w-3 h-3 rounded-full bg-yellow-500"></span>
-                    <span class="text-xs text-gray-600">Deadline Penting</span>
-                </div>
-                <div class="flex items-center gap-3">
-                    <span class="w-3 h-3 rounded-full bg-blue-500"></span>
-                    <span class="text-xs text-gray-600">Agenda Umum</span>
-                </div>
+                @endforeach
             </div>
         </div>
     </div>
 </div>
 
 <!-- Modal -->
-<div id="eventModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity duration-300">
+<div id="eventModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity duration-300 p-4">
     <div class="bg-white rounded-xl shadow-2xl w-full max-w-md overflow-hidden transform transition-all">
         <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
             <h3 class="text-lg font-bold text-gray-800">Buat Agenda Baru</h3>
@@ -211,11 +236,26 @@
                 </div>
                 <div>
                     <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Kategori</label>
-                    <select name="type" required class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 p-2.5 border transition-all text-sm">
-                        <option value="general">Umum</option>
-                        <option value="meeting">Meeting Klien</option>
-                        <option value="deadline">Deadline Penting</option>
+                    <select id="categorySelect" name="category_id" class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 p-2.5 border transition-all text-sm">
+                        <option value="">Pilih Kategori</option>
+                        @foreach($categories as $category)
+                        <option value="{{ $category->id }}">{{ $category->name }}</option>
+                        @endforeach
+                        <option value="new">+ Tambah Kategori Baru</option>
                     </select>
+                </div>
+                <div id="newCategoryFields" class="hidden space-y-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Nama Kategori Baru</label>
+                        <input type="text" id="newCategoryName" name="new_category_name" placeholder="Contoh: Konsultasi Klien" class="block w-full rounded-lg border-gray-200 shadow-sm p-2 border text-sm">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1">Warna</label>
+                        <div class="flex gap-2">
+                            <input type="color" id="newCategoryColor" name="new_category_color" value="#3b82f6" class="h-10 w-16 rounded border border-gray-200">
+                            <input type="text" id="colorHex" value="#3b82f6" class="flex-1 rounded-lg border-gray-200 p-2 border text-sm font-mono" readonly>
+                        </div>
+                    </div>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
@@ -247,6 +287,23 @@
 <script>
 const canManage = {{ $canManage ? 'true' : 'false' }};
 
+// Category dropdown handler
+document.getElementById('categorySelect')?.addEventListener('change', function() {
+    const newCategoryFields = document.getElementById('newCategoryFields');
+    if (this.value === 'new') {
+        newCategoryFields.classList.remove('hidden');
+        document.getElementById('newCategoryName').required = true;
+    } else {
+        newCategoryFields.classList.add('hidden');
+        document.getElementById('newCategoryName').required = false;
+    }
+});
+
+// Color picker sync
+document.getElementById('newCategoryColor')?.addEventListener('input', function() {
+    document.getElementById('colorHex').value = this.value;
+});
+
 function openEventModal(dateStr = null) {
     const modal = document.getElementById('eventModal');
     modal.classList.remove('hidden');
@@ -259,73 +316,92 @@ function closeEventModal() {
     const modal = document.getElementById('eventModal');
     modal.classList.add('hidden');
     document.getElementById('event-start').value = '';
+    document.getElementById('categorySelect').value = '';
+    document.getElementById('newCategoryFields').classList.add('hidden');
 }
 
 document.addEventListener('DOMContentLoaded', function() {
     var calendarEl = document.getElementById('calendar');
     var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
+        initialView: window.innerWidth < 768 ? 'listMonth' : 'dayGridMonth',
         locale: 'id',
         headerToolbar: {
             left: 'prev,next today',
             center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
+            right: 'dayGridMonth,listMonth'
         },
         buttonText: {
             today: 'Hari Ini',
             month: 'Bulan',
-            week: 'Minggu',
-            day: 'Hari',
-            list: 'Agenda'
+            list: 'List'
         },
         events: @json($calendarEvents),
-        dayMaxEvents: 3,
+        dayMaxEvents: false,
+        eventDisplay: 'none', // Hide event bars
         dateClick: function(info) {
             if (canManage) {
                 openEventModal(info.dateStr);
-            } else {
-                alert('Anda tidak memiliki izin untuk membuat agenda.');
             }
         },
         eventClick: function(info) {
             if (!info.event.extendedProps.isHoliday) {
-                alert('Agenda: ' + info.event.title + '\nTipe: ' + (info.event.extendedProps.type || 'Umum'));
+                const categoryName = info.event.extendedProps.categoryName || 'Umum';
+                alert('Agenda: ' + info.event.title + '\nKategori: ' + categoryName);
             }
         },
-        eventClassNames: function(arg) {
-            let classes = ['text-xs', 'py-1', 'px-2', 'mb-1'];
-            if (arg.event.extendedProps.isHoliday) {
-                classes.push('event-holiday');
-            } else {
-                classes.push('event-' + (arg.event.extendedProps.type || 'general'));
+        dayCellDidMount: function(info) {
+            const dateStr = info.date.toISOString().split('T')[0];
+            const eventsOnDay = @json($calendarEvents).filter(e => e.start.startsWith(dateStr));
+            const holiday = eventsOnDay.find(e => e.extendedProps && e.extendedProps.isHoliday);
+            const regularEvents = eventsOnDay.filter(e => !e.extendedProps || !e.extendedProps.isHoliday);
+            
+            // Holiday styling
+            if (holiday) {
+                info.el.classList.add('holiday-bg');
+                const dayNumber = info.el.querySelector('.fc-daygrid-day-number');
+                if (dayNumber) {
+                    dayNumber.classList.add('holiday-text');
+                }
+                info.el.title = holiday.title;
             }
-            return classes;
-        },
-        eventDidMount: function(info) {
-            if (info.event.extendedProps.isHoliday) {
-                // Set tooltip
-                info.el.title = info.event.title + ' (Libur Nasional)';
-                
-                // Color the day number red if possible
-                const cell = info.el.closest('.fc-daygrid-day');
-                if (cell) {
-                    const dayNumber = cell.querySelector('.fc-daygrid-day-number');
-                    if (dayNumber) {
-                        dayNumber.classList.add('holiday-text');
+            
+            // Add color dots for events
+            if (regularEvents.length > 0) {
+                const dayTop = info.el.querySelector('.fc-daygrid-day-top');
+                if (dayTop) {
+                    const dotsContainer = document.createElement('div');
+                    dotsContainer.className = 'event-dots-container';
+                    
+                    regularEvents.slice(0, 4).forEach(event => {
+                        const dot = document.createElement('div');
+                        dot.className = 'event-dot';
+                        dot.style.backgroundColor = event.extendedProps.categoryColor || event.backgroundColor;
+                        dot.title = event.title;
+                        dotsContainer.appendChild(dot);
+                    });
+                    
+                    if (regularEvents.length > 4) {
+                        const moreDot = document.createElement('span');
+                        moreDot.className = 'text-[8px] text-gray-500 font-bold';
+                        moreDot.textContent = '+' + (regularEvents.length - 4);
+                        dotsContainer.appendChild(moreDot);
                     }
+                    
+                    dayTop.appendChild(dotsContainer);
                 }
-                
-                // If it's a background event, we might want to hide the title if FullCalendar shows it
-                if (info.event.display === 'background') {
-                    const titleEl = info.el.querySelector('.fc-event-title');
-                    if (titleEl) titleEl.style.display = 'none';
-                }
-            } else {
-                info.el.title = info.event.title + ' (' + (info.event.extendedProps.type || 'umum') + ')';
             }
         }
     });
     calendar.render();
+    
+    // Responsive view change
+    window.addEventListener('resize', function() {
+        if (window.innerWidth < 768) {
+            calendar.changeView('listMonth');
+        } else {
+            calendar.changeView('dayGridMonth');
+        }
+    });
 });
 </script>
 @endsection
