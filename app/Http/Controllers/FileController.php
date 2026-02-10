@@ -80,8 +80,21 @@ class FileController extends Controller
 
         // Level 1: Clients List for a Category
         if ($request->has('category')) {
-            $viewMode = 'clients';
             $category = $request->category;
+            
+            // Special handling for public category "Kantor Narasumber Hukum"
+            if (strtolower($category) === 'kantor narasumber hukum') {
+                // Find or create a dummy client for this category
+                $client = Client::firstOrCreate(
+                    ['category' => $category, 'name' => 'Kantor Narasumber Hukum'],
+                    ['status' => 'active']
+                );
+                
+                // Redirect to folders view (which shows upload button)
+                return redirect()->route('files.index', ['client_id' => $client->id]);
+            }
+            
+            $viewMode = 'clients';
             
             $query = Client::where('category', $category);
             
