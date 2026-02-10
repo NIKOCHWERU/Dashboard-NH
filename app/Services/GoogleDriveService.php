@@ -253,4 +253,27 @@ class GoogleDriveService
 
         return $parentId;
     }
+
+    /**
+     * Ensure a category folder exists and return its ID.
+     * Creates the folder if it doesn't exist.
+     * 
+     * @param string $categoryName
+     * @return string Folder ID
+     */
+    public function ensureCategoryFolder($categoryName)
+    {
+        // Sanitize category name for folder usage
+        $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $categoryName);
+        
+        // Check if folder exists
+        $categoryFolderId = $this->findFolderByName($safeCategoryName, $this->folderId);
+        
+        // Create if doesn't exist
+        if (!$categoryFolderId) {
+            $categoryFolderId = $this->createFolder($safeCategoryName, $this->folderId);
+        }
+        
+        return $categoryFolderId;
+    }
 }

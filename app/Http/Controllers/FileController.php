@@ -139,27 +139,39 @@ class FileController extends Controller
         $description = $request->description;
         
         // Check permission if user is not admin
-        if (!auth()->user()->isAdmin()) {
+        // Skip check for "Kantor Narasumber Hukum" - public category
+        $client = Client::find($clientId);
+        
+        if (!auth()->user()->isAdmin() && strtolower($client->category) !== 'kantor narasumber hukum') {
              if (!auth()->user()->clients()->where('clients.id', $clientId)->exists()) {
                  abort(403, 'You do not have access to this client.');
              }
         }
-
-        $client = Client::find($clientId);
         
-        // Determine Target Drive Path
-        // /OfficeApp/Retainer/{Nama Perusahaan}/Berkas
-        // /OfficeApp/Klien/{Nama Klien}/Berkas
-        $rootParams = 'OfficeApp';
-        $typeParam = ($client->category === 'Retainer' || $client->category === 'retainer') ? 'Retainer' : 'Klien';
-        // Sanitize client name for folder usage
-        $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
+        // Determine Target Drive Path with Category Folders
+        // New structure: /{Category}/{ClientName}/Berkas/{Description}
+        // For "Kantor Narasumber Hukum": /{Category}/{FolderName}/{Description}
         
-        $drivePath = "{$rootParams}/{$typeParam}/{$safeClientName}/Berkas";
+        $category = $client->category;
+        $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $category);
         
-        if ($description) {
-            // Include description as subfolder if provided (matches "Folder" view logic)
-            $drivePath .= "/" . preg_replace('/[^A-Za-z0-9 _-]/', '', $description);
+        // Ensure category folder exists
+        $categoryFolderId = $this->driveService->ensureCategoryFolder($category);
+        
+        // Build path based on category
+        if (strtolower($category) === 'kantor narasumber hukum') {
+            // Public category: use folder name directly (description becomes folder name)
+            $folderName = $description ?: 'Umum';
+            $safeFolderName = preg_replace('/[^A-Za-z0-9 _-]/', '', $folderName);
+            $drivePath = "{$safeCategoryName}/{$safeFolderName}";
+        } else {
+            // Regular categories: use client name
+            $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
+            $drivePath = "{$safeCategoryName}/{$safeClientName}/Berkas";
+            
+            if ($description) {
+                $drivePath .= "/" . preg_replace('/[^A-Za-z0-9 _-]/', '', $description);
+            }
         }
 
         $uploadedCount = 0;
@@ -321,16 +333,22 @@ class FileController extends Controller
 
         $request->validate([
             'client_id' => 'required|exists:clients,id',
-            'folder' => 'required|string',
+            'folder' => 'nullable|string',
         ]);
 
         $clientId = $request->client_id;
         $folderName = $request->folder;
 
         // Find all files in this folder
-        $files = File::where('client_id', $clientId)
-            ->where('description', $folderName)
-            ->get();
+        $query = File::where('client_id', $clientId);
+        
+        if (empty($folderName)) {
+            $query->whereNull('description');
+        } else {
+            $query->where('description', $folderName);
+        }
+        
+        $files = $query->get();
 
         if ($files->isEmpty()) {
             return redirect()->back()->with('error', 'Folder not found or already empty.');
