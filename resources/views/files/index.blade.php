@@ -206,10 +206,11 @@
 
 <script>
 function confirmDeleteFolder(folderName, count, clientId) {
+    // folderName can be empty string for 'No Description'
     document.getElementById('delFolderName').textContent = folderName || 'Tanpa Keterangan';
     document.getElementById('delFileCount').textContent = count;
     document.getElementById('delClientId').value = clientId;
-    document.getElementById('delFolderNameInput').value = folderName;
+    document.getElementById('delFolderNameInput').value = folderName || '';
     document.getElementById('deleteFolderModal').classList.remove('hidden');
 }
 
@@ -300,6 +301,32 @@ function closeDeleteFolderModal() {
             fileInput.addEventListener('change', function() {
                 fileList.innerHTML = '';
                 if (this.files.length > 0) {
+                    // Calculate total size
+                    let totalSize = 0;
+                    for (let i = 0; i < this.files.length; i++) {
+                        totalSize += this.files[i].size;
+                    }
+                    
+                    // Format size
+                    const formatSize = (bytes) => {
+                        if (bytes < 1024) return bytes + ' B';
+                        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+                        if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+                        return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+                    };
+                    
+                    // Add summary header
+                    const summary = document.createElement('div');
+                    summary.className = 'mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg';
+                    summary.innerHTML = `
+                        <div class="flex items-center justify-between text-xs">
+                            <span class="font-bold text-blue-800">📁 ${this.files.length} file dipilih</span>
+                            <span class="font-semibold text-blue-600">Total: ${formatSize(totalSize)}</span>
+                        </div>
+                    `;
+                    fileList.appendChild(summary);
+                    
+                    // Show first 5 files
                     for (let i = 0; i < Math.min(this.files.length, 5); i++) {
                         const div = document.createElement('div');
                         div.className = 'text-[10px] text-gray-500 flex items-center gap-1';
