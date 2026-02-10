@@ -19,30 +19,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // Seed default categories
-        DB::table('event_categories')->insert([
-            [
-                'name' => 'Umum',
-                'color' => '#3b82f6',
-                'created_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Meeting Klien',
-                'color' => '#22c55e',
-                'created_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-            [
-                'name' => 'Deadline Penting',
-                'color' => '#eab308',
-                'created_by' => 1,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ],
-        ]);
+        // Seed default categories - MOVED TO SEEDER or skipped to prevent FK error
+        // DB::table('event_categories')->insert([...]);
     }
 
     /**
