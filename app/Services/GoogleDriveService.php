@@ -15,14 +15,14 @@ class GoogleDriveService
     public function __construct()
     {
         $client = new Client();
-        
+
         $tokenPath = storage_path('app/google-drive-token.json');
 
         if (file_exists($tokenPath)) {
             // Priority: Use the Stored User Token (Admin's Token)
             // This allows using the 100GB+ storage of the real user account
             $tokenData = json_decode(file_get_contents($tokenPath), true);
-            
+
             $client->setClientId(config('services.google.client_id'));
             $client->setClientSecret(config('services.google.client_secret'));
             $client->refreshToken($tokenData['refresh_token']);
@@ -32,7 +32,7 @@ class GoogleDriveService
         }
 
         $client->addScope(Drive::DRIVE);
-        
+
         $this->service = new Drive($client);
         $this->folderId = config('services.google.drive_folder_id', env('GOOGLE_DRIVE_FOLDER_ID'));
     }
@@ -47,7 +47,7 @@ class GoogleDriveService
     public function uploadFile($file, $folderId = null)
     {
         $folderId = $folderId ?: $this->folderId;
-        
+
         $fileMetadata = new DriveFile([
             'name' => $file->getClientOriginalName(),
             'parents' => [$folderId]
@@ -55,10 +55,10 @@ class GoogleDriveService
 
         $this->service->getClient()->setDefer(true);
         $request = $this->service->files->create($fileMetadata);
-        
+
         // chunk size 10MB (must be multiple of 256KB)
-        $chunkSizeBytes = 10 * 1024 * 1024; 
-        
+        $chunkSizeBytes = 10 * 1024 * 1024;
+
         $media = new \Google\Http\MediaFileUpload(
             $this->service->getClient(),
             $request,
@@ -67,18 +67,18 @@ class GoogleDriveService
             true, // Resumable
             $chunkSizeBytes
         );
-        
+
         $fileSize = $file->getSize();
         $media->setFileSize($fileSize);
 
         $status = false;
         $handle = fopen($file->getRealPath(), "rb");
-        
+
         while (!$status && !feof($handle)) {
             $chunk = fread($handle, $chunkSizeBytes);
             $status = $media->nextChunk($chunk);
         }
-        
+
         // Reset defer to false so subsequent calls work normally
         $this->service->getClient()->setDefer(false);
         fclose($handle);
@@ -243,7 +243,7 @@ class GoogleDriveService
 
         foreach ($parts as $part) {
             $foundId = $this->findFolderByName($part, $parentId);
-            
+
             if ($foundId) {
                 $parentId = $foundId;
             } else {
@@ -265,15 +265,51 @@ class GoogleDriveService
     {
         // Sanitize category name for folder usage
         $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $categoryName);
-        
+
         // Check if folder exists
         $categoryFolderId = $this->findFolderByName($safeCategoryName, $this->folderId);
-        
+
         // Create if doesn't exist
         if (!$categoryFolderId) {
             $categoryFolderId = $this->createFolder($safeCategoryName, $this->folderId);
         }
-        
+
         return $categoryFolderId;
+    }
+
+    /**
+     * List all files in a specific folder.
+     * 
+     * @param string $folderId
+     * @return array
+     */
+    public function listFiles($folderId)
+    {
+        $files = [];
+        $pageToken = null;
+
+        do {
+            $response = $this->service->files->listFiles([
+                'q' => "'{$folderId}' in parents and trashed = false",
+                'fields' => 'nextPageToken, files(id, name, mimeType, size)',
+                'pageToken' => $pageToken,
+                'pageSize' => 1000
+            ]);
+
+            foreach ($response->files as $file) {
+                // If it's a folder, we might want to recurse or just list it? 
+                // For now, let's list everything. The sync command will decide what to do.
+                $files[] = [
+                    'id' => $file->id,
+                    'name' => $file->name,
+                    'mimeType' => $file->mimeType,
+                    'size' => $file->size
+                ];
+            }
+
+            $pageToken = $response->nextPageToken;
+        } while ($pageToken != null);
+
+        return $files;
     }
 }
