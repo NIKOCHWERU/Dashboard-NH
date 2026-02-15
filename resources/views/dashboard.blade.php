@@ -72,45 +72,54 @@
         </div>
 
         <!-- Stats Grid -->
+        <!-- Stats Grid -->
         <div class="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500 flex items-center gap-4">
-                <div class="p-3 bg-blue-50 rounded-lg text-blue-500">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
-                        </path>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="text-black text-[10px] font-bold uppercase tracking-wider">Total Klien</h3>
-                    <p class="text-2xl font-bold text-black">{{ $stats['total_clients'] }}</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500 flex items-center gap-4">
-                <div class="p-3 bg-green-50 rounded-lg text-green-500">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                        </path>
-                    </svg>
-                </div>
-                <div>
-                    <h3 class="text-black text-[10px] font-bold uppercase tracking-wider">Total Berkas</h3>
-                    <p class="text-2xl font-bold text-black">{{ $stats['total_files'] }}</p>
-                </div>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500 relative overflow-hidden">
-                <div class="flex justify-between items-start">
+            <a href="{{ route('clients.index') }}" class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
+                <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500 flex items-center gap-4 h-full cursor-pointer hover:shadow-md transition-shadow">
+                    <div class="p-3 bg-blue-50 rounded-lg text-blue-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                            </path>
+                        </svg>
+                    </div>
                     <div>
-                        <h3 class="text-black text-[10px] font-bold uppercase tracking-wider mb-1">Storage Usage</h3>
-                        <p class="text-xl font-bold text-black">{{ $stats['storage']['used_formatted'] }}</p>
-                        <p class="text-[10px] text-gray-500">of {{ $stats['storage']['limit_formatted'] }}</p>
-                    </div>
-                    <div style="height: 60px; width: 60px;">
-                        <canvas id="storageChartSmall"></canvas>
+                        <h3 class="text-black text-[10px] font-bold uppercase tracking-wider">Total Klien</h3>
+                        <p class="text-2xl font-bold text-black">{{ $stats['total_clients'] }}</p>
                     </div>
                 </div>
-            </div>
+            </a>
+
+            <a href="{{ route('files.index') }}" class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
+                <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500 flex items-center gap-4 h-full cursor-pointer hover:shadow-md transition-shadow">
+                    <div class="p-3 bg-green-50 rounded-lg text-green-500">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            </path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-black text-[10px] font-bold uppercase tracking-wider">Total Berkas</h3>
+                        <p class="text-2xl font-bold text-black">{{ $stats['total_files'] }}</p>
+                    </div>
+                </div>
+            </a>
+
+            <a href="{{ route('files.index') }}" class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
+                <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500 relative overflow-hidden h-full cursor-pointer hover:shadow-md transition-shadow">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-black text-[10px] font-bold uppercase tracking-wider mb-1">Storage Usage</h3>
+                            <p class="text-xl font-bold text-black">{{ $stats['storage']['used_formatted'] }}</p>
+                            <p class="text-[10px] text-gray-500">of {{ $stats['storage']['limit_formatted'] }}</p>
+                        </div>
+                        <div style="height: 60px; width: 60px;">
+                            <canvas id="storageChartSmall"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </a>
         </div>
     </div>
 

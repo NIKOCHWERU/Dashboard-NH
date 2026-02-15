@@ -14,13 +14,10 @@ class DashboardController extends Controller
 
     public function index(GoogleDriveService $driveService, \App\Services\GoogleCalendarService $calendarService)
     {
-        // 1. Get Usage from Google Drive Folder directly
-        $totalUsage = \Illuminate\Support\Facades\Cache::remember('drive_folder_usage', 600, function () use ($driveService) {
-            try {
-                return $driveService->getTotalFolderSize();
-            } catch (\Exception $e) {
-                return File::sum('size');
-            }
+        // 1. Get Usage from Database (sum of synced files)
+        // This is faster and matches the "Total Files" count
+        $totalUsage = \Illuminate\Support\Facades\Cache::remember('drive_usage_db', 60, function () {
+            return File::sum('size');
         });
 
         $limitGb = env('GOOGLE_STORAGE_LIMIT_GB', 15);
