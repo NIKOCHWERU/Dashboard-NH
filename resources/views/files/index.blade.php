@@ -84,7 +84,7 @@
                                     Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-50">
+                        <tbody class="divide-y divide-gray-5">
                             @forelse($recentFiles as $file)
                                 <tr class="hover:bg-gray-50/50 transition-colors group">
                                     <td class="px-6 py-4">
@@ -297,311 +297,311 @@
         </div>
 
         <script>
-                function confirmDeleteFol        der(folder        Name, count, clientId) {
-                    // folderName can be empty string for 'No Description'
-                    document.getElementById('delFolderName').textContent = folderName || 'Tanpa Keterangan';
-                    document.getElementById('delFileCount').textContent = count;
-                    document.getElementById('delClientId').value = clientId;
-                    document.getElementById('delFolderNameInput').value = folderName || '';
-                    document.getElementById('deleteFolderModal').classList.remove('hidden');
-                }
+                        function confirmD        eleteFolder(folderName, count, clientId) {
+                            // folderName can be empty string for 'No Description'
+                            document.getElementById('delFolderName').textContent = folderName || 'Tanpa Keterangan';
+                            document.getElementById('delFileCount').textContent = count;
+                            document.getElementById('delClientId').value = clientId;
+                            document.getElementById('delFolderNameInput').value = folderName || '';
+                            document.getElementById('deleteFolderModal').classList.remove('hidden');
+                        }
 
-                function closeDeleteFolderModal() {
-                    document.getElementById('deleteFolderModal').classList.add('hidden');
-                }
-                </script>
-                @if($items->isEmpty())
-                    <div class="text-center py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada Folder</h3>
-                        <p class="mt-1 text-sm text-gray-500">Mulai upload file untuk membuat folder keterangan baru.</p>
-                        <div class="mt-6">
-                            <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
-                                Upload File Baru
-                            </button>
-                        </div>
-                    </div>
-                @endif
-
-                <!-- Upload Modal with Datalist -->
-                <div id="uploadModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity duration-300 p-4">
-                    <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
-                        <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                            <h3 class="text-lg font-bold text-gray-800">Upload Berkas: {{ $client->name }}</h3>
-                            <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
-                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                            </button>
-                        </div>
-
-                        <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
-                            @csrf
-                            <input type="hidden" name="client_id" value="{{ $client->id }}">
-
-                            <div class="space-y-4">
-                                <div>
-                                    <div class="relative mt-2">
-                                        <input list="descriptions-list" name="description" id="description" 
-                                            class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-primary transition-colors bg-transparent pt-4 pb-1" 
-                                            placeholder="Keterangan Folder" autocomplete="off">
-                                        <label for="description" 
-                                            class="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
-                                            Keterangan Folder / Sub-Folder
-                                        </label>
-                                        <datalist id="descriptions-list">
-                                            @foreach($suggestions as $s)
-                                                @if($s) <option value="{{ $s }}"> @endif
-                                            @endforeach
-                                        </datalist>
-                                    </div>
-                                    <p class="mt-1 text-[10px] text-gray-400 italic">Pilih atau ketik baru untuk mengelompokkan file.</p>
-                                </div>
-
-                                <div>
-                                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pilih File (Bisa Banyak)</label>
-                                    <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer relative" onclick="document.getElementById('file-input').click()">
-                                        <div class="space-y-1 text-center">
-                                            <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
-                                                <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                            </svg>
-                                            <div class="flex text-sm text-gray-600 justify-center">
-                                                <span class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary-dark">Upload a file</span>
-                                                <p class="pl-1">or drag and drop</p>
-                                            </div>
-                                            <p class="text-xs text-gray-500">PNG, JPG, PDF, DOCX up to 1GB per file</p>
-                                        </div>
-                                        <input id="file-input" name="files[]" type="file" class="sr-only" multiple required>
-                                    </div>
-                                    <!-- Scroll View for File List -->
-                                    <div id="file-list" class="mt-2 space-y-1 max-h-[200px] overflow-y-auto px-1 custom-scrollbar"></div>
-                                </div>
-                            </div>
-
-                            <div id="progress-container" class="mt-6 hidden">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Progress Unggah</h4>
-                                    <span id="overall-status" class="text-xs font-bold text-primary">0/0 Berhasil</span>
-                                </div>
-                                <!-- Scroll View for Progress List -->
-                                <div id="progress-list" class="space-y-2 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
-                                    <!-- Progress Items will be added here -->
-                                </div>
-                            </div>
-
-                            <div class="mt-8 flex justify-end gap-3">
-                                <button type="button" onclick="document.getElementById('uploadModal').classList.add('hidden')" class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all">Batal</button>
-                                <button type="submit" class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all" id="uploadBtn">
-                                    Mulai Unggah
-                                </button>
-                            </div>
-                        </form>
-
-                        <script>
-                            const fileInput = document.getElementById('file-input');
-                            const fileList = document.getElementById('file-list');
-                            const uploadBtn = document.getElementById('uploadBtn');
-                            const form = document.querySelector('#uploadModal form');
-                            const dropZone = fileInput.closest('.border-2'); // Get the parent div with border-dashed
-
-                            // (Script content remains mostly same, just ensuring ids match and scroll classes are in HTML)
-                            // Prevent default drag behaviors
-                            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
-                                dropZone.addEventListener(eventName, preventDefaults, false);
-                                document.body.addEventListener(eventName, preventDefaults, false);
-                            });
-
-                            function preventDefaults(e) {
-                                e.preventDefault();
-                                e.stopPropagation();
-                            }
-
-                            // Highlight drop zone
-                            ['dragenter', 'dragover'].forEach(eventName => {
-                                dropZone.addEventListener(eventName, highlight, false);
-                            });
-                            ['dragleave', 'drop'].forEach(eventName => {
-                                dropZone.addEventListener(eventName, unhighlight, false);
-                            });
-
-                            function highlight(e) {
-                                dropZone.classList.add('border-primary', 'bg-blue-50');
-                            }
-                            function unhighlight(e) {
-                                dropZone.classList.remove('border-primary', 'bg-blue-50');
-                            }
-
-                            // Handle dropped files
-                            dropZone.addEventListener('drop', handleDrop, false);
-
-                            function handleDrop(e) {
-                                const dt = e.dataTransfer;
-                                const files = dt.files;
-
-                                fileInput.files = files;
-                                const event = new Event('change');
-                                fileInput.dispatchEvent(event);
-                            }
-
-                            fileInput.addEventListener('change', function() {
-                                fileList.innerHTML = '';
-                                if (this.files.length > 0) {
-                                    let totalSize = 0;
-                                    for (let i = 0; i < this.files.length; i++) {
-                                        totalSize += this.files[i].size;
-                                    }
-
-                                    const formatSize = (bytes) => {
-                                        if (bytes < 1024) return bytes + ' B';
-                                        if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
-                                        if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
-                                        return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
-                                    };
-
-                                    const summary = document.createElement('div');
-                                    summary.className = 'mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg sticky top-0 z-10'; // Sticky summary
-                                    summary.innerHTML = `
-                                        <div class="flex items-center justify-between text-xs">
-                                            <span class="font-bold text-blue-800">📁 ${this.files.length} file dipilih</span>
-                                            <span class="font-semibold text-blue-600">Total: ${formatSize(totalSize)}</span>
-                                        </div>
-                                    `;
-                                    fileList.appendChild(summary);
-
-                                    Array.from(this.files).forEach((file, index) => {
-                                        const isImage = file.type.startsWith('image/');
-                                        const div = document.createElement('div');
-                                        div.className = 'text-[10px] text-gray-500 flex items-center gap-2 p-1 hover:bg-gray-50 rounded border-b border-gray-50 last:border-0';
-
-                                        let icon = `<svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
-
-                                        if (isImage) {
-                                            const url = URL.createObjectURL(file);
-                                            icon = `<img src="${url}" class="w-6 h-6 object-cover rounded border border-gray-200">`;
-                                        }
-
-                                        div.innerHTML = `${icon} <span class="truncate flex-1">${file.name}</span> <span class="text-xs text-gray-300 whitespace-nowrap">${formatSize(file.size)}</span>`;
-                                        fileList.appendChild(div);
-                                    });
-                                }
-                            });
-
-                            // AJAX Upload Handler
-                            form.addEventListener('submit', function(e) {
-                                e.preventDefault();
-
-                                const files = fileInput.files;
-                                if (files.length === 0) return;
-
-                                uploadBtn.disabled = true;
-                                uploadBtn.innerText = 'Uploading...';
-                                const progressContainer = document.getElementById('progress-container');
-                                const progressList = document.getElementById('progress-list');
-                                progressContainer.classList.remove('hidden');
-                                progressList.innerHTML = '';
-
-                                const queue = Array.from(files);
-                                const totalFiles = queue.length;
-                                let completedCount = 0;
-                                let hasErrors = false;
-
-                                const processQueue = async () => {
-                                    const overallStatus = document.getElementById('overall-status');
-                                    for (let i = 0; i < totalFiles; i++) {
-                                        const file = queue[i];
-                                        const progressId = 'prog-' + i;
-                                        const item = document.createElement('div');
-                                        item.className = 'text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 mb-2';
-                                        item.innerHTML = `
-                                            <div class="flex justify-between mb-1">
-                                                <span class="truncate w-1/2 font-medium">${file.name}</span>
-                                                <span id="${progressId}-status" class="font-bold text-primary">Menunggu...</span>
-                                            </div>
-                                            <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                                <div id="${progressId}-bar" class="bg-primary h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-                                            </div>
-                                        `;
-                                        progressList.appendChild(item);
-                                        item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-                                        try {
-                                            await uploadSingleFile(file, i, progressId);
-                                        } catch(err) {
-                                            hasErrors = true;
-                                        }
-                                        completedCount++;
-                                        overallStatus.textContent = `${completedCount}/${totalFiles} Selesai`;
-                                    }
-
-                                    if (!hasErrors) {
-                                        setTimeout(() => {
-                                            window.location.reload();
-                                        }, 1000);
-                                    } else {
-                                        uploadBtn.disabled = false;
-                                        uploadBtn.innerText = 'Coba Lagi / Selesai';
-                                        alert('Beberapa file gagal diunggah. Silakan cek status di bawah.');
-                                    }
-                                };
-
-                                const uploadSingleFile = (file, index, progressId) => {
-                                    return new Promise((resolve, reject) => {
-                                        const formData = new FormData();
-                                        const clientId = form.querySelector('input[name="client_id"]').value;
-                                        const description = form.querySelector('input[name="description"]').value;
-
-                                        formData.append('client_id', clientId);
-                                        formData.append('description', description);
-                                        formData.append('files[]', file);
-                                        formData.append('_token', '{{ csrf_token() }}');
-
-                                        const xhr = new XMLHttpRequest();
-                                        const progressBar = document.getElementById(progressId + '-bar');
-                                        const statusText = document.getElementById(progressId + '-status');
-
-                                        xhr.upload.addEventListener('progress', function(e) {
-                                            if (e.lengthComputable) {
-                                                const percent = Math.round((e.loaded / e.total) * 100);
-                                                progressBar.style.width = percent + '%';
-                                                statusText.innerText = percent + '%';
-                                            }
-                                        });
-
-                                        xhr.addEventListener('load', function() {
-                                            if (xhr.status >= 200 && xhr.status < 300) {
-                                                progressBar.classList.replace('bg-primary', 'bg-green-500');
-                                                statusText.innerText = 'Selesai';
-                                                statusText.className = 'font-bold text-green-600';
-                                                resolve();
-                                            } else {
-                                                progressBar.classList.replace('bg-primary', 'bg-red-500');
-                                                let errorMsg = 'Gagal';
-                                                try {
-                                                    const resp = JSON.parse(xhr.responseText);
-                                                    if (resp.error) errorMsg = resp.error;
-                                                    else if (resp.message) errorMsg = resp.message;
-                                                } catch(e) {}
-                                                statusText.innerText = errorMsg;
-                                                statusText.className = 'font-bold text-red-600';
-                                                reject(new Error(errorMsg));
-                                            }
-                                        });
-
-                                        xhr.addEventListener('error', function() {
-                                            statusText.innerText = 'Network Error';
-                                            statusText.className = 'font-bold text-red-600';
-                                            reject(new Error('Network Error'));
-                                        });
-
-                                        xhr.open('POST', '{{ route("files.store") }}');
-                                        xhr.setRequestHeader('Accept', 'application/json');
-                                        xhr.send(formData);
-                                    });
-                                };
-
-                                processQueue();
-                            });
+                        function closeDeleteFolderModal() {
+                            document.getElementById('deleteFolderModal').classList.add('hidden');
+                        }
                         </script>
-                    </div>
-                </div>
+                        @if($items->isEmpty())
+                            <div class="text-center py-10 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+                                <h3 class="mt-2 text-sm font-medium text-gray-900">Belum ada Folder</h3>
+                                <p class="mt-1 text-sm text-gray-500">Mulai upload file untuk membuat folder keterangan baru.</p>
+                                <div class="mt-6">
+                                    <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary">
+                                        Upload File Baru
+                                    </button>
+                                </div>
+                            </div>
+                        @endif
+
+                        <!-- Upload Modal with Datalist -->
+                        <div id="uploadModal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity duration-300 p-4">
+                            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
+                                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
+                                    <h3 class="text-lg font-bold text-gray-800">Upload Berkas: {{ $client->name }}</h3>
+                                    <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="text-gray-400 hover:text-gray-600">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                                    </button>
+                                </div>
+
+                                <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
+                                    @csrf
+                                    <input type="hidden" name="client_id" value="{{ $client->id }}">
+
+                                    <div class="space-y-4">
+                                        <div>
+                                            <div class="relative mt-2">
+                                                <input list="descriptions-list" name="description" id="description" 
+                                                    class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-primary transition-colors bg-transparent pt-4 pb-1" 
+                                                    placeholder="Keterangan Folder" autocomplete="off">
+                                                <label for="description" 
+                                                    class="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
+                                                    Keterangan Folder / Sub-Folder
+                                                </label>
+                                                <datalist id="descriptions-list">
+                                                    @foreach($suggestions as $s)
+                                                        @if($s) <option value="{{ $s }}"> @endif
+                                                    @endforeach
+                                                </datalist>
+                                            </div>
+                                            <p class="mt-1 text-[10px] text-gray-400 italic">Pilih atau ketik baru untuk mengelompokkan file.</p>
+                                        </div>
+
+                                        <div>
+                                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pilih File (Bisa Banyak)</label>
+                                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer relative" onclick="document.getElementById('file-input').click()">
+                                                <div class="space-y-1 text-center">
+                                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+                                                        <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                                    </svg>
+                                                    <div class="flex text-sm text-gray-600 justify-center">
+                                                        <span class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary-dark">Upload a file</span>
+                                                        <p class="pl-1">or drag and drop</p>
+                                                    </div>
+                                                    <p class="text-xs text-gray-500">PNG, JPG, PDF, DOCX up to 1GB per file</p>
+                                                </div>
+                                                <input id="file-input" name="files[]" type="file" class="sr-only" multiple required>
+                                            </div>
+                                            <!-- Scroll View for File List -->
+                                            <div id="file-list" class="mt-2 space-y-1 max-h-[200px] overflow-y-auto px-1 custom-scrollbar"></div>
+                                        </div>
+                                    </div>
+
+                                    <div id="progress-container" class="mt-6 hidden">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Progress Unggah</h4>
+                                            <span id="overall-status" class="text-xs font-bold text-primary">0/0 Berhasil</span>
+                                        </div>
+                                        <!-- Scroll View for Progress List -->
+                                        <div id="progress-list" class="space-y-2 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
+                                            <!-- Progress Items will be added here -->
+                                        </div>
+                                    </div>
+
+                                    <div class="mt-8 flex justify-end gap-3">
+                                        <button type="button" onclick="document.getElementById('uploadModal').classList.add('hidden')" class="px-5 py-2.5 border border-gray-300 rounded-lg text-sm font-semibold text-gray-700 hover:bg-gray-50 transition-all">Batal</button>
+                                        <button type="submit" class="px-5 py-2.5 bg-primary text-white rounded-lg text-sm font-semibold hover:bg-primary-dark shadow-lg shadow-primary/20 transition-all" id="uploadBtn">
+                                            Mulai Unggah
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <script>
+                                    const fileInput = document.getElementById('file-input');
+                                    const fileList = document.getElementById('file-list');
+                                    const uploadBtn = document.getElementById('uploadBtn');
+                                    const form = document.querySelector('#uploadModal form');
+                                    const dropZone = fileInput.closest('.border-2'); // Get the parent div with border-dashed
+
+                                    // (Script content remains mostly same, just ensuring ids match and scroll classes are in HTML)
+                                    // Prevent default drag behaviors
+                                    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                                        dropZone.addEventListener(eventName, preventDefaults, false);
+                                        document.body.addEventListener(eventName, preventDefaults, false);
+                                    });
+
+                                    function preventDefaults(e) {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                    }
+
+                                    // Highlight drop zone
+                                    ['dragenter', 'dragover'].forEach(eventName => {
+                                        dropZone.addEventListener(eventName, highlight, false);
+                                    });
+                                    ['dragleave', 'drop'].forEach(eventName => {
+                                        dropZone.addEventListener(eventName, unhighlight, false);
+                                    });
+
+                                    function highlight(e) {
+                                        dropZone.classList.add('border-primary', 'bg-blue-50');
+                                    }
+                                    function unhighlight(e) {
+                                        dropZone.classList.remove('border-primary', 'bg-blue-50');
+                                    }
+
+                                    // Handle dropped files
+                                    dropZone.addEventListener('drop', handleDrop, false);
+
+                                    function handleDrop(e) {
+                                        const dt = e.dataTransfer;
+                                        const files = dt.files;
+
+                                        fileInput.files = files;
+                                        const event = new Event('change');
+                                        fileInput.dispatchEvent(event);
+                                    }
+
+                                    fileInput.addEventListener('change', function() {
+                                        fileList.innerHTML = '';
+                                        if (this.files.length > 0) {
+                                            let totalSize = 0;
+                                            for (let i = 0; i < this.files.length; i++) {
+                                                totalSize += this.files[i].size;
+                                            }
+
+                                            const formatSize = (bytes) => {
+                                                if (bytes < 1024) return bytes + ' B';
+                                                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+                                                if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+                                                return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
+                                            };
+
+                                            const summary = document.createElement('div');
+                                            summary.className = 'mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg sticky top-0 z-10'; // Sticky summary
+                                            summary.innerHTML = `
+                                                <div class="flex items-center justify-between text-xs">
+                                                    <span class="font-bold text-blue-800">📁 ${this.files.length} file dipilih</span>
+                                                    <span class="font-semibold text-blue-600">Total: ${formatSize(totalSize)}</span>
+                                                </div>
+                                            `;
+                                            fileList.appendChild(summary);
+
+                                            Array.from(this.files).forEach((file, index) => {
+                                                const isImage = file.type.startsWith('image/');
+                                                const div = document.createElement('div');
+                                                div.className = 'text-[10px] text-gray-500 flex items-center gap-2 p-1 hover:bg-gray-50 rounded border-b border-gray-50 last:border-0';
+
+                                                let icon = `<svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
+
+                                                if (isImage) {
+                                                    const url = URL.createObjectURL(file);
+                                                    icon = `<img src="${url}" class="w-6 h-6 object-cover rounded border border-gray-200">`;
+                                                }
+
+                                                div.innerHTML = `${icon} <span class="truncate flex-1">${file.name}</span> <span class="text-xs text-gray-300 whitespace-nowrap">${formatSize(file.size)}</span>`;
+                                                fileList.appendChild(div);
+                                            });
+                                        }
+                                    });
+
+                                    // AJAX Upload Handler
+                                    form.addEventListener('submit', function(e) {
+                                        e.preventDefault();
+
+                                        const files = fileInput.files;
+                                        if (files.length === 0) return;
+
+                                        uploadBtn.disabled = true;
+                                        uploadBtn.innerText = 'Uploading...';
+                                        const progressContainer = document.getElementById('progress-container');
+                                        const progressList = document.getElementById('progress-list');
+                                        progressContainer.classList.remove('hidden');
+                                        progressList.innerHTML = '';
+
+                                        const queue = Array.from(files);
+                                        const totalFiles = queue.length;
+                                        let completedCount = 0;
+                                        let hasErrors = false;
+
+                                        const processQueue = async () => {
+                                            const overallStatus = document.getElementById('overall-status');
+                                            for (let i = 0; i < totalFiles; i++) {
+                                                const file = queue[i];
+                                                const progressId = 'prog-' + i;
+                                                const item = document.createElement('div');
+                                                item.className = 'text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 mb-2';
+                                                item.innerHTML = `
+                                                    <div class="flex justify-between mb-1">
+                                                        <span class="truncate w-1/2 font-medium">${file.name}</span>
+                                                        <span id="${progressId}-status" class="font-bold text-primary">Menunggu...</span>
+                                                    </div>
+                                                    <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                                        <div id="${progressId}-bar" class="bg-primary h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                                    </div>
+                                                `;
+                                                progressList.appendChild(item);
+                                                item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+                                                try {
+                                                    await uploadSingleFile(file, i, progressId);
+                                                } catch(err) {
+                                                    hasErrors = true;
+                                                }
+                                                completedCount++;
+                                                overallStatus.textContent = `${completedCount}/${totalFiles} Selesai`;
+                                            }
+
+                                            if (!hasErrors) {
+                                                setTimeout(() => {
+                                                    window.location.reload();
+                                                }, 1000);
+                                            } else {
+                                                uploadBtn.disabled = false;
+                                                uploadBtn.innerText = 'Coba Lagi / Selesai';
+                                                alert('Beberapa file gagal diunggah. Silakan cek status di bawah.');
+                                            }
+                                        };
+
+                                        const uploadSingleFile = (file, index, progressId) => {
+                                            return new Promise((resolve, reject) => {
+                                                const formData = new FormData();
+                                                const clientId = form.querySelector('input[name="client_id"]').value;
+                                                const description = form.querySelector('input[name="description"]').value;
+
+                                                formData.append('client_id', clientId);
+                                                formData.append('description', description);
+                                                formData.append('files[]', file);
+                                                formData.append('_token', '{{ csrf_token() }}');
+
+                                                const xhr = new XMLHttpRequest();
+                                                const progressBar = document.getElementById(progressId + '-bar');
+                                                const statusText = document.getElementById(progressId + '-status');
+
+                                                xhr.upload.addEventListener('progress', function(e) {
+                                                    if (e.lengthComputable) {
+                                                        const percent = Math.round((e.loaded / e.total) * 100);
+                                                        progressBar.style.width = percent + '%';
+                                                        statusText.innerText = percent + '%';
+                                                    }
+                                                });
+
+                                                xhr.addEventListener('load', function() {
+                                                    if (xhr.status >= 200 && xhr.status < 300) {
+                                                        progressBar.classList.replace('bg-primary', 'bg-green-500');
+                                                        statusText.innerText = 'Selesai';
+                                                        statusText.className = 'font-bold text-green-600';
+                                                        resolve();
+                                                    } else {
+                                                        progressBar.classList.replace('bg-primary', 'bg-red-500');
+                                                        let errorMsg = 'Gagal';
+                                                        try {
+                                                            const resp = JSON.parse(xhr.responseText);
+                                                            if (resp.error) errorMsg = resp.error;
+                                                            else if (resp.message) errorMsg = resp.message;
+                                                        } catch(e) {}
+                                                        statusText.innerText = errorMsg;
+                                                        statusText.className = 'font-bold text-red-600';
+                                                        reject(new Error(errorMsg));
+                                                    }
+                                                });
+
+                                                xhr.addEventListener('error', function() {
+                                                    statusText.innerText = 'Network Error';
+                                                    statusText.className = 'font-bold text-red-600';
+                                                    reject(new Error('Network Error'));
+                                                });
+
+                                                xhr.open('POST', '{{ route("files.store") }}');
+                                                xhr.setRequestHeader('Accept', 'application/json');
+                                                xhr.send(formData);
+                                            });
+                                        };
+
+                                        processQueue();
+                                    });
+                                </script>
+                            </div>
+                        </div>
     @endif
 
         <!-- VIEW MODE 3: FILES LIST -->
@@ -639,6 +639,7 @@
                                     <input type="checkbox" name="selected_files[]" value="{{ $file->id }}" 
                                            data-file-name="{{ $file->name }}" 
                                            data-file-link="https://drive.google.com/file/d/{{ $file->drive_file_id }}/view?usp=sharing"
+                                           data-file-is-image="{{ str_starts_with($file->mime_type, 'image/') ? '1' : '0' }}"
                                            class="file-checkbox rounded border-gray-300 text-primary focus:ring-primary" onchange="updateBulkUI()">
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap" onclick="window.open('{{ route('files.view', $file) }}', '_blank'); event.stopPropagation();">
@@ -761,26 +762,58 @@
                         return;
                     }
 
-                    if (!confirm('Buka Gmail dengan link untuk ' + checked.length + ' file terpilih?')) return;
+                    // Icons (Public URLs to ensure visibility in email)
+                    const iconDoc = "https://img.icons8.com/color/48/document--v1.png";
+                    const iconImg = "https://img.icons8.com/color/48/image-file.png";
 
-                    let bodyContent = "";
+                    let htmlContent = "<ul style='list-style: none; padding-left: 0;'>";
+                    let textContent = "";
 
                     checked.forEach(cb => {
                         const name = cb.getAttribute('data-file-name');
                         const link = cb.getAttribute('data-file-link');
                         const isImage = cb.getAttribute('data-file-is-image') === '1';
 
-                        // Use Emojis because real images cannot be passed via URL parameters
-                        const icon = isImage ? "🖼️" : "📄";
+                        const iconUrl = isImage ? iconImg : iconDoc;
 
-                        bodyContent += `${icon} ${name}: ${link}\n`;
+                        // HTML for Email (Table layout handling vertical alignment)
+                        htmlContent += `
+                            <li style="margin-bottom: 8px; display: flex; align-items: center;">
+                                <img src="${iconUrl}" width="24" height="24" style="vertical-align: middle; margin-right: 10px;">
+                                <a href="${link}" style="color: #1a0dab; text-decoration: none; font-weight: bold;">${name}</a>
+                            </li>`;
+
+                        textContent += `- ${name}: ${link}\n`;
                     });
 
-                    const subject = encodeURIComponent("Berkas Pilihan");
-                    const body = encodeURIComponent(bodyContent);
-                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+                    htmlContent += "</ul>";
 
-                    window.open(gmailUrl, '_blank');
+                    if (!confirm('Agar link BISA DIKLIK, sistem akan menyalinnya ke Clipboard.\n\nKlik OK, lalu Paste (Ctrl+V) di Gmail.')) return;
+
+                    try {
+                        const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+                        const textBlob = new Blob([textContent], { type: "text/plain" });
+
+                        await navigator.clipboard.write([
+                            new ClipboardItem({
+                                "text/html": htmlBlob,
+                                "text/plain": textBlob
+                            })
+                        ]);
+
+                        // Open Gmail automatically
+                        const subject = encodeURIComponent("Berkas Pilihan");
+                        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}`;
+                        window.open(gmailUrl, '_blank');
+
+                    } catch (err) {
+                        console.error('Gagal menyalin:', err);
+                        alert('Gagal menyalin otomatis. Membuka Gmail dengan teks biasa.');
+                        const subject = encodeURIComponent("Berkas Pilihan");
+                        const body = encodeURIComponent(textContent);
+                        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+                        window.open(gmailUrl, '_blank');
+                    }
                 }
             </script>
         @endif
