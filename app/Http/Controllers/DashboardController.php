@@ -32,15 +32,18 @@ class DashboardController extends Controller
             'total_users' => User::count(),
             'storage' => [
                 'usage' => $totalUsage,
-                'limit' => $totalLimit
+                'limit' => $totalLimit,
+                'usage_gb' => round($totalUsage / (1024 * 1024 * 1024), 2),
+                'limit_gb' => $limitGb,
+                'percentage' => $totalLimit > 0 ? round(($totalUsage / $totalLimit) * 100, 1) : 0,
             ],
         ];
-        
+
         // 2. Calendar Events for Mini Calendar
         $events = \App\Models\Event::with(['user', 'category'])->get();
         $holidays = $calendarService->getIndonesianHolidays(date('Y'));
-        
-        $calendarEvents = $events->map(function($event) {
+
+        $calendarEvents = $events->map(function ($event) {
             $color = $event->category ? $event->category->color : $this->getColorByType($event->type);
             return [
                 'title' => $event->title,
@@ -84,7 +87,7 @@ class DashboardController extends Controller
 
     private function getColorByType($type)
     {
-        return match($type) {
+        return match ($type) {
             'meeting' => '#22c55e',
             'deadline' => '#eab308',
             default => '#3b82f6',
