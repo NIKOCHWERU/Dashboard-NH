@@ -690,28 +690,55 @@ function closeDeleteFolderModal() {
         form.submit();
     }
 
-    function emailLinks() {
+    async function emailLinks() {
         const checked = document.querySelectorAll('.file-checkbox:checked');
         if (checked.length === 0) {
             alert('Pilih minimal satu file.');
             return;
         }
-        
-        if (!confirm('Buka Gmail dengan link untuk ' + checked.length + ' file terpilih?')) return;
 
-        let linksText = "Berikut berkas yang Anda butuhkan:\n\n";
-        
+        // Create HTML content for Clipboard (Clickable Links)
+        let htmlContent = "<p>Berikut berkas yang Anda butuhkan:</p><ul>";
+        let textContent = "Berikut berkas yang Anda butuhkan:\n\n";
+
         checked.forEach(cb => {
             const name = cb.getAttribute('data-file-name');
             const link = cb.getAttribute('data-file-link');
-            linksText += `- ${name}: ${link}\n`;
+            
+            htmlContent += `<li><a href="${link}">${name}</a></li>`;
+            textContent += `- ${name}: ${link}\n`;
         });
-        
-        linksText += "\nTerima kasih.";
+
+        htmlContent += "</ul><p>Terima kasih.</p>";
+        textContent += "\nTerima kasih.";
+
+        if (!confirm('Salin ' + checked.length + ' link file ke Clipboard dan buka Gmail?\n\n(Nanti Anda tinggal Paste/Tempel di badan email)')) return;
+
+        try {
+            const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+            const textBlob = new Blob([textContent], { type: "text/plain" });
+            
+            await navigator.clipboard.write([
+                new ClipboardItem({
+                    "text/html": htmlBlob,
+                    "text/plain": textBlob
+                })
+            ]);
+            
+            alert('Link berhasil disalin! Silakan Paste (Ctrl+V) di Gmail.');
+        } catch (err) {
+            console.error('Gagal menyalin ke clipboard:', err);
+            alert('Gagal menyalin otomatis. Membuka Gmail dengan teks biasa.');
+            // Fallback to URL params if clipboard fails
+            const subject = encodeURIComponent("Berkas Pilihan");
+            const body = encodeURIComponent(textContent);
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+            window.open(gmailUrl, '_blank');
+            return;
+        }
 
         const subject = encodeURIComponent("Berkas Pilihan");
-        const body = encodeURIComponent(linksText);
-        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}`;
         window.open(gmailUrl, '_blank');
     }
 </script>
