@@ -307,7 +307,51 @@ function closeDeleteFolderModal() {
         <script>
             const fileInput = document.getElementById('file-input');
             const fileList = document.getElementById('file-list');
-            
+            const uploadBtn = document.getElementById('uploadBtn');
+            const form = document.querySelector('#uploadModal form');
+            const dropZone = fileInput.closest('.border-2'); // Get the parent div with border-dashed
+
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            // Highlight drop zone
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, highlight, false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                dropZone.classList.add('border-primary', 'bg-blue-50');
+            }
+            function unhighlight(e) {
+                dropZone.classList.remove('border-primary', 'bg-blue-50');
+            }
+
+            // Handle dropped files
+            dropZone.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                
+                // Assign to input
+                fileInput.files = files;
+                
+                // Trigger change event manually
+                const event = new Event('change');
+                fileInput.dispatchEvent(event);
+            }
+
             fileInput.addEventListener('change', function() {
                 fileList.innerHTML = '';
                 if (this.files.length > 0) {
@@ -336,48 +380,36 @@ function closeDeleteFolderModal() {
                     `;
                     fileList.appendChild(summary);
                     
-                    // Show first 5 files
-                    for (let i = 0; i < Math.min(this.files.length, 5); i++) {
+                    // Show file list with preview if image
+                    Array.from(this.files).forEach((file, index) => {
+                         // Only show first 10 to avoid lagging
+                         if (index >= 10) return;
+
+                        const isImage = file.type.startsWith('image/');
                         const div = document.createElement('div');
-                        div.className = 'text-[10px] text-gray-500 flex items-center gap-1';
-                        div.innerHTML = `<svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg> ${this.files[i].name}`;
+                        div.className = 'text-[10px] text-gray-500 flex items-center gap-2 p-1 hover:bg-gray-50 rounded';
+                        
+                        let icon = `<svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
+                        
+                        if (isImage) {
+                            const url = URL.createObjectURL(file);
+                            icon = `<img src="${url}" class="w-6 h-6 object-cover rounded border border-gray-200">`;
+                        }
+
+                        div.innerHTML = `${icon} <span class="truncate">${file.name}</span> <span class="text-xs text-gray-300 ml-auto">${formatSize(file.size)}</span>`;
                         fileList.appendChild(div);
-                    }
-                    if (this.files.length > 5) {
+                    });
+
+                    if (this.files.length > 10) {
                         const more = document.createElement('div');
-                        more.className = 'text-[10px] text-gray-400 italic';
-                        more.textContent = `... dan ${this.files.length - 5} file lainnya`;
+                        more.className = 'text-[10px] text-gray-400 italic pl-1';
+                        more.textContent = `... dan ${this.files.length - 10} file lainnya`;
                         fileList.appendChild(more);
                     }
                 }
             });
-            // 1. File Size Validation
-            const fileInput = document.querySelector('input[type="file"]');
-            const uploadBtn = document.getElementById('uploadBtn');
-            const form = document.querySelector('#uploadModal form');
-            
-            fileInput.addEventListener('change', function() {
-                const maxPostSize = {{ $maxPostSize }};
-                
-                // Allow user to select files, we will validate individually during upload or verify total if needed.
-                // But for chunking/individual upload, we mostly care about individual file limits or total if sent at once.
-                // Since we will split them, individual limit matters most, but let's keep the check simple.
-                
-                let totalSize = 0;
-                for (let i = 0; i < this.files.length; i++) {
-                    totalSize += this.files[i].size;
-                }
-                
-                // Warn if SUPER large total, but don't block because we sell separate requests
-                // Actually server PHP post_max_size applies to EACH request.
-                // So if we send 1 file per request, each file must be < 100GB.
-                
-                 if (this.files.length > 0) {
-                     // logic ok
-                 }
-            });
 
-            // 2. AJAX Upload Handler
+            // AJAX Upload Handler
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
                 
@@ -396,6 +428,7 @@ function closeDeleteFolderModal() {
                 const queue = Array.from(files);
                 const totalFiles = queue.length;
                 let completedCount = 0;
+                let hasErrors = false;
 
                 // Process function
                 const processQueue = async () => {
@@ -420,19 +453,29 @@ function closeDeleteFolderModal() {
                         item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
                         // Upload Single File
-                        await uploadSingleFile(file, i, progressId);
+                        try {
+                            await uploadSingleFile(file, i, progressId);
+                        } catch(err) {
+                            hasErrors = true;
+                        }
                         completedCount++;
-                        overallStatus.textContent = `${completedCount}/${totalFiles} Berhasil`;
+                        overallStatus.textContent = `${completedCount}/${totalFiles} Selesai`;
                     }
 
                     // All done
-                    setTimeout(() => {
-                        window.location.reload();
-                    }, 500);
+                    if (!hasErrors) {
+                        setTimeout(() => {
+                            window.location.reload();
+                        }, 1000);
+                    } else {
+                        uploadBtn.disabled = false;
+                        uploadBtn.innerText = 'Coba Lagi / Selesai';
+                        alert('Beberapa file gagal diunggah. Silakan cek status di bawah.');
+                    }
                 };
 
                 const uploadSingleFile = (file, index, progressId) => {
-                    return new Promise((resolve) => {
+                    return new Promise((resolve, reject) => {
                         const formData = new FormData();
                         const clientId = form.querySelector('input[name="client_id"]').value;
                         const description = form.querySelector('input[name="description"]').value;
@@ -451,10 +494,6 @@ function closeDeleteFolderModal() {
                                 const percent = Math.round((e.loaded / e.total) * 100);
                                 progressBar.style.width = percent + '%';
                                 statusText.innerText = percent + '%';
-                                
-                                if (percent === 100) {
-                                    statusText.innerText = 'Memproses...';
-                                }
                             }
                         });
 
@@ -474,14 +513,14 @@ function closeDeleteFolderModal() {
                                 } catch(e) {}
                                 statusText.innerText = errorMsg;
                                 statusText.className = 'font-bold text-red-600';
-                                resolve();
+                                reject(new Error(errorMsg));
                             }
                         });
 
                         xhr.addEventListener('error', function() {
-                            statusText.innerText = 'Error';
+                            statusText.innerText = 'Network Error';
                             statusText.className = 'font-bold text-red-600';
-                            resolve();
+                            reject(new Error('Network Error'));
                         });
 
                         xhr.open('POST', '{{ route("files.store") }}');
