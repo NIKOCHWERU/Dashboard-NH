@@ -103,7 +103,7 @@
                 <h3 class="text-black text-[10px] font-bold uppercase tracking-wider mb-1">Storage Drive</h3>
                 <div class="flex items-end justify-between">
                     <p class="text-xl font-bold text-black">
-                        {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2) }} GB</p>
+                        {{ $stats['storage']['used_formatted'] }}</p>
                     <span
                         class="text-[10px] text-black font-bold">{{ $stats['storage']['limit'] > 0 ? round(($stats['storage']['usage'] / $stats['storage']['limit']) * 100, 1) : 0 }}%</span>
                 </div>
@@ -112,6 +112,7 @@
                         style="width: {{ $stats['storage']['limit'] > 0 ? ($stats['storage']['usage'] / $stats['storage']['limit']) * 100 : 0 }}%">
                     </div>
                 </div>
+                <p class="text-[10px] text-gray-500 mt-1">Total: {{ $stats['storage']['limit_formatted'] }}</p>
             </div>
         </div>
     </div>
@@ -238,10 +239,8 @@
             </div>
             <div class="mt-4 text-center">
                 <p class="text-sm text-gray-600">
-                    Used: <span class="font-bold">{{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2) }}
-                        GB</span> /
-                    Total: <span class="font-bold">{{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2) }}
-                        GB</span>
+                    Used: <span class="font-bold">{{ $stats['storage']['used_formatted'] }}</span> /
+                    Total: <span class="font-bold">{{ $stats['storage']['limit_formatted'] }}</span>
                 </p>
             </div>
         </div>
