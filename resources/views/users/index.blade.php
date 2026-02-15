@@ -48,9 +48,10 @@
                 </span>
 
                 <div class="grid grid-cols-{{ auth()->user()->isAdmin() ? '3' : '1' }} gap-2 w-full mt-auto">
-                    <a href="mailto:{{ $user->email }}?subject=Pesan%20dari%20Dashboard"
+                    <a href="https://mail.google.com/mail/?view=cm&fs=1&to={{ $user->email }}&su=Pesan%20dari%20Dashboard"
+                        target="_blank"
                         class="flex items-center justify-center bg-blue-50 text-blue-600 py-2 rounded-lg font-bold text-sm hover:bg-blue-100 transition-colors"
-                        title="Kirim Email">
+                        title="Kirim Email via Gmail">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">

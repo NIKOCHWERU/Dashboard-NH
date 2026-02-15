@@ -715,11 +715,12 @@ function closeDeleteFolderModal() {
         // Submit form for download
         form.submit();
         
-        // 2. Open Mailto (Delayed to allow download to start)
+        // 2. Open Gmail (Delayed to allow download to start)
         setTimeout(() => {
             const subject = encodeURIComponent("Berkas Pilihan");
             const body = encodeURIComponent("Silakan temukan lampiran berkas ZIP yang telah diunduh.\n\nTerima kasih.");
-            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+            window.open(gmailUrl, '_blank');
         }, 1500);
     }
 </script>
