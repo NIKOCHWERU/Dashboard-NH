@@ -257,14 +257,21 @@ function closeDeleteFolderModal() {
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Keterangan Folder / Sub-Folder</label>
-                    <input list="descriptions-list" name="description" class="mt-1 block w-full rounded-lg border-gray-200 shadow-sm focus:border-primary focus:ring focus:ring-primary focus:ring-opacity-20 p-2.5 border transition-all text-sm" placeholder="Pilih yang ada atau ketik untuk buat baru..." autocomplete="off">
-                    <datalist id="descriptions-list">
-                        @foreach($suggestions as $s)
-                            @if($s) <option value="{{ $s }}"> @endif
-                        @endforeach
-                    </datalist>
-                    <p class="mt-1 text-[10px] text-gray-400 italic">Gunakan keterangan yang sama untuk menyatukan berkas dalam satu folder.</p>
+                    <div class="relative mt-2">
+                        <input list="descriptions-list" name="description" id="description" 
+                            class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-primary transition-colors bg-transparent pt-4 pb-1" 
+                            placeholder="Keterangan Folder" autocomplete="off">
+                        <label for="description" 
+                            class="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
+                            Keterangan Folder / Sub-Folder
+                        </label>
+                        <datalist id="descriptions-list">
+                            @foreach($suggestions as $s)
+                                @if($s) <option value="{{ $s }}"> @endif
+                            @endforeach
+                        </datalist>
+                    </div>
+                    <p class="mt-1 text-[10px] text-gray-400 italic">Pilih atau ketik baru untuk mengelompokkan file.</p>
                 </div>
 
                 <div>
@@ -274,7 +281,7 @@ function closeDeleteFolderModal() {
                             <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
                                 <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                             </svg>
-                            <div class="flex text-sm text-gray-600">
+                            <div class="flex text-sm text-gray-600 justify-center">
                                 <span class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary-dark">Upload a file</span>
                                 <p class="pl-1">or drag and drop</p>
                             </div>
@@ -282,7 +289,8 @@ function closeDeleteFolderModal() {
                         </div>
                         <input id="file-input" name="files[]" type="file" class="sr-only" multiple required>
                     </div>
-                    <div id="file-list" class="mt-2 space-y-1"></div>
+                    <!-- Scroll View for File List -->
+                    <div id="file-list" class="mt-2 space-y-1 max-h-[200px] overflow-y-auto px-1 custom-scrollbar"></div>
                 </div>
             </div>
 
@@ -291,7 +299,8 @@ function closeDeleteFolderModal() {
                     <h4 class="text-xs font-bold text-gray-700 uppercase tracking-widest">Progress Unggah</h4>
                     <span id="overall-status" class="text-xs font-bold text-primary">0/0 Berhasil</span>
                 </div>
-                <div id="progress-list" class="space-y-2 max-h-40 overflow-y-auto pr-2 custom-scrollbar">
+                <!-- Scroll View for Progress List -->
+                <div id="progress-list" class="space-y-2 max-h-[150px] overflow-y-auto pr-2 custom-scrollbar">
                     <!-- Progress Items will be added here -->
                 </div>
             </div>
@@ -311,6 +320,7 @@ function closeDeleteFolderModal() {
             const form = document.querySelector('#uploadModal form');
             const dropZone = fileInput.closest('.border-2'); // Get the parent div with border-dashed
 
+            // (Script content remains mostly same, just ensuring ids match and scroll classes are in HTML)
             // Prevent default drag behaviors
             ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
                 dropZone.addEventListener(eventName, preventDefaults, false);
@@ -344,10 +354,7 @@ function closeDeleteFolderModal() {
                 const dt = e.dataTransfer;
                 const files = dt.files;
                 
-                // Assign to input
                 fileInput.files = files;
-                
-                // Trigger change event manually
                 const event = new Event('change');
                 fileInput.dispatchEvent(event);
             }
@@ -355,13 +362,11 @@ function closeDeleteFolderModal() {
             fileInput.addEventListener('change', function() {
                 fileList.innerHTML = '';
                 if (this.files.length > 0) {
-                    // Calculate total size
                     let totalSize = 0;
                     for (let i = 0; i < this.files.length; i++) {
                         totalSize += this.files[i].size;
                     }
                     
-                    // Format size
                     const formatSize = (bytes) => {
                         if (bytes < 1024) return bytes + ' B';
                         if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
@@ -369,9 +374,8 @@ function closeDeleteFolderModal() {
                         return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
                     };
                     
-                    // Add summary header
                     const summary = document.createElement('div');
-                    summary.className = 'mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg';
+                    summary.className = 'mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg sticky top-0 z-10'; // Sticky summary
                     summary.innerHTML = `
                         <div class="flex items-center justify-between text-xs">
                             <span class="font-bold text-blue-800">📁 ${this.files.length} file dipilih</span>
@@ -380,14 +384,10 @@ function closeDeleteFolderModal() {
                     `;
                     fileList.appendChild(summary);
                     
-                    // Show file list with preview if image
                     Array.from(this.files).forEach((file, index) => {
-                         // Only show first 10 to avoid lagging
-                         if (index >= 10) return;
-
                         const isImage = file.type.startsWith('image/');
                         const div = document.createElement('div');
-                        div.className = 'text-[10px] text-gray-500 flex items-center gap-2 p-1 hover:bg-gray-50 rounded';
+                        div.className = 'text-[10px] text-gray-500 flex items-center gap-2 p-1 hover:bg-gray-50 rounded border-b border-gray-50 last:border-0';
                         
                         let icon = `<svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path></svg>`;
                         
@@ -396,16 +396,9 @@ function closeDeleteFolderModal() {
                             icon = `<img src="${url}" class="w-6 h-6 object-cover rounded border border-gray-200">`;
                         }
 
-                        div.innerHTML = `${icon} <span class="truncate">${file.name}</span> <span class="text-xs text-gray-300 ml-auto">${formatSize(file.size)}</span>`;
+                        div.innerHTML = `${icon} <span class="truncate flex-1">${file.name}</span> <span class="text-xs text-gray-300 whitespace-nowrap">${formatSize(file.size)}</span>`;
                         fileList.appendChild(div);
                     });
-
-                    if (this.files.length > 10) {
-                        const more = document.createElement('div');
-                        more.className = 'text-[10px] text-gray-400 italic pl-1';
-                        more.textContent = `... dan ${this.files.length - 10} file lainnya`;
-                        fileList.appendChild(more);
-                    }
                 }
             });
 
@@ -416,27 +409,22 @@ function closeDeleteFolderModal() {
                 const files = fileInput.files;
                 if (files.length === 0) return;
 
-                // UI Setup
                 uploadBtn.disabled = true;
                 uploadBtn.innerText = 'Uploading...';
                 const progressContainer = document.getElementById('progress-container');
                 const progressList = document.getElementById('progress-list');
                 progressContainer.classList.remove('hidden');
-                progressList.innerHTML = ''; // Clear previous
+                progressList.innerHTML = '';
 
-                // Create Queue
                 const queue = Array.from(files);
                 const totalFiles = queue.length;
                 let completedCount = 0;
                 let hasErrors = false;
 
-                // Process function
                 const processQueue = async () => {
                     const overallStatus = document.getElementById('overall-status');
                     for (let i = 0; i < totalFiles; i++) {
                         const file = queue[i];
-                        
-                        // Create Progress Element
                         const progressId = 'prog-' + i;
                         const item = document.createElement('div');
                         item.className = 'text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 mb-2';
@@ -452,7 +440,6 @@ function closeDeleteFolderModal() {
                         progressList.appendChild(item);
                         item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
-                        // Upload Single File
                         try {
                             await uploadSingleFile(file, i, progressId);
                         } catch(err) {
@@ -462,7 +449,6 @@ function closeDeleteFolderModal() {
                         overallStatus.textContent = `${completedCount}/${totalFiles} Selesai`;
                     }
 
-                    // All done
                     if (!hasErrors) {
                         setTimeout(() => {
                             window.location.reload();
@@ -529,7 +515,6 @@ function closeDeleteFolderModal() {
                     });
                 };
 
-                // Start
                 processQueue();
             });
         </script>
@@ -586,13 +571,31 @@ function closeDeleteFolderModal() {
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($file->size / 1024, 2) }} KB</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $file->created_at->format('d M Y H:i') }}</td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" onclick="event.stopPropagation()">
-                    <a href="{{ route('files.download', $file) }}" class="text-green-600 hover:text-green-900 mr-3">Download</a>
-                    @if(auth()->user()->isAdmin())
-                    <form action="{{ route('files.destroy', $file) }}" method="POST" class="inline" onsubmit="return confirm('Hapus file?');">
-                        @csrf @method('DELETE')
-                        <button type="submit" class="text-red-600 hover:text-red-900">Delete</button>
-                    </form>
-                    @endif
+                    <div class="flex items-center gap-2">
+                        <a href="{{ route('files.download', $file) }}" class="text-green-600 hover:text-green-900" title="Download">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        </a>
+                        
+                        <!-- NEW: Send to Gmail Button -->
+                        @php
+                            $driveLink = "https://drive.google.com/file/d/{$file->drive_file_id}/view?usp=sharing";
+                            $subject = "Berkas: " . $file->name;
+                            $body = "Berikut adalah link untuk mengunduh berkas yang Anda butuhkan:%0A%0A" . $driveLink . "%0A%0ATerima kasih.";
+                            $gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&su=" . urlencode($subject) . "&body=" . $body; // Removed to= to let user fill it
+                        @endphp
+                        <a href="{{ $gmailLink }}" target="_blank" class="text-blue-600 hover:text-blue-900" title="Kirim via Gmail">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        </a>
+
+                        @if(auth()->user()->isAdmin())
+                        <form action="{{ route('files.destroy', $file) }}" method="POST" class="inline" onsubmit="return confirm('Hapus file?');">
+                            @csrf @method('DELETE')
+                            <button type="submit" class="text-red-600 hover:text-red-900" title="Delete">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </form>
+                        @endif
+                    </div>
                 </td>
             </tr>
             @empty
@@ -663,5 +666,6 @@ function closeDeleteFolderModal() {
     }
 </script>
 @endif
+
 
 @endsection
