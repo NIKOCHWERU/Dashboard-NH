@@ -32,11 +32,13 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/profile', [App\Http\Controllers\ProfileController::class, 'update'])->name('profile.update');
 
     // File Routes (accessible by all auth users, scoped by logic)
-    Route::resource('files', FileController::class);
+    // Custom routes MUST come before resource route to prevent wildcard capturing (files/{file})
     Route::get('files/{file}/view', [FileController::class, 'view'])->name('files.view');
     Route::get('files/{file}/download', [FileController::class, 'download'])->name('files.download');
     Route::post('files/bulk-download', [FileController::class, 'bulkDownload'])->name('files.bulk-download');
     Route::delete('files/folder', [FileController::class, 'destroyFolder'])->name('files.destroyFolder')->middleware(['role:admin']);
+
+    Route::resource('files', FileController::class);
 
     // Clients - Read access for all, write for admin only
     Route::get('clients', [ClientController::class, 'index'])->name('clients.index');

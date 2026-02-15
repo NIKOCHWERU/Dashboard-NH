@@ -550,9 +550,9 @@ function closeDeleteFolderModal() {
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             Download Terpilih
         </button>
-        <button onclick="downloadAndEmail()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm flex items-center ml-auto md:ml-2">
-            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
-            Unduh & Email
+        <button onclick="emailLinks()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm flex items-center ml-auto md:ml-2">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            Email Link
         </button>
     </div>
 
@@ -572,7 +572,10 @@ function closeDeleteFolderModal() {
             @forelse($items as $file)
             <tr class="hover:bg-gray-50 cursor-pointer" onclick="toggleRow(this)">
                 <td class="px-6 py-4" onclick="event.stopPropagation()">
-                    <input type="checkbox" name="selected_files[]" value="{{ $file->id }}" data-file-id="{{ $file->id }}" class="file-checkbox rounded border-gray-300 text-primary focus:ring-primary" onchange="updateBulkUI()">
+                    <input type="checkbox" name="selected_files[]" value="{{ $file->id }}" 
+                           data-file-name="{{ $file->name }}" 
+                           data-file-link="https://drive.google.com/file/d/{{ $file->drive_file_id }}/view?usp=sharing"
+                           class="file-checkbox rounded border-gray-300 text-primary focus:ring-primary" onchange="updateBulkUI()">
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap" onclick="window.open('{{ route('files.view', $file) }}', '_blank'); event.stopPropagation();">
                     <div class="flex items-center">
@@ -603,10 +606,10 @@ function closeDeleteFolderModal() {
                             $driveLink = "https://drive.google.com/file/d/{$file->drive_file_id}/view?usp=sharing";
                             $subject = "Berkas: " . $file->name;
                             $body = "Berikut adalah link untuk mengunduh berkas yang Anda butuhkan:%0A%0A" . $driveLink . "%0A%0ATerima kasih.";
-                            $gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&su=" . urlencode($subject) . "&body=" . $body; // Removed to= to let user fill it
+                            $gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&su=" . urlencode($subject) . "&body=" . $body; 
                         @endphp
-                        <a href="{{ $gmailLink }}" target="_blank" class="text-blue-600 hover:text-blue-900" title="Kirim via Gmail">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <a href="{{ $gmailLink }}" target="_blank" class="text-blue-600 hover:text-blue-900" title="Kirim Link via Gmail">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
                         </a>
 
                         @if(auth()->user()->isAdmin())
@@ -643,15 +646,15 @@ function closeDeleteFolderModal() {
     const bulkToolbar = document.getElementById('bulk-actions');
     const selectedCount = document.getElementById('selected-count');
 
-    selectAll.addEventListener('change', function() {
-        checkboxes.forEach(cb => cb.checked = this.checked);
-        updateBulkUI();
-    });
+    if(selectAll) {
+        selectAll.addEventListener('change', function() {
+            checkboxes.forEach(cb => cb.checked = this.checked);
+            updateBulkUI();
+        });
+    }
 
     function toggleRow(row) {
         // Optional: Clicking row selects checkbox (if not clicking link)
-        // Implementation might conflict with 'view' action on row click. 
-        // Current implementation separates View click to name column.
     }
 
     function updateBulkUI() {
@@ -687,41 +690,29 @@ function closeDeleteFolderModal() {
         form.submit();
     }
 
-    function downloadAndEmail() {
+    function emailLinks() {
         const checked = document.querySelectorAll('.file-checkbox:checked');
         if (checked.length === 0) {
             alert('Pilih minimal satu file.');
             return;
         }
         
-        if (!confirm('Sistem akan mengunduh ZIP berisi ' + checked.length + ' file, lalu membuka aplikasi Email Anda untuk melampirkannya.\n\nLanjutkan?')) return;
+        if (!confirm('Buka Gmail dengan link untuk ' + checked.length + ' file terpilih?')) return;
+
+        let linksText = "Berikut berkas yang Anda butuhkan:\n\n";
         
-        // 1. Trigger Download using existing form
-        const form = document.getElementById('bulk-download-form');
-        const container = document.getElementById('bulk-file-ids');
-        
-        // Clear previous inputs
-        container.innerHTML = '';
-        
-        // Add file IDs as hidden inputs
         checked.forEach(cb => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = 'file_ids[]';
-            input.value = cb.value;
-            container.appendChild(input);
+            const name = cb.getAttribute('data-file-name');
+            const link = cb.getAttribute('data-file-link');
+            linksText += `- ${name}: ${link}\n`;
         });
         
-        // Submit form for download
-        form.submit();
-        
-        // 2. Open Gmail (Delayed to allow download to start)
-        setTimeout(() => {
-            const subject = encodeURIComponent("Berkas Pilihan");
-            const body = encodeURIComponent("Silakan temukan lampiran berkas ZIP yang telah diunduh.\n\nTerima kasih.");
-            const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
-            window.open(gmailUrl, '_blank');
-        }, 1500);
+        linksText += "\nTerima kasih.";
+
+        const subject = encodeURIComponent("Berkas Pilihan");
+        const body = encodeURIComponent(linksText);
+        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+        window.open(gmailUrl, '_blank');
     }
 </script>
 @endif
