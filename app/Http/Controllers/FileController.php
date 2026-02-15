@@ -21,29 +21,29 @@ class FileController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        
+
         // --- 1. Navigation Logic ---
-        
+
         // Level 3: Files List (Final Depth)
         if ($request->has('client_id') && $request->has('folder')) {
             $viewMode = 'files';
             $client = Client::findOrFail($request->client_id);
             $folderName = $request->folder;
-            
+
             $query = File::with(['uploader'])
                 ->where('client_id', $client->id)
                 ->where('description', $folderName)
                 ->latest();
-                
+
             $items = $query->paginate(50);
-            
+
             $breadcrumbs = [
                 ['label' => 'Home', 'url' => route('files.index')],
                 ['label' => ucfirst($client->category), 'url' => route('files.index', ['category' => $client->category])],
                 ['label' => $client->name, 'url' => route('files.index', ['client_id' => $client->id])],
                 ['label' => $folderName, 'url' => '#'],
             ];
-            
+
             return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'client', 'folderName'));
         }
 
@@ -51,7 +51,7 @@ class FileController extends Controller
         if ($request->has('client_id')) {
             $viewMode = 'folders';
             $client = Client::findOrFail($request->client_id);
-            
+
             // Authorization Check
             if (!$user->isAdmin() && !$user->clients()->where('clients.id', $client->id)->exists()) {
                 abort(403, 'Unauthorized access to this client.');
@@ -63,12 +63,19 @@ class FileController extends Controller
                 ->groupBy('description')
                 ->orderBy('description')
                 ->get();
-                
-            $breadcrumbs = [
-                ['label' => 'Home', 'url' => route('files.index')],
-                ['label' => ucfirst($client->category), 'url' => route('files.index', ['category' => $client->category])],
-                ['label' => $client->name, 'url' => '#'],
-            ];
+
+            if (strtolower($client->category) === 'kantor narasumber hukum') {
+                $breadcrumbs = [
+                    ['label' => 'Home', 'url' => route('files.index')],
+                    ['label' => 'Kantor Narasumber Hukum', 'url' => '#'],
+                ];
+            } else {
+                $breadcrumbs = [
+                    ['label' => 'Home', 'url' => route('files.index')],
+                    ['label' => ucfirst($client->category), 'url' => route('files.index', ['category' => $client->category])],
+                    ['label' => $client->name, 'url' => '#'],
+                ];
+            }
 
             // Also get clients for the upload modal (dropdown)
             $uploadClients = $user->isAdmin() ? Client::all() : $user->clients;
@@ -81,7 +88,7 @@ class FileController extends Controller
         // Level 1: Clients List for a Category
         if ($request->has('category')) {
             $category = $request->category;
-            
+
             // Special handling for public category "Kantor Narasumber Hukum"
             if (strtolower($category) === 'kantor narasumber hukum') {
                 // Find or create a dummy client for this category
@@ -89,53 +96,53 @@ class FileController extends Controller
                     ['category' => $category, 'name' => 'Kantor Narasumber Hukum'],
                     ['status' => 'active']
                 );
-                
+
                 // Redirect to folders view (which shows upload button)
                 return redirect()->route('files.index', ['client_id' => $client->id]);
             }
-            
+
             $viewMode = 'clients';
-            
+
             $query = Client::where('category', $category);
-            
+
             // Filter by assignment if not admin
             if (!$user->isAdmin()) {
-                $query->whereHas('users', function($q) use ($user) {
+                $query->whereHas('users', function ($q) use ($user) {
                     $q->where('users.id', $user->id);
                 });
             }
-            
+
             $items = $query->withCount('files')->get();
-            
+
             $breadcrumbs = [
                 ['label' => 'Home', 'url' => route('files.index')],
                 ['label' => ucfirst($category), 'url' => '#'],
             ];
-            
+
             return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'category'));
         }
 
         // Level 0: Root (Categories)
         $viewMode = 'categories';
-        
+
         $fixedCategories = ['Retainer', 'Perorangan', 'Kantor Narasumber Hukum'];
         $dbCategories = Client::select('category')->distinct()->pluck('category')->toArray();
-        
+
         // Merge
         $all = array_merge($fixedCategories, $dbCategories);
-        
+
         // Normalize everything to Title Case (ucfirst) to deduplicate 'retainer' vs 'Retainer'
-        $allNormalized = array_map(function($c) {
+        $allNormalized = array_map(function ($c) {
             return ucfirst($c);
         }, $all);
-        
+
         $items = array_unique($allNormalized);
-        
+
         $breadcrumbs = [];
 
         // Fetch recent files for this view
         $recentFiles = File::with(['client', 'uploader'])->latest()->take(10)->get();
-        
+
         return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'recentFiles'));
     }
 
@@ -150,27 +157,27 @@ class FileController extends Controller
 
         $clientId = $request->client_id;
         $description = $request->description;
-        
+
         // Check permission if user is not admin
         // Skip check for "Kantor Narasumber Hukum" - public category
         $client = Client::find($clientId);
-        
+
         if (!auth()->user()->isAdmin() && strtolower($client->category) !== 'kantor narasumber hukum') {
-             if (!auth()->user()->clients()->where('clients.id', $clientId)->exists()) {
-                 abort(403, 'You do not have access to this client.');
-             }
+            if (!auth()->user()->clients()->where('clients.id', $clientId)->exists()) {
+                abort(403, 'You do not have access to this client.');
+            }
         }
-        
+
         // Determine Target Drive Path with Category Folders
         // New structure: /{Category}/{ClientName}/Berkas/{Description}
         // For "Kantor Narasumber Hukum": /{Category}/{FolderName}/{Description}
-        
+
         $category = $client->category;
         $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $category);
-        
+
         // Ensure category folder exists
         $categoryFolderId = $this->driveService->ensureCategoryFolder($category);
-        
+
         // Build path based on category
         if (strtolower($category) === 'kantor narasumber hukum') {
             // Public category: use folder name directly (description becomes folder name)
@@ -181,7 +188,7 @@ class FileController extends Controller
             // Regular categories: use client name
             $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
             $drivePath = "{$safeCategoryName}/{$safeClientName}/Berkas";
-            
+
             if ($description) {
                 $drivePath .= "/" . preg_replace('/[^A-Za-z0-9 _-]/', '', $description);
             }
@@ -218,11 +225,11 @@ class FileController extends Controller
                 'exception' => $e,
                 'trace' => $e->getTraceAsString()
             ]);
-            
+
             if ($request->wantsJson()) {
                 return response()->json(['error' => 'Upload failed: ' . $e->getMessage()], 500);
             }
-            
+
             return redirect()->back()->with('error', 'Upload failed: ' . $e->getMessage());
         }
 
@@ -256,11 +263,11 @@ class FileController extends Controller
         Log::info('File downloaded: ' . $file->id . ' by User: ' . auth()->id());
 
         $response = $this->driveService->getFileStream($file->drive_file_id);
-        
+
         // If response is a Guzzle Response, get the body stream
         $stream = ($response instanceof \Psr\Http\Message\ResponseInterface) ? $response->getBody() : $response;
 
-        return response()->streamDownload(function() use ($stream) {
+        return response()->streamDownload(function () use ($stream) {
             while (!$stream->eof()) {
                 echo $stream->read(1024 * 8);
             }
@@ -284,7 +291,7 @@ class FileController extends Controller
         // Create ZIP file
         $zipFileName = 'files_' . date('Y-m-d_His') . '.zip';
         $zipPath = storage_path('app/temp/' . $zipFileName);
-        
+
         // Ensure temp directory exists
         if (!file_exists(storage_path('app/temp'))) {
             mkdir(storage_path('app/temp'), 0755, true);
@@ -299,11 +306,11 @@ class FileController extends Controller
             foreach ($files as $file) {
                 $response = $this->driveService->getFileStream($file->drive_file_id);
                 $stream = ($response instanceof \Psr\Http\Message\ResponseInterface) ? $response->getBody() : $response;
-                
+
                 // Add file to ZIP
                 $zip->addFromString($file->name, $stream->getContents());
             }
-            
+
             $zip->close();
 
             // Return ZIP and delete after sending
@@ -321,7 +328,7 @@ class FileController extends Controller
     public function destroy(File $file)
     {
         $this->authorizeFileAccess($file);
-        
+
         // Admin only or owner/uploader? Requirement says "Admin: kelola user, klien, semua file", "User: upload & lihat". 
         // Assuming Users shouldn't delete, or maybe they can? Safest is Admin only or Uploader.
         if (!auth()->user()->isAdmin()) {
@@ -354,13 +361,13 @@ class FileController extends Controller
 
         // Find all files in this folder
         $query = File::where('client_id', $clientId);
-        
+
         if (empty($folderName)) {
             $query->whereNull('description');
         } else {
             $query->where('description', $folderName);
         }
-        
+
         $files = $query->get();
 
         if ($files->isEmpty()) {
@@ -378,7 +385,7 @@ class FileController extends Controller
                 $file->delete();
             }
             DB::commit();
-            
+
             return redirect()->route('files.index', ['client_id' => $clientId])
                 ->with('success', "Folder '$folderName' and $fileCount file(s) deleted successfully.");
         } catch (\Exception $e) {
@@ -391,7 +398,8 @@ class FileController extends Controller
     private function authorizeFileAccess(File $file)
     {
         $user = auth()->user();
-        if ($user->isAdmin()) return true;
+        if ($user->isAdmin())
+            return true;
 
         if (!$user->clients()->where('clients.id', $file->client_id)->exists()) {
             abort(403, 'Unauthorized access to this file.');

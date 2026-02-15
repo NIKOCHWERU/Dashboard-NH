@@ -105,33 +105,51 @@
     </div>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    @foreach($items as $cat)
-    <a href="{{ route('files.index', ['category' => $cat]) }}" class="block group">
-        <div class="bg-white rounded-xl shadow-md p-6 border-l-4 border-primary hover:shadow-lg transition-shadow">
-            <div class="flex items-center">
-                <div class="p-3 rounded-full bg-yellow-100 text-primary mr-4">
-                    <!-- Icon -->
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                </div>
-                <div>
-                    <h3 class="text-xl font-bold text-gray-800 group-hover:text-primary">{{ ucfirst($cat) }}</h3>
-                    @if(strtolower($cat) === 'kantor narasumber hukum')
-                        <div class="flex items-center gap-2 mt-1">
-                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-green-100 text-green-800">
-                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
-                                Akses Publik
-                            </span>
-                            <p class="text-gray-500 text-xs">Semua user bisa upload</p>
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+                <tr>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori</th>
+                    <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis / Keterangan</th>
+                    <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
+                </tr>
+            </thead>
+            <tbody class="bg-white divide-y divide-gray-200">
+                @foreach($items as $cat)
+                <tr class="hover:bg-gray-50 transition-colors group">
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div class="p-2 bg-yellow-50 rounded-lg text-primary mr-3 group-hover:bg-yellow-100 transition-colors">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            </div>
+                            <span class="text-sm font-bold text-gray-900">{{ ucfirst($cat) }}</span>
                         </div>
-                    @else
-                        <p class="text-gray-500 text-sm">Masuk ke kategori</p>
-                    @endif
-                </div>
-            </div>
-        </div>
-    </a>
-    @endforeach
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        @if(strtolower($cat) === 'kantor narasumber hukum')
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-100 text-green-800">
+                                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                    Akses Publik
+                                </span>
+                                <span class="text-xs text-gray-500">Semua user bisa upload</span>
+                            </div>
+                        @else
+                            <span class="text-xs text-gray-500 font-medium">Kategori Klien</span>
+                        @endif
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="{{ route('files.index', ['category' => $cat]) }}" class="inline-flex items-center px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-colors text-xs font-bold uppercase tracking-wider">
+                            Buka
+                            <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        </a>
+                    </td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
 @endif
 
@@ -532,6 +550,10 @@ function closeDeleteFolderModal() {
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
             Download Terpilih
         </button>
+        <button onclick="downloadAndEmail()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm flex items-center ml-auto md:ml-2">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            Unduh & Email
+        </button>
     </div>
 
     <table class="min-w-full divide-y divide-gray-200">
@@ -663,6 +685,42 @@ function closeDeleteFolderModal() {
         
         // Submit form
         form.submit();
+    }
+
+    function downloadAndEmail() {
+        const checked = document.querySelectorAll('.file-checkbox:checked');
+        if (checked.length === 0) {
+            alert('Pilih minimal satu file.');
+            return;
+        }
+        
+        if (!confirm('Sistem akan mengunduh ZIP berisi ' + checked.length + ' file, lalu membuka aplikasi Email Anda untuk melampirkannya.\n\nLanjutkan?')) return;
+        
+        // 1. Trigger Download using existing form
+        const form = document.getElementById('bulk-download-form');
+        const container = document.getElementById('bulk-file-ids');
+        
+        // Clear previous inputs
+        container.innerHTML = '';
+        
+        // Add file IDs as hidden inputs
+        checked.forEach(cb => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = 'file_ids[]';
+            input.value = cb.value;
+            container.appendChild(input);
+        });
+        
+        // Submit form for download
+        form.submit();
+        
+        // 2. Open Mailto (Delayed to allow download to start)
+        setTimeout(() => {
+            const subject = encodeURIComponent("Berkas Pilihan");
+            const body = encodeURIComponent("Silakan temukan lampiran berkas ZIP yang telah diunduh.\n\nTerima kasih.");
+            window.location.href = `mailto:?subject=${subject}&body=${body}`;
+        }, 1500);
     }
 </script>
 @endif
