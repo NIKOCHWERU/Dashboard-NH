@@ -37,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('files/{file}/download', [FileController::class, 'download'])->name('files.download');
     Route::post('files/bulk-download', [FileController::class, 'bulkDownload'])->name('files.bulk-download');
     Route::delete('files/folder', [FileController::class, 'destroyFolder'])->name('files.destroyFolder')->middleware(['role:admin']);
+    Route::get('files/folder-links', [FileController::class, 'getFolderLinks'])->name('files.folder-links');
 
     Route::resource('files', FileController::class);
 

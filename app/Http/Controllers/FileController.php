@@ -395,6 +395,49 @@ class FileController extends Controller
         }
     }
 
+    public function getFolderLinks(Request $request)
+    {
+        $request->validate([
+            'client_id' => 'required|exists:clients,id',
+            'folder' => 'nullable|string',
+        ]);
+
+        $clientId = $request->client_id;
+        $folderName = $request->folder;
+
+        $user = auth()->user();
+        if (!$user->isAdmin()) {
+            // Basic check: user belongs to client
+            if (!$user->clients()->where('clients.id', $clientId)->exists()) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+        }
+
+        $query = File::where('client_id', $clientId);
+
+        if (empty($folderName)) {
+            $query->whereNull('description');
+        } else {
+            $query->where('description', $folderName);
+        }
+
+        $files = $query->get(['name', 'drive_file_id', 'mime_type']);
+
+        $links = $files->map(function ($file) {
+            return [
+                'name' => $file->name,
+                'link' => "https://drive.google.com/file/d/{$file->drive_file_id}/view?usp=sharing",
+                'is_image' => str_starts_with($file->mime_type, 'image/') ? true : false,
+            ];
+        });
+
+        return response()->json([
+            'files' => $links,
+            'count' => $files->count(),
+            'folder' => $folderName ?: 'Tanpa Keterangan'
+        ]);
+    }
+
     private function authorizeFileAccess(File $file)
     {
         $user = auth()->user();
