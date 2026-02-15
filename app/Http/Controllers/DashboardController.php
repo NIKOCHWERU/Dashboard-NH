@@ -36,6 +36,8 @@ class DashboardController extends Controller
                 'usage_gb' => round($totalUsage / (1024 * 1024 * 1024), 2),
                 'limit_gb' => $limitGb,
                 'percentage' => $totalLimit > 0 ? round(($totalUsage / $totalLimit) * 100, 1) : 0,
+                'used_formatted' => $this->formatBytes($totalUsage),
+                'limit_formatted' => $this->formatBytes($totalLimit),
             ],
         ];
 
