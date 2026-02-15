@@ -36,46 +36,38 @@ class SyncDriveFiles extends Command
 
         $this->info('Starting Google Drive Sync...');
 
-        if ($clientId) {
-            $clients = Client::where('id', $clientId)->get();
-        } else {
-            $clients = Client::all();
-        }
+        // 1. Sync Public Category
+        $this->syncPublicCategory('Kantor Narasumber Hukum');
 
-        foreach ($clients as $client) {
-            $this->syncClientFiles($client);
-        }
-
-        // Special handling for "Kantor Narasumber Hukum" (Public Category)
-        // If no specific client is requested, or if the dummy client ID matches
+        // 2. Discover & Sync Clients (Retainer & Perorangan)
         if (!$clientId) {
-            $this->syncPublicCategory('Kantor Narasumber Hukum');
+            $categories = ['Retainer', 'Perorangan'];
+            foreach ($categories as $category) {
+                $this->discoverAndSyncClients($category);
+            }
+        } else {
+            // If specific client requested, just sync that one
+            $client = Client::find($clientId);
+            if ($client) {
+                $this->syncClientFiles($client);
+            } else {
+                $this->error("Client with ID $clientId not found.");
+            }
         }
 
         $this->info('Sync completed.');
     }
 
-    private function syncClientFiles(Client $client)
+    private function discoverAndSyncClients($categoryName)
     {
-        $this->info("Syncing client: {$client->name} ({$client->category})");
+        $this->info("Scanning category: {$categoryName}");
 
-        // 1. Resolve Path: /{Category}/{ClientName}/Berkas
-        // Note: The structure in FileController is:
-        // $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $category);
-        // $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
-        // $drivePath = "{$safeCategoryName}/{$safeClientName}/Berkas";
-
-        if (strtolower($client->category) === 'kantor narasumber hukum') {
-            return; // Handled separately
-        }
-
-        $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->category);
-        $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
-
-        // We need to FIND these folders to get their IDs.
-
-        // Root -> Category
         $rootId = config('services.google.drive_folder_id', env('GOOGLE_DRIVE_FOLDER_ID'));
+        // Find category folder
+        // Note: Logic in FileController uses a "Safe Name", e.g. "Retainer", "Perorangan"
+        // We assume the folder name in Drive matches the Category Name exactly or close enough.
+
+        $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $categoryName);
         $categoryId = $this->driveService->findFolderByName($safeCategoryName, $rootId);
 
         if (!$categoryId) {
@@ -83,34 +75,98 @@ class SyncDriveFiles extends Command
             return;
         }
 
-        // Category -> Client
-        $clientId = $this->driveService->findFolderByName($safeClientName, $categoryId);
+        // List all folders inside this Category Folder -> These are CLIENTS
+        $items = $this->driveService->listFiles($categoryId);
+
+        foreach ($items as $item) {
+            if ($item['mimeType'] === 'application/vnd.google-apps.folder') {
+                $clientName = $item['name'];
+                $this->info("  Found Client Folder: {$clientName}");
+
+                // Check if Client exists in DB
+                $client = Client::where('name', $clientName)
+                    ->where('category', $categoryName)
+                    ->first();
+
+                if (!$client) {
+                    $this->info("    Creating new client record: {$clientName}");
+                    $client = Client::create([
+                        'name' => $clientName,
+                        'category' => $categoryName,
+                        'status' => 'active', // Default status
+                        // 'retainer_uuid' ?? 'address' ??
+                    ]);
+                }
+
+                // Now Sync Files for this client
+                // We pass the KNOWN client folder ID to avoid searching for it again
+                $this->syncClientFiles($client, $item['id']);
+            }
+        }
+    }
+
+    private function syncClientFiles(Client $client, $knownClientFolderId = null)
+    {
+        $this->info("    Syncing files for: {$client->name}");
+
+        if (strtolower($client->category) === 'kantor narasumber hukum') {
+            return; // Handled separately
+        }
+
+        $clientId = $knownClientFolderId;
+
+        // If we don't know the ID (e.g. run via --client option), find it
         if (!$clientId) {
-            $this->warn("  Client folder not found in Drive: {$safeClientName}");
+            $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->category);
+            $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
+
+            $rootId = config('services.google.drive_folder_id', env('GOOGLE_DRIVE_FOLDER_ID'));
+            $categoryId = $this->driveService->findFolderByName($safeCategoryName, $rootId);
+
+            if (!$categoryId) {
+                // If category doesn't exist, client folder can't exist
+                $this->warn("      Category folder not found in Drive: {$safeCategoryName}");
+                return;
+            }
+
+            $clientId = $this->driveService->findFolderByName($safeClientName, $categoryId);
+        }
+
+        if (!$clientId) {
+            $this->warn("      Client folder not found in Drive.");
             return;
         }
 
         // Client -> Berkas
         $berkasId = $this->driveService->findFolderByName('Berkas', $clientId);
+
+        // If /Berkas exists, we look there. 
+        // If NOT, maybe files are just in the Client Root? 
+        // Logic in FileController ENFORCES /Berkas, so we should probably stick to that locally,
+        // BUT for import, if user manually put files in Client Root, we might want to see them?
+        // Let's stick to FileController logic: $drivePath = "{$safeCategoryName}/{$safeClientName}/Berkas";
+        // So yes, we expect 'Berkas'.
+
         if (!$berkasId) {
-            $this->warn("  'Berkas' folder not found in Drive for client: {$client->name}");
-            // Optional: Create it if we want to enforce structure, but for sync we just skip
-            // Or maybe look for files directly in Client folder? Implementation plan said /Berkas
-            return;
+            $this->warn("      'Berkas' folder not found. Scanning root of client folder instead?");
+            // Fallback: Scan root of client folder, treating files as 'Umum' (null description)
+            // and folders as descriptions.
+            $berkasId = $clientId;
         }
 
-        // Now list folders inside 'Berkas'. These are the 'descriptions'.
-        // e.g. /Berkas/Surat Menyurat/file.pdf
-        // If files are directly in /Berkas, description is null.
-
-        $this->syncFolderContents($berkasId, $client->id, null); // Files directly in Berkas
+        $this->syncFolderContents($berkasId, $client->id, null); // Files directly in Berkas/Root
 
         $items = $this->driveService->listFiles($berkasId);
         foreach ($items as $item) {
             if ($item['mimeType'] === 'application/vnd.google-apps.folder') {
-                // This is a "Description" folder
+                // This is a "Description" folder (e.g. "Surat Menyurat")
+                // UNLESS we are scanning root and found "Berkas" (recursive issue? no we just set berkasId)
+                if ($berkasId === $clientId && $item['name'] === 'Berkas') {
+                    continue; // Avoid double scanning if we fell back to root
+                }
+
                 $description = $item['name'];
-                $this->info("    Scanning folder: {$description}");
+                $this->info("      -> Folder: {$description}");
                 $this->syncFolderContents($item['id'], $client->id, $description);
             }
         }
