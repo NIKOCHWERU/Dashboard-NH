@@ -244,77 +244,10 @@
         <div class="lg:col-span-2 space-y-8">
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="md:p-8 p-5 bg-white rounded-t">
-                    <div class="px-4 flex items-center justify-between">
-                        <span id="month-year" tabindex="0" class="focus:outline-none text-xl font-bold text-gray-800">
-                            <!-- Dynamic Month Year -->
-                        </span>
-                        <div class="flex items-center">
-                            <button id="prev-month" aria-label="calendar backward"
-                                class="focus:text-gray-400 hover:text-gray-400 text-gray-800 p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left"
-                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <polyline points="15 6 9 12 15 18" />
-                                </svg>
-                            </button>
-                            <button id="next-month" aria-label="calendar forward"
-                                class="focus:text-gray-400 hover:text-gray-400 ml-3 text-gray-800 p-2">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-right"
-                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                    <polyline points="9 6 15 12 9 18" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
+
                     <div class="flex items-center justify-between pt-12 overflow-x-auto">
                         <table class="w-full border-collapse border border-gray-200">
-                            <thead>
-                                <tr>
-                                    <th class="w-14 h-14 border border-gray-200">
-                                        <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800">Sen
-                                            </p>
-                                        </div>
-                                    </th>
-                                    <th class="w-14 h-14 border border-gray-200">
-                                        <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800">Sel
-                                            </p>
-                                        </div>
-                                    </th>
-                                    <th class="w-14 h-14 border border-gray-200">
-                                        <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800">Rab
-                                            </p>
-                                        </div>
-                                    </th>
-                                    <th class="w-14 h-14 border border-gray-200">
-                                        <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800">Kam
-                                            </p>
-                                        </div>
-                                    </th>
-                                    <th class="w-14 h-14 border border-gray-200">
-                                        <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800">Jum
-                                            </p>
-                                        </div>
-                                    </th>
-                                    <th class="w-14 h-14 border border-gray-200 bg-red-50/30">
-                                        <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-red-500">Sab</p>
-                                        </div>
-                                    </th>
-                                    <th class="w-14 h-14 border border-gray-200 bg-red-50/30">
-                                        <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-red-500">Min</p>
-                                        </div>
-                                    </th>
-                                </tr>
-                            </thead>
+
                             <tbody id="calendar-body">
                                 <!-- Dynamic Days -->
                             </tbody>
@@ -535,9 +468,9 @@
                 const dateStr = dateObj.toLocaleDateString('id-ID', options);
 
                 let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                                                                    <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-                                                                                    ${dateStr}
-                                                                                </h5>`;
+                                                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                                                                        ${dateStr}
+                                                                                    </h5>`;
 
                 if (events.length === 0) {
                     html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
@@ -558,14 +491,14 @@
                         }
 
                         html += `
-                                                                                            <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
-                                                                                                <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
-                                                                                                ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
-                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
-                                                                                                    ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
-                                                                                                </p>` : ''}
-                                                                                            </div>
-                                                                                        `;
+                                                                                                <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
+                                                                                                    <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
+                                                                                                    ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
+                                                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
+                                                                                                        ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
+                                                                                                    </p>` : ''}
+                                                                                                </div>
+                                                                                            `;
                     });
                     html += `</div>`;
                 }
