@@ -2,61 +2,7 @@
 
 @section('content')
     <style>
-        /* Mini Calendar Styles */
-        .fc-mini {
-            font-size: 1rem;
-            color: #000 !important;
-            font-weight: 700;
-        }
-
-        .fc-mini .fc-toolbar-title {
-            font-size: 1.2rem !important;
-            font-weight: 800;
-            color: #000;
-        }
-
-        .fc-mini .fc-button {
-            padding: 0.4rem 0.6rem !important;
-            font-size: 0.9rem !important;
-            background: #D4AF37 !important;
-            border: none !important;
-        }
-
-        .fc-mini .fc-daygrid-day-number {
-            padding: 6px !important;
-            color: #000 !important;
-            font-weight: 800;
-        }
-
-        .fc-mini .fc-col-header-cell-cushion {
-            padding: 8px 0 !important;
-            color: #000 !important;
-            font-weight: 800;
-            text-transform: uppercase;
-        }
-
-        .fc-mini .fc-day-today {
-            background-color: #fff9e6 !important;
-        }
-
-        .fc-mini .fc-day-today .fc-daygrid-day-number {
-            background: #D4AF37;
-            color: white !important;
-            border-radius: 6px;
-            width: 28px;
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .holiday-bg {
-            background-color: #fee2e2 !important;
-        }
-
-        .holiday-bg .fc-daygrid-day-number {
-            color: #dc2626 !important;
-        }
+        /* Custom styles if needed */
     </style>
 
     <!-- Top Row: Stats & Clock -->
@@ -74,8 +20,10 @@
         <!-- Stats Grid -->
         <!-- Stats Grid -->
         <div class="w-full lg:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-6">
-            <a href="{{ route('clients.index') }}" class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
-                <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500 flex items-center gap-4 h-full cursor-pointer hover:shadow-md transition-shadow">
+            <a href="{{ route('clients.index') }}"
+                class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
+                <div
+                    class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-blue-500 flex items-center gap-4 h-full cursor-pointer hover:shadow-md transition-shadow">
                     <div class="p-3 bg-blue-50 rounded-lg text-blue-500">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -90,8 +38,10 @@
                 </div>
             </a>
 
-            <a href="{{ route('files.index') }}" class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
-                <div class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500 flex items-center gap-4 h-full cursor-pointer hover:shadow-md transition-shadow">
+            <a href="{{ route('files.index') }}"
+                class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
+                <div
+                    class="bg-white rounded-xl shadow-sm p-6 border-l-4 border-green-500 flex items-center gap-4 h-full cursor-pointer hover:shadow-md transition-shadow">
                     <div class="p-3 bg-green-50 rounded-lg text-green-500">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -106,8 +56,10 @@
                 </div>
             </a>
 
-            <a href="{{ route('files.index') }}" class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
-                <div class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500 relative overflow-hidden h-full cursor-pointer hover:shadow-md transition-shadow">
+            <a href="{{ route('files.index') }}"
+                class="block transform transition-transform hover:scale-105 active:scale-95 duration-200">
+                <div
+                    class="bg-white rounded-xl shadow-sm p-4 border-l-4 border-yellow-500 relative overflow-hidden h-full cursor-pointer hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start">
                         <div>
                             <h3 class="text-black text-[10px] font-bold uppercase tracking-wider mb-1">Storage Usage</h3>
@@ -145,7 +97,8 @@
                         <div class="group border-b border-black/5 pb-6 mb-6 last:mb-0 last:border-0 last:pb-0">
                             <h4
                                 class="text-md font-bold text-black border-l-4 border-primary pl-3 mb-2 group-hover:text-primary-hover transition-colors">
-                                {{ $info->title }}</h4>
+                                {{ $info->title }}
+                            </h4>
                             <p class="text-xs text-black font-medium leading-relaxed">{{ Str::limit($info->content, 100) }}</p>
                             <div class="text-[10px] uppercase font-bold text-black/60 mt-4 flex items-center gap-4">
                                 <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none"
@@ -180,7 +133,8 @@
                                 <span class="text-xs font-bold text-black">{{ $client->name }}</span>
                                 <div class="text-right">
                                     <p class="text-[10px] font-bold text-red-600 uppercase">
-                                        {{ $client->retainer_contract_end->format('d/m/y') }}</p>
+                                        {{ $client->retainer_contract_end->format('d/m/y') }}
+                                    </p>
                                 </div>
                             </div>
                         @endforeach
@@ -191,177 +145,263 @@
 
         <!-- Right Column (2/3): Large Calendar -->
         <div class="lg:col-span-2 space-y-8">
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="p-4 border-b border-gray-50 flex justify-between items-center bg-gray-50/50">
-                    <h3 class="font-bold text-black text-sm flex items-center gap-2">
-                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2-2v12a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                        Kalender Utama
-                    </h3>
-                    <a href="{{ route('events.index') }}"
-                        class="text-[10px] font-bold text-primary uppercase hover:underline">Full View</a>
-                </div>
-                <div class="p-4 fc-mini">
-                    <div id="mini-calendar" style="min-height: 450px;"></div>
-                </div>
-
-                <!-- Agenda List Footer -->
-                <div class="px-6 pb-6 pt-4 border-t border-gray-100 bg-gray-50/30">
-                    <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4">Daftar Agenda Terdekat</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        @forelse($upcomingEvents as $event)
-                            <div
-                                class="flex items-center gap-4 p-3 rounded-xl bg-white border border-black/5 hover:border-primary/50 transition-all shadow-sm group">
-                                <div
-                                    class="w-12 h-12 rounded-lg bg-primary text-white flex flex-col items-center justify-center flex-shrink-0 shadow-md transform group-hover:scale-105 transition-transform">
-                                    <span class="text-[10px] font-extrabold uppercase">{{ $event->start->format('M') }}</span>
-                                    <span class="text-lg font-black">{{ $event->start->format('d') }}</span>
-                                </div>
-                                <div class="min-w-0">
-                                    <h5 class="text-sm font-black text-black truncate">{{ $event->title }}</h5>
-                                    <p class="text-[10px] text-black font-extrabold uppercase tracking-tighter opacity-70">
-                                        {{ $event->start->format('H:i') }} • {{ $event->type }}</p>
-                                </div>
+            <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+                    <div class="md:p-8 p-5 dark:bg-gray-800 bg-white rounded-t">
+                        <div class="px-4 flex items-center justify-between">
+                            <span id="month-year" tabindex="0" class="focus:outline-none text-xl font-bold dark:text-gray-100 text-gray-800">
+                                <!-- Dynamic Month Year -->
+                            </span>
+                            <div class="flex items-center">
+                                <button id="prev-month" aria-label="calendar backward" class="focus:text-gray-400 hover:text-gray-400 text-gray-800 dark:text-gray-100 p-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <polyline points="15 6 9 12 15 18" />
+                                    </svg>
+                                </button>
+                                <button id="next-month" aria-label="calendar forward" class="focus:text-gray-400 hover:text-gray-400 ml-3 text-gray-800 dark:text-gray-100 p-2"> 
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                        <polyline points="9 6 15 12 9 18" />
+                                    </svg>
+                                </button>
                             </div>
-                        @empty
-                            <p class="text-black/40 text-[11px] py-4 italic font-extrabold text-center col-span-2">Tidak ada
-                                agenda minggu ini.</p>
-                        @endforelse
+                        </div>
+                        <div class="flex items-center justify-between pt-12 overflow-x-auto">
+                            <table class="w-full">
+                                <thead>
+                                    <tr>
+                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Sen</p></div></th>
+                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Sel</p></div></th>
+                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Rab</p></div></th>
+                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Kam</p></div></th>
+                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Jum</p></div></th>
+                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Sab</p></div></th>
+                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Min</p></div></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="calendar-body">
+                                    <!-- Dynamic Days -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <!-- Agenda / Events Section -->
+                    <div class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b">
+                        <div id="selected-date-events" class="px-4">
+                            <!-- Dynamic Event List -->
+                            <p class="text-center text-gray-400 text-sm">Pilih tanggal untuk melihat agenda.</p>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
+            </div>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const ctx = document.getElementById('storageChartSmall').getContext('2d');
-            const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
-            const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
-            const freeGb = Math.max(0, limitGb - usageGb);
+            <!-- Chart.js -->
+            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+            <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    // Storage Chart
+                    const ctx = document.getElementById('storageChartSmall').getContext('2d');
+                    const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
+                    const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
+                    const freeGb = Math.max(0, limitGb - usageGb);
 
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Used', 'Free'],
-                    datasets: [{
-                        data: [usageGb, freeGb],
-                        backgroundColor: [
-                            '#ef4444', // Red for Used
-                            '#22c55e'  // Green for Free
-                        ],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            display: false // Hide legend for small chart
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Used', 'Free'],
+                            datasets: [{
+                                data: [usageGb, freeGb],
+                                backgroundColor: ['#ef4444', '#22c55e'],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
                         },
-                        tooltip: {
-                            callbacks: {
-                                label: function (context) {
-                                    return context.label + ': ' + context.raw.toFixed(2) + ' GB';
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
+                            cutout: '65%',
+                        }
+                    });
+
+                    // --- Custom Calendar Logic ---
+                    const calendarEvents = @json($calendarEvents);
+                    let currentMonth = new Date().getMonth();
+                    let currentYear = new Date().getFullYear();
+                    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+
+                    function renderCalendar(month, year) {
+                        const firstDay = new Date(year, month).getDay(); // 0 = Sunday
+                        const daysInMonth = 32 - new Date(year, month, 32).getDate();
+                        const tbl = document.getElementById("calendar-body");
+                        const monthYearLabel = document.getElementById("month-year");
+
+                        // Adjust for Monday start if needed, but UI shows Mo first? 
+                        // The provided UI has Mo, Tu, We... so 0 Should be mapped to Monday? 
+                        // Standard JS getDay(): 0=Sun, 1=Mon. 
+                        // HTML Headers: Mo, Tu, We, Th, Fr, Sa, Su.
+                        // So if 1st is Sun (0), it should be in 7th cell?
+
+                        // Let's assume standard grid where Monday is first column.
+                        // JS Day: 0(Sun), 1(Mon), 2(Tue)... 6(Sat)
+                        // Grid Cols: 0(Mon), 1(Tue)... 5(Sat), 6(Sun)
+
+                        // Calculate starting empty slots
+                        let startCol = (firstDay === 0) ? 6 : firstDay - 1;
+
+                        tbl.innerHTML = "";
+                        monthYearLabel.innerText = `${monthNames[month]} ${year}`;
+
+                        let date = 1;
+                        for (let i = 0; i < 6; i++) {
+                            let row = document.createElement("tr");
+                            for (let j = 0; j < 7; j++) {
+                                let cell = document.createElement("td");
+                                cell.className = "pt-6";
+
+                                let div = document.createElement("div");
+                                div.className = "px-2 py-2 cursor-pointer flex w-full justify-center";
+
+                                if (i === 0 && j < startCol) {
+                                    // Empty previous month days
+                                } else if (date > daysInMonth) {
+                                    // Empty next month days
+                                } else {
+                                    // Date Cell
+
+                                    // Check for events
+                                    // Convert date to YYYY-MM-DD local
+                                    const dateObj = new Date(year, month, date);
+                                    // Adjust for timezone offset to compare correctly with server strings usually? 
+                                    // Or just string manipulate:
+                                    const yearStr = year;
+                                    const monthStr = String(month + 1).padStart(2, '0');
+                                    const dayStr = String(date).padStart(2, '0');
+                                    const dateString = `${yearStr}-${monthStr}-${dayStr}`;
+
+                                    const dayEvents = calendarEvents.filter(e => e.start.startsWith(dateString));
+                                    const isToday = (date === new Date().getDate() && year === new Date().getFullYear() && month === new Date().getMonth());
+
+                                    let p = document.createElement("p");
+                                    p.className = `text-base font-medium`;
+                                    p.innerText = date;
+
+                                    if (isToday) {
+                                        // Today Style (Gold Circle)
+                                        let activeDiv = document.createElement("div");
+                                        activeDiv.className = "w-full h-full";
+                                        activeDiv.innerHTML = `<div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#D4AF37] text-white shadow-md">
+                                                <span class="text-base font-medium">${date}</span>
+                                            </div>`;
+                                        div = document.createElement("div"); // Reset div
+                                        div.className = "w-full h-full flex items-center justify-center cursor-pointer";
+                                        div.appendChild(activeDiv);
+
+                                        // Click to show events
+                                        div.onclick = () => showEventDetails(dateString, dayEvents);
+                                    } else {
+                                        if (dayEvents.length > 0) {
+                                            // Has events
+                                            p.classList.add("text-gray-800", "font-bold");
+                                            // Add dot
+                                            let dot = document.createElement("span");
+                                            dot.className = "h-1 w-1 bg-[#D4AF37] rounded-full absolute bottom-1";
+                                            div.classList.add("relative", "flex-col", "items-center");
+                                            div.appendChild(p);
+                                            div.appendChild(dot);
+                                            // Click handler
+                                            div.onclick = () => showEventDetails(dateString, dayEvents);
+                                        } else {
+                                            p.classList.add("text-gray-500", "hover:text-[#D4AF37]");
+                                            div.appendChild(p);
+                                        }
+                                    }
+                                    date++;
                                 }
+
+                                cell.appendChild(div);
+                                row.appendChild(cell);
                             }
+                            tbl.appendChild(row);
+                            if (date > daysInMonth) break;
                         }
-                    },
-                    cutout: '65%',
-                }
-            });
-        });
-    </script>
-
-    <!-- FullCalendar -->
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js"></script>
-
-    <script>
-        // Clock
-        function updateClock() {
-            const now = new Date();
-            document.getElementById('digital-clock').innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-            document.getElementById('date-display').innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        // Mini Calendar
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('mini-calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                headerToolbar: {
-                    left: 'prev',
-                    center: 'title',
-                    right: 'next'
-                },
-                height: window.innerWidth < 768 ? 'auto' : 450,
-                locale: 'id',
-                events: @json($calendarEvents),
-                dayMaxEvents: false,
-                eventDisplay: 'none', // Don't show event bars, only dots
-                dayCellDidMount: function (info) {
-                    // Highlight days with events/holidays
-                    const dateStr = info.date.toISOString().split('T')[0];
-                    const eventsOnDay = @json($calendarEvents).filter(e => e.start.startsWith(dateStr));
-                    const holiday = eventsOnDay.find(e => e.extendedProps && e.extendedProps.isHoliday);
-                    const regularEvents = eventsOnDay.filter(e => !e.extendedProps || !e.extendedProps.isHoliday);
-
-                    if (holiday) {
-                        info.el.classList.add('holiday-bg');
-                        const dayNumber = info.el.querySelector('.fc-daygrid-day-number');
-                        if (dayNumber) {
-                            dayNumber.style.color = '#dc2626';
-                            dayNumber.style.fontWeight = '900';
-                        }
-                        info.el.title = holiday.title; // Tooltip
                     }
 
-                    // Add color dots for events
-                    if (regularEvents.length > 0) {
-                        const dayTop = info.el.querySelector('.fc-daygrid-day-top');
-                        if (dayTop) {
-                            const dotsContainer = document.createElement('div');
-                            dotsContainer.style.cssText = 'display:flex;flex-wrap:wrap;justify-content:center;gap:2px;margin-top:2px;';
+                    function showEventDetails(dateStr, events) {
+                        const container = document.getElementById('selected-date-events');
+                        container.innerHTML = ''; // Clear
 
-                            regularEvents.slice(0, 3).forEach(event => {
-                                const dot = document.createElement('div');
-                                dot.style.cssText = `width:5px;height:5px;border-radius:50%;background-color:${event.extendedProps.categoryColor || event.backgroundColor}`;
-                                dot.title = event.title;
-                                dotsContainer.appendChild(dot);
+                        // Formatter
+                        const d = new Date(dateStr);
+                        const readableDate = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
+
+                        // Header
+                        let header = document.createElement('div');
+                        header.className = "border-b pb-4 border-gray-400 border-dashed";
+                        header.innerHTML = `<p class="text-xs font-light leading-3 text-gray-500 uppercase tracking-widest">${readableDate}</p>`;
+                        container.appendChild(header);
+
+                        if (events.length === 0) {
+                            let empty = document.createElement('p');
+                            empty.className = "text-sm pt-2 text-gray-400 italic";
+                            empty.innerText = "Tidak ada agenda.";
+                            container.appendChild(empty);
+                        } else {
+                            events.forEach(ev => {
+                                let item = document.createElement('div');
+                                item.className = "border-b pb-4 border-gray-400 border-dashed pt-5 last:border-0";
+
+                                // Parse time
+                                const time = ev.start.split('T')[1]?.slice(0, 5) || 'All Day';
+
+                                item.innerHTML = `
+                                        <p class="text-xs font-bold leading-3 text-[#D4AF37]">${time}</p>
+                                        <a class="block text-md font-bold leading-5 text-gray-800 mt-1">${ev.title}</a>
+                                        <p class="text-xs pt-1 text-gray-500 capitalize">${ev.extendedProps?.description || ev.type || ''}</p>
+                                     `;
+                                container.appendChild(item);
                             });
-
-                            if (regularEvents.length > 3) {
-                                const moreDot = document.createElement('span');
-                                moreDot.style.cssText = 'font-size:8px;color:#6b7280;font-weight:bold;';
-                                moreDot.textContent = '+' + (regularEvents.length - 3);
-                                dotsContainer.appendChild(moreDot);
-                            }
-
-                            dayTop.appendChild(dotsContainer);
                         }
                     }
-                }
-            });
-            calendar.render();
 
-            // Responsive resize
-            window.addEventListener('resize', function () {
-                if (window.innerWidth < 768) {
-                    calendar.setOption('height', 'auto');
-                } else {
-                    calendar.setOption('height', 450);
-                }
-            });
-        });
-    </script>
+                    document.getElementById('prev-month').addEventListener('click', () => {
+                        currentMonth--;
+                        if (currentMonth < 0) {
+                            currentMonth = 11;
+                            currentYear--;
+                        }
+                        renderCalendar(currentMonth, currentYear);
+                    });
+
+                    document.getElementById('next-month').addEventListener('click', () => {
+                        currentMonth++;
+                        if (currentMonth > 11) {
+                            currentMonth = 0;
+                            currentYear++;
+                        }
+                        renderCalendar(currentMonth, currentYear);
+                    });
+
+                    // Initial Render
+                    renderCalendar(currentMonth, currentYear);
+
+                    // Show today's events initially
+                    const today = new Date();
+                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+                    const todayEvents = calendarEvents.filter(e => e.start.startsWith(todayStr));
+                    showEventDetails(todayStr, todayEvents);
+
+                    // Clock
+                    function updateClock() {
+                        const now = new Date();
+                        const clockEl = document.getElementById('digital-clock');
+                        if (clockEl) clockEl.innerText = now.toLocaleTimeString('id-ID', { hour12: false });
+                        const dateEl = document.getElementById('date-display');
+                        if (dateEl) dateEl.innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
+                    }
+                    setInterval(updateClock, 1000);
+                    updateClock();
+                });
+            </script>
 @endsection
