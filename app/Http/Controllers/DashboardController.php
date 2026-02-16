@@ -68,7 +68,19 @@ class DashboardController extends Controller
         }
 
         // 3. Upcoming Events & Info
-        $upcomingEvents = \App\Models\Event::with(['user', 'category'])
+        // a. Cuti (Leaves) - Filter by title containing 'Cuti' or type 'leave'
+        $leaves = \App\Models\Event::with(['user', 'category'])
+            ->where(function ($q) {
+                $q->where('title', 'like', '%Cuti%')
+                    ->orWhere('type', 'leave');
+            })
+            ->whereBetween('start', [now()->startOfMonth(), now()->endOfMonth()])
+            ->orderBy('start')
+            ->get();
+
+        // b. Upcoming Meetings - Filter by type 'meeting'
+        $upcomingMeetings = \App\Models\Event::with(['user', 'category'])
+            ->where('type', 'meeting')
             ->whereBetween('start', [now(), now()->addDays(7)])
             ->orderBy('start')
             ->get();
@@ -81,7 +93,7 @@ class DashboardController extends Controller
 
         $infos = \App\Models\Info::with('creator')->active()->latest()->take(3)->get();
 
-        return view('dashboard', compact('stats', 'contractDeadlines', 'upcomingEvents', 'infos', 'calendarEvents'));
+        return view('dashboard', compact('stats', 'contractDeadlines', 'upcomingMeetings', 'leaves', 'infos', 'calendarEvents'));
     }
 
     private function formatBytes($bytes, $precision = 2)

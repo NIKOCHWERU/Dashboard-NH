@@ -114,6 +114,70 @@
                         </div>
                     @endforelse
                 </div>
+                <!-- Agenda List Footer -->
+                <div class="px-6 pb-6 pt-4 border-t border-gray-100 bg-gray-50/30">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        
+                        <!-- Cuti (Leaves) Section -->
+                        <div>
+                            <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-red-500"></span>
+                                Cuti Bulan Ini
+                            </h4>
+                            <div class="space-y-3">
+                                @forelse($leaves as $leave)
+                                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-red-50 hover:border-red-200 transition-all shadow-sm">
+                                        <div class="relative">
+                                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                                                @if($leave->user && $leave->user->photo)
+                                                    <img src="{{ asset('storage/' . $leave->user->photo) }}" alt="{{ $leave->user->name }}" class="w-full h-full object-cover">
+                                                @else
+                                                    <span class="text-xs font-bold text-gray-500">{{ substr($leave->title, 0, 2) }}</span>
+                                                @endif
+                                            </div>
+                                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h5 class="text-xs font-bold text-black truncate">{{ $leave->title }}</h5>
+                                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
+                                                {{ $leave->start->format('d M') }} - {{ $leave->end ? $leave->end->format('d M') : 'Sehari' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <p class="text-gray-400 text-[10px] italic">Tidak ada yang cuti bulan ini.</p>
+                                @endforelse
+                            </div>
+                        </div>
+
+                        <!-- Meetings Section -->
+                        <div>
+                            <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
+                                Meeting & Agenda
+                            </h4>
+                            <div class="space-y-3">
+                                @forelse($upcomingMeetings as $meeting)
+                                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-green-50 hover:border-green-200 transition-all shadow-sm group">
+                                        <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex flex-col items-center justify-center flex-shrink-0 border border-green-100">
+                                            <span class="text-[8px] font-bold uppercase">{{ $meeting->start->format('M') }}</span>
+                                            <span class="text-sm font-black">{{ $meeting->start->format('d') }}</span>
+                                        </div>
+                                        <div class="min-w-0">
+                                            <h5 class="text-xs font-bold text-black truncate group-hover:text-green-600 transition-colors">{{ $meeting->title }}</h5>
+                                            <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
+                                                {{ $meeting->start->format('H:i') }} • {{ $meeting->user ? $meeting->user->name : 'System' }}
+                                            </p>
+                                        </div>
+                                    </div>
+                                @empty
+                                    <p class="text-gray-400 text-[10px] italic">Tidak ada meeting terdekat.</p>
+                                @endforelse
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
             </div>
 
             <!-- Contract Deadlines Alert -->
