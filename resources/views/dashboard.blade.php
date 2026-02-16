@@ -93,8 +93,9 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <!-- Left Column (1/3): Info & Deadlines -->
+    <!-- Middle Row: Info & Files -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <!-- Left: Info Board -->
         <div class="space-y-8">
             <!-- Info Board -->
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -132,40 +133,33 @@
                         </div>
                     @endforelse
                 </div>
-                <!-- Agenda List Footer -->
+                <!-- Agenda List Footer (Leaves/Meetings inside Info Board?) -->
+                <!-- Keeping original structure where Leaves/Meetings were below Info Board list but inside the same container? -->
+                <!-- The original code had them in a border-t footer section of the card -->
                 <div class="px-6 pb-6 pt-4 border-t border-gray-100 bg-gray-50/30">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-
-                        <!-- Cuti (Leaves) Section -->
-                        <div>
-                            <h4
-                                class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-red-500"></span>
-                                Cuti Bulan Ini
+                        <!-- Cuti -->
+                         <div>
+                            <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-red-500"></span> Cuti Bulan Ini
                             </h4>
                             <div class="space-y-3">
                                 @forelse($leaves as $leave)
-                                    <div
-                                        class="flex items-center gap-3 p-3 rounded-xl bg-white border border-red-50 hover:border-red-200 transition-all shadow-sm">
+                                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-red-50 hover:border-red-200 transition-all shadow-sm">
                                         <div class="relative">
-                                            <div
-                                                class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
                                                 @if($leave->user && $leave->user->photo)
-                                                    <img src="{{ asset('storage/' . $leave->user->photo) }}"
-                                                        alt="{{ $leave->user->name }}" class="w-full h-full object-cover">
+                                                    <img src="{{ asset('storage/' . $leave->user->photo) }}" alt="{{ $leave->user->name }}" class="w-full h-full object-cover">
                                                 @else
-                                                    <span
-                                                        class="text-xs font-bold text-gray-500">{{ substr($leave->title, 0, 2) }}</span>
+                                                    <span class="text-xs font-bold text-gray-500">{{ substr($leave->title, 0, 2) }}</span>
                                                 @endif
                                             </div>
-                                            <span
-                                                class="absolute bottom-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
+                                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
                                         </div>
                                         <div class="min-w-0">
                                             <h5 class="text-xs font-bold text-black truncate">{{ $leave->title }}</h5>
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
-                                                {{ $leave->start->format('d M') }} -
-                                                {{ $leave->end ? $leave->end->format('d M') : 'Sehari' }}
+                                                {{ $leave->start->format('d M') }} - {{ $leave->end ? $leave->end->format('d M') : 'Sehari' }}
                                             </p>
                                         </div>
                                     </div>
@@ -174,32 +168,22 @@
                                 @endforelse
                             </div>
                         </div>
-
-                        <!-- Meetings Section -->
+                        <!-- Meetings -->
                         <div>
-                            <h4
-                                class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
-                                <span class="w-2 h-2 rounded-full bg-green-500"></span>
-                                Meeting & Agenda
+                            <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span> Meeting & Agenda
                             </h4>
-                            <div class="space-y-3">
+                             <div class="space-y-3">
                                 @forelse($upcomingMeetings as $meeting)
-                                    <div
-                                        class="flex items-center gap-3 p-3 rounded-xl bg-white border border-green-50 hover:border-green-200 transition-all shadow-sm group">
-                                        <div
-                                            class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex flex-col items-center justify-center flex-shrink-0 border border-green-100">
-                                            <span
-                                                class="text-[8px] font-bold uppercase">{{ $meeting->start->format('M') }}</span>
+                                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-green-50 hover:border-green-200 transition-all shadow-sm group">
+                                        <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex flex-col items-center justify-center flex-shrink-0 border border-green-100">
+                                            <span class="text-[8px] font-bold uppercase">{{ $meeting->start->format('M') }}</span>
                                             <span class="text-sm font-black">{{ $meeting->start->format('d') }}</span>
                                         </div>
                                         <div class="min-w-0">
-                                            <h5
-                                                class="text-xs font-bold text-black truncate group-hover:text-green-600 transition-colors">
-                                                {{ $meeting->title }}
-                                            </h5>
+                                            <h5 class="text-xs font-bold text-black truncate group-hover:text-green-600 transition-colors">{{ $meeting->title }}</h5>
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
-                                                {{ $meeting->start->format('H:i') }} •
-                                                {{ $meeting->user ? $meeting->user->name : 'System' }}
+                                                {{ $meeting->start->format('H:i') }} • {{ $meeting->user ? $meeting->user->name : 'System' }}
                                             </p>
                                         </div>
                                     </div>
@@ -208,20 +192,15 @@
                                 @endforelse
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
 
-            <!-- Contract Deadlines Alert -->
+             <!-- Contract Deadlines Alert -->
             @if($contractDeadlines->count() > 0)
                 <div class="bg-white rounded-xl shadow-sm border border-red-100 overflow-hidden">
                     <div class="px-6 py-4 bg-red-50 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
-                            </path>
-                        </svg>
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
                         <h3 class="text-red-800 font-bold text-sm">Deadline Kontrak</h3>
                     </div>
                     <div class="divide-y divide-red-50">
@@ -229,9 +208,7 @@
                             <div class="px-6 py-4 flex justify-between items-center hover:bg-red-50/30 transition-colors">
                                 <span class="text-xs font-bold text-black">{{ $client->name }}</span>
                                 <div class="text-right">
-                                    <p class="text-[10px] font-bold text-red-600 uppercase">
-                                        {{ $client->retainer_contract_end->format('d/m/y') }}
-                                    </p>
+                                    <p class="text-[10px] font-bold text-red-600 uppercase">{{ $client->retainer_contract_end->format('d/m/y') }}</p>
                                 </div>
                             </div>
                         @endforeach
@@ -240,36 +217,72 @@
             @endif
         </div>
 
-        <!-- Right Column (2/3): Calendar & Agenda -->
-        <div class="lg:col-span-2">
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                <!-- Left: Calendar (Smaller) -->
-                <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                    <h5 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                        <span class="w-2 h-2 rounded-full bg-blue-500"></span> Kalender
-                    </h5>
-                    <div class="overflow-x-auto">
-                        <table class="w-full border-collapse">
-                            <tbody id="calendar-body"></tbody>
-                        </table>
-                    </div>
+        <!-- Right: File Berkas (NEW) -->
+        <div class="space-y-8">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-fit">
+                <div class="px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center">
+                    <h3 class="font-bold text-gray-800 flex items-center gap-2">
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                        File Berkas
+                    </h3>
+                    <span class="text-[10px] uppercase font-bold tracking-widest bg-gray-100 text-gray-500 px-2 py-0.5 rounded">Retainer</span>
                 </div>
+                <div class="p-6 grid grid-cols-1 gap-4">
+                     <!-- Folder Item 1 -->
+                    <a href="{{ route('files.index', ['category' => 'perorangan']) }}" class="group flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 transition-all">
+                        <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 group-hover:text-blue-700">Klien Perorangan</h4>
+                            <p class="text-xs text-gray-500">Berkas klien individu</p>
+                        </div>
+                        <svg class="w-5 h-5 text-gray-300 ml-auto group-hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+    
+                     <!-- Folder Item 2 -->
+                    <a href="{{ route('files.index', ['category' => 'kantor']) }}" class="group flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 transition-all">
+                        <div class="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-gray-800 group-hover:text-indigo-700">Kantor Narasumber Hukum</h4>
+                            <p class="text-xs text-gray-500">Dokumen internal kantor</p>
+                        </div>
+                         <svg class="w-5 h-5 text-gray-300 ml-auto group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                <!-- Right: Agenda List (Larger) -->
-                <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                     <div class="flex items-center justify-between mb-4">
-                        <button id="prev-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M15 6l-6 6l6 6" /></svg>
-                        </button>
-                        <h4 id="agenda-month-year" class="text-lg font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">Agenda</h4>
-                        <button id="next-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 6l6 6l-6 6" /></svg>
-                        </button>
-                    </div>
-                    <div id="agenda-list-content" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                         <p class="text-center text-gray-400 text-sm italic py-10">Memuat agenda...</p>
-                    </div>
-                </div>
+    <!-- Bottom Row: Calendar & Agenda -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <!-- Left: Calendar (Smaller - 5 cols) -->
+        <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+            <h5 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-blue-500"></span> Kalender
+            </h5>
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse">
+                    <tbody id="calendar-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right: Agenda List (Larger - 7 cols) -->
+        <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                <div class="flex items-center justify-between mb-4">
+                <button id="prev-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M15 6l-6 6l6 6" /></svg>
+                </button>
+                <h4 id="agenda-month-year" class="text-lg font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">Agenda</h4>
+                <button id="next-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 6l6 6l-6 6" /></svg>
+                </button>
+            </div>
+            <div id="agenda-list-content" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                    <p class="text-center text-gray-400 text-sm italic py-10">Memuat agenda...</p>
             </div>
         </div>
     </div>
