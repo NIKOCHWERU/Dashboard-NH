@@ -254,24 +254,30 @@
                         </table>
                     </div>
                 </div>
-                <!-- Agenda / Events Section -->
-                <div
-                    class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b flex flex-col md:flex-row gap-6 items-start">
-                    <div id="selected-date-events" class="px-4 flex-1 w-full">
-                        <!-- Dynamic Event List -->
-                        <h5 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Agenda Harian
-                        </h5>
-                        <div id="agenda-list-content">
-                            <p class="text-center text-gray-400 text-sm italic">Pilih tanggal untuk melihat agenda.</p>
-                        </div>
+                <!-- Monthly Agenda List Section -->
+                <div class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b">
+                    <div class="flex items-center justify-between mb-6">
+                        <button id="prev-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" fill="none">
+                                <path d="M15 6l-6 6l6 6" />
+                            </svg>
+                        </button>
+                        <h4 id="agenda-month-year"
+                            class="text-lg font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
+                            <div class="w-2 h-2 rounded-full bg-blue-500"></div> Agenda
+                        </h4>
+                        <button id="next-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+                                stroke="currentColor" fill="none">
+                                <path d="M9 6l6 6l-6 6" />
+                            </svg>
+                        </button>
                     </div>
 
-                    <!-- Mini Calendar (Bottom Right) -->
-                    <div class="bg-white rounded-xl p-4 border border-gray-200 w-full md:w-auto min-w-[240px] shadow-sm">
-                        <div id="mini-calendar-grid" class="grid grid-cols-7 gap-1">
-                            <!-- Dynamic Days -->
-                        </div>
+                    <div id="agenda-list-content" class="space-y-6">
+                        <!-- Dynamic Monthly Agenda List -->
+                        <p class="text-center text-gray-400 text-sm italic py-10">Memuat agenda...</p>
                     </div>
                 </div>
             </div>
@@ -281,332 +287,273 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            // Storage Chart
-            const ctx = document.getElementById('storageChartSmall').getContext('2d');
-            const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
-            const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
-            const freeGb = Math.max(0, limitGb - usageGb);
+            document.addEventListener('DOMContentLoaded', function              () {
+                // Storage Chart
+                const ctx = document.getElementById('storageChartSmall').getContext('2d');
+                const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
+                const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
+                const freeGb = Math.max(0, limitGb - usageGb);
 
-            new Chart(ctx, {
-                type: 'doughnut',
-                data: {
-                    labels: ['Used', 'Free'],
-                    datasets: [{
-                        data: [usageGb, freeGb],
-                        backgroundColor: ['#ef4444', '#22c55e'],
-                        borderWidth: 0,
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
-                    cutout: '65%',
-                }
-            });
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Used', 'Free'],
+                        datasets: [{
+                            data: [usageGb, freeGb],
+                            backgroundColor: ['#ef4444', '#22c55e'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
+                        cutout: '65%',
+                    }
+                });
 
-            // --- Custom Calendar Logic ---
-            const calendarEvents = @json($calendarEvents);
-            let currentMonth = new Date().getMonth();
-            let currentYear = new Date().getFullYear();
-            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                // --- Custom Calendar & Agenda Logic ---
+                const calendarEvents = @json($calendarEvents);
+                let currentMonth = new Date().getMonth();
+                let currentYear = new Date().getFullYear();
+                const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-            function renderCalendar(month, year) {
-                const firstDay = (new Date(year, month)).getDay();
-                // Convert Sunday(0) to 7 for easier logic if we start on Monday(1)
-                // Header: Sen(1), Sel(2), Rab(3), Kam(4), Jum(5), Sab(6), Min(0/7)
-                // JS getDay(): Sun=0, Mon=1...
-                // We want grid to start Mon. So if getDay() is 1 (Mon), offset is 0. If 0 (Sun), offset is 6.
-                let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+                // Render Large Calendar Grid (Just the grid, no headers as requested)
+                function renderCalendarGrid(month, year) {
+                    const firstDay = (new Date(year, month)).getDay();
+                    let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+                    const daysInMonth = 32 - new Date(year, month, 32).getDate();
+                    const tbl = document.getElementById("calendar-body");
 
-                const daysInMonth = 32 - new Date(year, month, 32).getDate();
-                const tbl = document.getElementById("calendar-body");
-                const monthYearLabel = document.getElementById("month-year");
+                    if(tbl) tbl.innerHTML = "";
 
-                if (tbl) tbl.innerHTML = "";
-                if (monthYearLabel) monthYearLabel.innerText = monthNames[month] + " " + year;
+                    let date = 1;
+                    for (let i = 0; i < 6; i++) {
+                        const row = document.createElement("tr");
+                        if (date > daysInMonth) break;
 
-                let date = 1;
-                for (let i = 0; i < 6; i++) {
-                    const row = document.createElement("tr");
+                        for (let j = 0; j < 7; j++) {
+                            const cell = document.createElement("td");
+                            cell.className = "w-14 h-14 border border-gray-200 align-top relative hover:bg-gray-50 transition cursor-pointer";
 
-                    // Optimization: Stop creating rows if we're done with days
-                    if (date > daysInMonth) break;
+                            if (i === 0 && j < startOffset) {
+                                cell.appendChild(document.createTextNode(""));
+                            } else if (date > daysInMonth) {
+                                cell.appendChild(document.createTextNode(""));
+                            } else {
+                                const dayVal = date;
 
-                    for (let j = 0; j < 7; j++) {
-                        const cell = document.createElement("td");
-                        cell.className = "w-14 h-14 border border-gray-200 align-top relative hover:bg-gray-50 transition cursor-pointer";
+                                // Container
+                                const con = document.createElement("div");
+                                con.className = "w-full h-full flex flex-col items-center justify-start py-1";
 
-                        if (i === 0 && j < startOffset) {
-                            // Empty cells before start of month
-                            const cellText = document.createTextNode("");
-                            cell.appendChild(cellText);
-                        } else if (date > daysInMonth) {
-                            // Empty cells after end of month
-                            const cellText = document.createTextNode("");
-                            cell.appendChild(cellText);
-                        } else {
-                            // Actual Date Cell
-                            const dayVal = date;
-                            const currentDt = new Date(year, month, dayVal);
+                                // Date Number
+                                const span = document.createElement("span");
+                                span.innerText = date;
+                                span.className = "text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1";
 
-                            // Container for number and dots
-                            const con = document.createElement("div");
-                            con.className = "w-full h-full flex flex-col items-center justify-start py-1";
-
-                            // Date Number
-                            const span = document.createElement("span");
-                            span.innerText = date;
-                            span.className = "text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1";
-
-                            // Highlight Today
-                            const today = new Date();
-                            if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
-                                span.classList.add("bg-[#D4AF37]", "text-white", "font-bold", "shadow-sm");
-                            }
-                            // Highlight Weekends & Holidays (Red Text)
-                            else if (j === 5 || j === 6) { // Sat or Sun
-                                span.classList.add("text-red-500");
-                                cell.classList.add("bg-red-50/20");
-                            }
-
-                            // Check Events (Range check)
-                            // Reset time for comparison
-                            const checkDate = new Date(year, month, date);
-                            checkDate.setHours(0, 0, 0, 0);
-
-                            const dayEvents = calendarEvents.filter(e => {
-                                const startData = new Date(e.start);
-                                startData.setHours(0, 0, 0, 0);
-                                // If end is null, assume single day
-                                const endData = e.end ? new Date(e.end) : new Date(startData);
-                                endData.setHours(0, 0, 0, 0);
-
-                                return checkDate >= startData && checkDate <= endData;
-                            });
-
-                            // Highlight Upcoming Events (Future dates with events)
-                            const todayCheck = new Date();
-                            todayCheck.setHours(0, 0, 0, 0);
-
-                            if (checkDate >= todayCheck && dayEvents.length > 0) {
-                                // Add a marker for upcoming events (Blue ring/border)
-                                if (!span.classList.contains("bg-[#D4AF37]")) { // Don't override today's style excessively
-                                    span.classList.add("ring-2", "ring-blue-200", "font-bold", "text-blue-600");
-                                    cell.classList.add("bg-blue-50/10");
+                                // Highlight Today
+                                const today = new Date();
+                                if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                                    span.classList.add("bg-[#D4AF37]", "text-white", "font-bold", "shadow-sm");
+                                } else if (j === 5 || j === 6) { 
+                                    span.classList.add("text-red-500");
+                                    cell.classList.add("bg-red-50/20");
                                 }
-                            }
 
-
-
-                            // Check for Holiday Event to color red
-                            const isHoliday = dayEvents.some(e => e.extendedProps && e.extendedProps.isHoliday);
-                            if (isHoliday && !span.classList.contains("bg-[#D4AF37]")) {
-                                span.classList.remove("text-blue-600", "ring-blue-200"); // Override blue if holiday
-                                span.classList.add("text-red-500", "font-bold");
-                                cell.classList.add("bg-red-50/20");
-                            }
-
-                            con.appendChild(span);
-
-                            // Event Dots
-                            if (dayEvents.length > 0) {
-                                const dotsDiv = document.createElement("div");
-                                dotsDiv.className = "flex gap-0.5 justify-center flex-wrap px-1";
-
-                                // Filter distinct colors or just show up to 3 dots
-                                dayEvents.slice(0, 4).forEach(evt => {
-                                    const dot = document.createElement("div");
-                                    let dotColor = evt.backgroundColor || '#3b82f6';
-                                    if (evt.extendedProps && evt.extendedProps.isHoliday) dotColor = '#ef4444';
-                                    else if (evt.title.toLowerCase().includes('cuti')) dotColor = '#ef4444'; // Cuti dot red
-
-                                    dot.className = "w-1.5 h-1.5 rounded-full";
-                                    dot.style.backgroundColor = dotColor;
-                                    dotsDiv.appendChild(dot);
+                                // Check events for dots/colors
+                                const checkDate = new Date(year, month, date);
+                                checkDate.setHours(0,0,0,0);
+                                 const dayEvents = calendarEvents.filter(e => {
+                                    const startData = new Date(e.start);
+                                    startData.setHours(0, 0, 0, 0);
+                                    const endData = e.end ? new Date(e.end) : new Date(startData);
+                                    endData.setHours(0, 0, 0, 0);
+                                    return checkDate >= startData && checkDate <= endData;
                                 });
 
-                                con.appendChild(dotsDiv);
+                                 // Holiday Red
+                                const isHoliday = dayEvents.some(e => e.extendedProps && e.extendedProps.isHoliday);
+                                if (isHoliday && !span.classList.contains("bg-[#D4AF37]")) {
+                                    span.classList.add("text-red-500", "font-bold");
+                                    cell.classList.add("bg-red-50/20");
+                                }
+
+                                con.appendChild(span);
+                                 // Dots
+                                if (dayEvents.length > 0) {
+                                    const dotsDiv = document.createElement("div");
+                                    dotsDiv.className = "flex gap-0.5 justify-center flex-wrap px-1";
+                                    dayEvents.slice(0, 4).forEach(evt => {
+                                        const dot = document.createElement("div");
+                                        let dotColor = evt.backgroundColor || '#3b82f6';
+                                        if (evt.extendedProps && evt.extendedProps.isHoliday) dotColor = '#ef4444';
+                                        else if (evt.title.toLowerCase().includes('cuti')) dotColor = '#ef4444';
+                                        dot.className = "w-1.5 h-1.5 rounded-full";
+                                        dot.style.backgroundColor = dotColor;
+                                        dotsDiv.appendChild(dot);
+                                    });
+                                    con.appendChild(dotsDiv);
+                                }
+                                cell.appendChild(con);
+                                date++;
                             }
+                            row.appendChild(cell);
+                        }
+                        if(tbl) tbl.appendChild(row);
+                    }
+                }
 
-                            cell.appendChild(con);
+                // Render Monthly Agenda List
+                function renderAgendaList(month, year) {
+                    const container = document.getElementById("agenda-list-content");
+                    const header = document.getElementById("agenda-month-year");
+                    if(!container || !header) return;
 
-                            // Click Event
-                            cell.addEventListener('click', () => {
-                                showEvents(dayEvents, dayVal, month, year);
-                                // Active state styling
-                                document.querySelectorAll('#calendar-body td div span').forEach(s => s.classList.remove('ring-2', 'ring-[#D4AF37]'));
-                                span.classList.add('ring-2', 'ring-[#D4AF37]');
+                    // Update Header
+                    header.innerHTML = `<div class="w-2 h-2 rounded-full bg-blue-500"></div> Agenda ${monthNames[month]} ${year}`;
+
+                    // Filter events for this month
+                    const startOfMonth = new Date(year, month, 1);
+                    const endOfMonth = new Date(year, month + 1, 0);
+
+                    const monthEvents = calendarEvents.filter(e => {
+                        const start = new Date(e.start);
+                        // Check if event overlaps with this month
+                        const end = e.end ? new Date(e.end) : new Date(start);
+                        return start <= endOfMonth && end >= startOfMonth;
+                    });
+
+                    if(monthEvents.length === 0) {
+                        container.innerHTML = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
+                        return;
+                    }
+
+                    // Group by Date
+                    // We iterate through every day of the month to show empty days? 
+                    // User input: "Agenda Harian... Selasa, 17 Februari 2026... Kunjungan...". 
+                    // Likely only dates with events should be shown to be compact, or maybe all?
+                    // Given "Agenda Monthly List", usually only dates with events are shown.
+                    // Converting to map: DateString -> [Events]
+
+                    // Better approach: Sort events by start date, then group.
+                    monthEvents.sort((a,b) => new Date(a.start) - new Date(b.start));
+
+                    // But we need to handle multi-day events appearing on each day? 
+                    // For simplicity and "Agenda Harian" style, let's group by start date for now, 
+                    // OR duplicate multi-day events across days?
+                    // "Tahun Baru Imlek... dengan agenda selama bulan ini"
+                    // Let's iterate days of month and check events for each day.
+
+                    let html = "";
+                    const today = new Date();
+                    today.setHours(0,0,0,0);
+
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                    for(let d=1; d<=daysInMonth; d++) {
+                        const currentDt = new Date(year, month, d);
+                        // Check events for this day
+                         const dayEvents = monthEvents.filter(e => {
+                            const s = new Date(e.start); s.setHours(0,0,0,0);
+                            const end = e.end ? new Date(e.end) : new Date(s); end.setHours(0,0,0,0);
+                            return currentDt >= s && currentDt <= end;
+                        });
+
+                        if(dayEvents.length > 0) {
+                            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                            const dateStr = currentDt.toLocaleDateString('id-ID', options);
+                            const isPast = currentDt < today;
+
+                            html += `
+                            <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
+                                <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
+                                    <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
+                                    ${dateStr}
+                                </h5>
+                                <div class="space-y-2">`;
+
+                            dayEvents.forEach(e => {
+                                const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
+                                // Check strict past (if event ended before today)
+                                // Or use the day's "past" status. User said "jika sudah terlewat coret" (strike if passed).
+                                // If the specific event time is passed? Or just the day?
+                                // Let's use the day logic: if date < today, strike.
+
+                                let contentClass = isPast ? "line-through text-gray-400 grayscale opacity-70" : "text-gray-800";
+
+                                // Specific styling requests
+                                // "14.00 - 02.00"
+                                const timeStr = isHoliday ? '' : 
+                                    `${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` + 
+                                    (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
+
+                                html += `
+                                    <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
+                                        <p class="font-bold text-sm mb-1">${e.title}</p>
+                                        ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
+                                    </div>
+                                `;
                             });
 
-                            date++;
+                            html += `</div></div>`;
                         }
-                        row.appendChild(cell);
                     }
-                    if (tbl) tbl.appendChild(row);
+
+                    if(html === "") html = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
+                    container.innerHTML = html;
                 }
-            }
 
-            function showEvents(events, day, month, year) {
-                const container = document.getElementById("agenda-list-content");
-                const dateObj = new Date(year, month, day);
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                const dateStr = dateObj.toLocaleDateString('id-ID', options);
+                // Navigation Handlers
+                 const prevBtn = document.getElementById("prev-month-agenda");
+                 const nextBtn = document.getElementById("next-month-agenda");
 
-                let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                                                                            <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-                                                                                            ${dateStr}
-                                                                                        </h5>`;
+                 if(prevBtn) prevBtn.addEventListener("click", () => {
+                     currentMonth--;
+                     if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+                     renderCalendarGrid(currentMonth, currentYear);
+                     renderAgendaList(currentMonth, currentYear);
+                 });
 
-                if (events.length === 0) {
-                    html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
-                } else {
-                    html += `<div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">`;
-                    events.forEach(e => {
-                        const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
-                        const isCuti = e.title.toLowerCase().includes('cuti') || e.extendedProps.type === 'leave';
-                        let borderClass = "border-l-2 border-blue-500";
-                        let bgClass = "bg-blue-50/50";
+                 if(nextBtn) nextBtn.addEventListener("click", () => {
+                     currentMonth++;
+                     if(currentMonth > 11) { currentMonth = 0; currentYear++; }
+                     renderCalendarGrid(currentMonth, currentYear);
+                     renderAgendaList(currentMonth, currentYear);
+                 });
 
-                        if (isHoliday || isCuti) {
-                            borderClass = "border-l-2 border-red-500";
-                            bgClass = "bg-red-50/50";
-                        } else if (e.extendedProps.type === 'meeting') {
-                            borderClass = "border-l-2 border-green-500";
-                            bgClass = "bg-green-50/50";
-                        }
 
-                        html += `
-                                                                                                    <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
-                                                                                                        <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
-                                                                                                        ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
-                                                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
-                                                                                                            ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
-                                                                                                        </p>` : ''}
-                                                                                                    </div>
-                                                                                                `;
-                    });
-                    html += `</div>`;
+                // Initial Render
+                renderCalendarGrid(currentMonth, currentYear);
+                renderAgendaList(currentMonth, currentYear);
+
+                // --- Helper Logic for Clock ---
+                function updateClock() {
+                    const now = new Date();
+                    const clockEl = document.getElementById('digital-clock');
+                    const secondsEl = document.getElementById('digital-clock-seconds');
+                    const dateFullEl = document.getElementById('date-display-full');
+
+                    if (clockEl) {
+                        const hours = String(now.getHours()).padStart(2, '0');
+                        const minutes = String(now.getMinutes()).padStart(2, '0');
+                        clockEl.innerText = `${hours}:${minutes}`;
+                    }
+
+                    if (secondsEl) {
+                        const seconds = String(now.getSeconds()).padStart(2, '0');
+                        secondsEl.innerText = seconds;
+                    }
+
+                    if (dateFullEl) {
+                        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                        // Indonesian locale
+                        dateFullEl.innerText = now.toLocaleDateString('id-ID', options);
+                    }
                 }
-                if (container) container.innerHTML = html;
-            }
-
-            const prevBtn = document.getElementById("prev-month");
-            if (prevBtn) {
-                prevBtn.addEventListener("click", () => {
-                    currentMonth--;
-                    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
-                    renderCalendar(currentMonth, currentYear);
-                });
-            }
-
-            const nextBtn = document.getElementById("next-month");
-            if (nextBtn) {
-                nextBtn.addEventListener("click", () => {
-                    currentMonth++;
-                    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
-                    renderCalendar(currentMonth, currentYear);
-                });
-            }
-
-            // Initial Render
-            renderCalendar(currentMonth, currentYear);
-
-            // Show today's events initially
-            const today = new Date();
-            const initialEvents = calendarEvents.filter(e => {
-                const start = new Date(e.start);
-                start.setHours(0, 0, 0, 0);
-                const end = e.end ? new Date(e.end) : new Date(start);
-                end.setHours(0, 0, 0, 0);
-                const todayCheck = new Date();
-                todayCheck.setHours(0, 0, 0, 0);
-                return todayCheck >= start && todayCheck <= end;
+                setInterval(updateClock, 1000);
+                updateClock();
             });
-            showEvents(initialEvents, today.getDate(), today.getMonth(), today.getFullYear());
-
-
-
-
-            // --- Helper Logic for Clock ---
-            function updateClock() {
-                const now = new Date();
-                const clockEl = document.getElementById('digital-clock');
-                const secondsEl = document.getElementById('digital-clock-seconds');
-                const dateFullEl = document.getElementById('date-display-full');
-
-                if (clockEl) {
-                    const hours = String(now.getHours()).padStart(2, '0');
-                    const minutes = String(now.getMinutes()).padStart(2, '0');
-                    clockEl.innerText = `${hours}:${minutes}`;
-                }
-
-                if (secondsEl) {
-                    const seconds = String(now.getSeconds()).padStart(2, '0');
-                    secondsEl.innerText = seconds;
-                }
-
-                if (dateFullEl) {
-                    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                    // Indonesian locale
-                    dateFullEl.innerText = now.toLocaleDateString('id-ID', options);
-                }
-            }
-            setInterval(updateClock, 1000);
-            updateClock();
-
-            // --- Mini Calendar Logic ---
-            function renderMiniCalendar() {
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = now.getMonth();
-
-                // Header (Removed in HTML, so verify existence before setting)
-                const monthNamesMini = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-                const miniMonthLabel = document.getElementById('mini-calendar-month-year');
-                if (miniMonthLabel) miniMonthLabel.textContent = `${monthNamesMini[month]} ${year}`;
-
-                const firstDay = (new Date(year, month, 1)).getDay();
-                let startOffset = (firstDay === 0 ? 6 : firstDay - 1); // Monday start
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                const grid = document.getElementById('mini-calendar-grid');
-                if (!grid) return;
-
-                grid.innerHTML = '';
-
-                // Previous month padding
-                for (let i = 0; i < startOffset; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = "h-6 w-full"; // spacer
-                    grid.appendChild(cell);
-                }
-
-                // Days
-                for (let d = 1; d <= daysInMonth; d++) {
-                    const cell = document.createElement('div');
-                    const isToday = (d === now.getDate());
-
-                    const currentDayOfWeek = new Date(year, month, d).getDay();
-                    const isWeekend = (currentDayOfWeek === 0 || currentDayOfWeek === 6);
-
-                    let baseClasses = "h-6 w-full flex items-center justify-center text-[10px] rounded-md font-medium transition-colors cursor-default";
-                    if (isToday) {
-                        baseClasses += " bg-blue-600 text-white font-bold shadow-sm shadow-blue-200";
-                    } else if (isWeekend) {
-                        baseClasses += " text-red-500 hover:bg-red-50";
-                    } else {
-                        baseClasses += " text-gray-600 hover:bg-gray-100";
-                    }
-
-                    cell.className = baseClasses;
-                    cell.textContent = d;
-                    grid.appendChild(cell);
-                }
-            }
-            renderMiniCalendar();
-        });
-    </script>
+        </script>
 @endsection
