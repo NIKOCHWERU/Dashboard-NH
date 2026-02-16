@@ -517,9 +517,9 @@
                 const dateStr = dateObj.toLocaleDateString('id-ID', options);
 
                 let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-                                    ${dateStr}
-                                </h5>`;
+                                            <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                            ${dateStr}
+                                        </h5>`;
 
                 if (events.length === 0) {
                     html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
@@ -540,14 +540,14 @@
                         }
 
                         html += `
-                                            <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
-                                                <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
-                                                ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
-                                                    ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
-                                                </p>` : ''}
-                                            </div>
-                                        `;
+                                                    <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
+                                                        <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
+                                                        ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
+                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
+                                                            ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
+                                                        </p>` : ''}
+                                                    </div>
+                                                `;
                     });
                     html += `</div>`;
                 }
@@ -582,80 +582,63 @@
             });
             showEvents(initialEvents, today.getDate(), today.getMonth(), today.getFullYear());
         });
-    </script>
 
-            // --- Mini Calendar & Clock Logic ---
-            function updateClock() {
-                const now = new Date();
-                const hours = String(now.getHours()).padStart(2, '0');
-                const minutes = String(now.getMinutes()).padStart(2, '0');
-                const seconds = String(now.getSeconds()).padStart(2, '0');
-                
-                // Update Time
-                document.getElementById('digital-clock').textContent = `${hours}:${minutes}`;
-                const secondsEl = document.getElementById('digital-clock-seconds');
-                if(secondsEl) secondsEl.textContent = seconds;
 
-                // Update Date String
-                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                const dateStr = now.toLocaleDateString('id-ID', options);
-                const dateDisplayFull = document.getElementById('date-display-full');
-                if(dateDisplayFull) dateDisplayFull.textContent = dateStr;
-            }
-            setInterval(updateClock, 1000);
-            updateClock(); // Initial call
 
-            function renderMiniCalendar() {
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = now.getMonth();
-                
-                const monthNamesMini = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-                const miniMonthLabel = document.getElementById('mini-calendar-month-year');
-                if(miniMonthLabel) miniMonthLabel.textContent = `${monthNamesMini[month]} ${year}`;
+        // --- Mini Calendar & Clock Logic ---
+        function updateClock() {
+            const now = new Date();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
 
-                const firstDay = (new Date(year, month, 1)).getDay();
-                // 0=Sun, 1=Mon... we want Mon start.
-                // If Mon(1) -> offset 0.
-                // If Sun(0) -> offset 6.
-                let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-                
-                const grid = document.getElementById('mini-calendar-grid');
-                if(!grid) return;
-                
-                grid.innerHTML = '';
+            // Update Time
+            const clockEl = document.getElementById('digital-clock');
+            if (clockEl) clockEl.textContent = `${hours}:${minutes}`;
 
-                // Previous month padding
-                for(let i=0; i<startOffset; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = "h-6"; // spacer
-                    grid.appendChild(cell);
-                }
+            const secondsEl = document.getElementById('digital-clock-seconds');
+            if (secondsEl) secondsEl.textContent = seconds;
 
-                // Days
-                for(let d=1; d<=daysInMonth; d++) {
-                    const cell = document.createElement('div');
-                    // Check if today
-                    const isToday = (d === now.getDate());
-                    
-                    // Determine day of week for styling (0=Sun, 6=Sat) relative to this date
-                    const currentDayOfWeek = new Date(year, month, d).getDay();
-                    const isWeekend = (currentDayOfWeek === 0 || currentDayOfWeek === 6);
+            // Update Date String
+            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const dateStr = now.toLocaleDateString('id-ID', options);
+            const dateDisplayFull = document.getElementById('date-display-full');
+            if (dateDisplayFull) dateDisplayFull.textContent = dateStr;
+        }
+        setInterval(updateClock, 1000);
+        updateClock(); // Initial call
 
-                    let baseClasses = "h-6 w-full flex items-center justify-center text-[10px] rounded-md font-medium transition-colors cursor-default";
-                    if(isToday) {
-                        baseClasses += " bg-blue-600 text-white font-bold shadow-sm shadow-blue-200";
-                    } else if(isWeekend) {
-                        baseClasses += " text-red-500 hover:bg-red-50";
-                    } else {
-                        baseClasses += " text-gray-600 hover:bg-gray-100";
-                    }
+        function renderMiniCalendar() {
+            const now = new Date();
+            const year = now.getFullYear();
+            const month = now.getMonth();
 
-                   cell.className = baseClasses;
-                   cell.textContent = d;
-                   grid.appendChild(cell);
-                }
-            }
-            renderMiniCalendar();
+            const monthNamesMini = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
+                "Oktober", "November", "Desember"];
+            const miniMonthLabel = document.getElementById('mini-calendar-month-year');
+            if (miniMonthLabel) miniMonthLabel.textContent = `${monthNamesMini[month]} ${year}`;
+
+            const firstDay = (new Date(year, month, 1)).getDay();
+            // 0=Sun, 1=Mon... we want Mon start.
+            let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const grid = document.getElementById('mini-calendar-grid');
+            if (!grid) return;
+
+            grid.innerHTML = '';
+
+            // Previous month padding
+            for (let i = 0; i < startOffset; i++) {
+                const cell = document.createElement('div'); cell.className = "h-6"; // spacer
+                grid.appendChild(cell);
+            } // Days for(let d=1; d<=daysInMonth; d++) { const cell=document.createElement('div');
+            const isToday = (d === now.getDate()); const currentDayOfWeek = new Date(year, month, d).getDay(); const
+                isWeekend = (currentDayOfWeek === 0 || currentDayOfWeek === 6); let
+                    baseClasses = "h-6 w-full flex items-center justify-center text-[10px] rounded-md font-medium transition-colors cursor-default"
+                ; if (isToday) { baseClasses += " bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"; } else if (isWeekend) {
+                    baseClasses += " text-red-500 hover:bg-red-50";
+                } else { baseClasses += " text-gray-600 hover:bg-gray-100"; }
+            cell.className = baseClasses; cell.textContent = d; grid.appendChild(cell);
+        } } renderMiniCalendar(); }); </script>
 @endsection
