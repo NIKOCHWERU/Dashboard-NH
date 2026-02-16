@@ -10,49 +10,27 @@
         <!-- Clock Widget -->
         <!-- Clock Widget -->
         <div
-            class="w-full lg:w-1/3 bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            class="w-full lg:w-1/3 bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col justify-center relative overflow-hidden group hover:shadow-md transition-all duration-300">
             <!-- Decorative Background Blob -->
             <div
                 class="absolute -top-10 -right-10 w-32 h-32 bg-blue-50 rounded-full blur-2xl opacity-50 pointer-events-none">
             </div>
 
             <!-- Header / Clock Section -->
-            <div class="z-10 text-center mb-6">
-                <div class="flex items-center justify-center gap-2 mb-2">
+            <div class="z-10 text-center">
+                <div class="flex items-center justify-center gap-2 mb-6">
                     <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
                     <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Waktu Sekarang</h3>
                 </div>
 
-                <div class="flex items-baseline justify-center gap-2 mb-2">
+                <div class="flex items-baseline justify-center gap-2 mb-4">
                     <div id="digital-clock"
-                        class="text-5xl font-black text-gray-800 tracking-tighter tabular-nums drop-shadow-sm">--:--</div>
-                    <div id="digital-clock-seconds" class="text-xl font-bold text-gray-300 tracking-tight tabular-nums">--
+                        class="text-6xl font-black text-gray-800 tracking-tighter tabular-nums drop-shadow-sm">--:--</div>
+                    <div id="digital-clock-seconds" class="text-2xl font-bold text-gray-300 tracking-tight tabular-nums">--
                     </div>
                 </div>
                 <div id="date-display-full"
-                    class="text-xs font-bold text-blue-600 bg-blue-50/50 py-1.5 px-3 rounded-full inline-block capitalize">
-                    ...</div>
-            </div>
-
-            <!-- Mini Calendar Section (Bottom Right) -->
-            <div class="flex justify-end z-10 mt-auto">
-                <div class="bg-gray-50/50 rounded-lg p-3 backdrop-blur-sm border border-gray-100 w-full max-w-[200px]">
-                    <div class="flex items-center justify-between mb-2">
-                        <span class="text-[10px] font-bold text-gray-500 uppercase tracking-wider"
-                            id="mini-calendar-month-year">...</span>
-                    </div>
-                    <div class="grid grid-cols-7 mb-1">
-                        <div class="text-[8px] font-bold text-center text-gray-400">S</div>
-                        <div class="text-[8px] font-bold text-center text-gray-400">S</div>
-                        <div class="text-[8px] font-bold text-center text-gray-400">R</div>
-                        <div class="text-[8px] font-bold text-center text-gray-400">K</div>
-                        <div class="text-[8px] font-bold text-center text-gray-400">J</div>
-                        <div class="text-[8px] font-bold text-center text-red-400">S</div>
-                        <div class="text-[8px] font-bold text-center text-red-400">M</div>
-                    </div>
-                    <div id="mini-calendar-grid" class="grid grid-cols-7 gap-y-1 gap-x-0.5">
-                        <!-- Dynamic Days -->
-                    </div>
+                    class="text-sm font-bold text-blue-600 bg-blue-50/50 py-2 px-4 rounded-full inline-block capitalize">...
                 </div>
             </div>
         </div>
@@ -531,9 +509,9 @@
                 const dateStr = dateObj.toLocaleDateString('id-ID', options);
 
                 let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-                                                                        ${dateStr}
-                                                                    </h5>`;
+                                                                                <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                                                                ${dateStr}
+                                                                            </h5>`;
 
                 if (events.length === 0) {
                     html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
@@ -554,14 +532,14 @@
                         }
 
                         html += `
-                                                                                <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
-                                                                                    <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
-                                                                                    ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
-                                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
-                                                                                        ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
-                                                                                    </p>` : ''}
-                                                                                </div>
-                                                                            `;
+                                                                                        <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
+                                                                                            <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
+                                                                                            ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
+                                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
+                                                                                                ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
+                                                                                            </p>` : ''}
+                                                                                        </div>
+                                                                                    `;
                     });
                     html += `</div>`;
                 }
