@@ -117,30 +117,37 @@
                 <!-- Agenda List Footer -->
                 <div class="px-6 pb-6 pt-4 border-t border-gray-100 bg-gray-50/30">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        
+
                         <!-- Cuti (Leaves) Section -->
                         <div>
-                            <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <h4
+                                class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-red-500"></span>
                                 Cuti Bulan Ini
                             </h4>
                             <div class="space-y-3">
                                 @forelse($leaves as $leave)
-                                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-red-50 hover:border-red-200 transition-all shadow-sm">
+                                    <div
+                                        class="flex items-center gap-3 p-3 rounded-xl bg-white border border-red-50 hover:border-red-200 transition-all shadow-sm">
                                         <div class="relative">
-                                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
                                                 @if($leave->user && $leave->user->photo)
-                                                    <img src="{{ asset('storage/' . $leave->user->photo) }}" alt="{{ $leave->user->name }}" class="w-full h-full object-cover">
+                                                    <img src="{{ asset('storage/' . $leave->user->photo) }}"
+                                                        alt="{{ $leave->user->name }}" class="w-full h-full object-cover">
                                                 @else
-                                                    <span class="text-xs font-bold text-gray-500">{{ substr($leave->title, 0, 2) }}</span>
+                                                    <span
+                                                        class="text-xs font-bold text-gray-500">{{ substr($leave->title, 0, 2) }}</span>
                                                 @endif
                                             </div>
-                                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
+                                            <span
+                                                class="absolute bottom-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
                                         </div>
                                         <div class="min-w-0">
                                             <h5 class="text-xs font-bold text-black truncate">{{ $leave->title }}</h5>
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
-                                                {{ $leave->start->format('d M') }} - {{ $leave->end ? $leave->end->format('d M') : 'Sehari' }}
+                                                {{ $leave->start->format('d M') }} -
+                                                {{ $leave->end ? $leave->end->format('d M') : 'Sehari' }}
                                             </p>
                                         </div>
                                     </div>
@@ -152,21 +159,29 @@
 
                         <!-- Meetings Section -->
                         <div>
-                            <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <h4
+                                class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-green-500"></span>
                                 Meeting & Agenda
                             </h4>
                             <div class="space-y-3">
                                 @forelse($upcomingMeetings as $meeting)
-                                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-green-50 hover:border-green-200 transition-all shadow-sm group">
-                                        <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex flex-col items-center justify-center flex-shrink-0 border border-green-100">
-                                            <span class="text-[8px] font-bold uppercase">{{ $meeting->start->format('M') }}</span>
+                                    <div
+                                        class="flex items-center gap-3 p-3 rounded-xl bg-white border border-green-50 hover:border-green-200 transition-all shadow-sm group">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex flex-col items-center justify-center flex-shrink-0 border border-green-100">
+                                            <span
+                                                class="text-[8px] font-bold uppercase">{{ $meeting->start->format('M') }}</span>
                                             <span class="text-sm font-black">{{ $meeting->start->format('d') }}</span>
                                         </div>
                                         <div class="min-w-0">
-                                            <h5 class="text-xs font-bold text-black truncate group-hover:text-green-600 transition-colors">{{ $meeting->title }}</h5>
+                                            <h5
+                                                class="text-xs font-bold text-black truncate group-hover:text-green-600 transition-colors">
+                                                {{ $meeting->title }}
+                                            </h5>
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
-                                                {{ $meeting->start->format('H:i') }} • {{ $meeting->user ? $meeting->user->name : 'System' }}
+                                                {{ $meeting->start->format('H:i') }} •
+                                                {{ $meeting->user ? $meeting->user->name : 'System' }}
                                             </p>
                                         </div>
                                     </div>
@@ -210,262 +225,322 @@
         <!-- Right Column (2/3): Large Calendar -->
         <div class="lg:col-span-2 space-y-8">
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                    <div class="md:p-8 p-5 dark:bg-gray-800 bg-white rounded-t">
-                        <div class="px-4 flex items-center justify-between">
-                            <span id="month-year" tabindex="0" class="focus:outline-none text-xl font-bold dark:text-gray-100 text-gray-800">
-                                <!-- Dynamic Month Year -->
-                            </span>
-                            <div class="flex items-center">
-                                <button id="prev-month" aria-label="calendar backward" class="focus:text-gray-400 hover:text-gray-400 text-gray-800 dark:text-gray-100 p-2">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <polyline points="15 6 9 12 15 18" />
-                                    </svg>
-                                </button>
-                                <button id="next-month" aria-label="calendar forward" class="focus:text-gray-400 hover:text-gray-400 ml-3 text-gray-800 dark:text-gray-100 p-2"> 
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                                        <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                                        <polyline points="9 6 15 12 9 18" />
-                                    </svg>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="flex items-center justify-between pt-12 overflow-x-auto">
-                            <table class="w-full">
-                                <thead>
-                                    <tr>
-                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Sen</p></div></th>
-                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Sel</p></div></th>
-                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Rab</p></div></th>
-                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Kam</p></div></th>
-                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Jum</p></div></th>
-                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Sab</p></div></th>
-                                        <th><div class="w-full flex justify-center"><p class="text-base font-medium text-center text-gray-800 dark:text-gray-100">Min</p></div></th>
-                                    </tr>
-                                </thead>
-                                <tbody id="calendar-body">
-                                    <!-- Dynamic Days -->
-                                </tbody>
-                            </table>
+                <div class="md:p-8 p-5 dark:bg-gray-800 bg-white rounded-t">
+                    <div class="px-4 flex items-center justify-between">
+                        <span id="month-year" tabindex="0"
+                            class="focus:outline-none text-xl font-bold dark:text-gray-100 text-gray-800">
+                            <!-- Dynamic Month Year -->
+                        </span>
+                        <div class="flex items-center">
+                            <button id="prev-month" aria-label="calendar backward"
+                                class="focus:text-gray-400 hover:text-gray-400 text-gray-800 dark:text-gray-100 p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left"
+                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <polyline points="15 6 9 12 15 18" />
+                                </svg>
+                            </button>
+                            <button id="next-month" aria-label="calendar forward"
+                                class="focus:text-gray-400 hover:text-gray-400 ml-3 text-gray-800 dark:text-gray-100 p-2">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-right"
+                                    width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                                    fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                    <polyline points="9 6 15 12 9 18" />
+                                </svg>
+                            </button>
                         </div>
                     </div>
-                    <!-- Agenda / Events Section -->
-                    <div class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b">
-                        <div id="selected-date-events" class="px-4">
-                            <!-- Dynamic Event List -->
-                            <p class="text-center text-gray-400 text-sm">Pilih tanggal untuk melihat agenda.</p>
-                        </div>
+                    <div class="flex items-center justify-between pt-12 overflow-x-auto">
+                        <table class="w-full border-collapse border border-gray-200">
+                            <thead>
+                                <tr>
+                                    <th class="w-14 h-14 border border-gray-200">
+                                        <div class="w-full flex justify-center">
+                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Sen
+                                            </p>
+                                        </div>
+                                    </th>
+                                    <th class="w-14 h-14 border border-gray-200">
+                                        <div class="w-full flex justify-center">
+                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Sel
+                                            </p>
+                                        </div>
+                                    </th>
+                                    <th class="w-14 h-14 border border-gray-200">
+                                        <div class="w-full flex justify-center">
+                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Rab
+                                            </p>
+                                        </div>
+                                    </th>
+                                    <th class="w-14 h-14 border border-gray-200">
+                                        <div class="w-full flex justify-center">
+                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Kam
+                                            </p>
+                                        </div>
+                                    </th>
+                                    <th class="w-14 h-14 border border-gray-200">
+                                        <div class="w-full flex justify-center">
+                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Jum
+                                            </p>
+                                        </div>
+                                    </th>
+                                    <th class="w-14 h-14 border border-gray-200 bg-red-50/30">
+                                        <div class="w-full flex justify-center">
+                                            <p class="text-sm font-bold text-center text-red-500">Sab</p>
+                                        </div>
+                                    </th>
+                                    <th class="w-14 h-14 border border-gray-200 bg-red-50/30">
+                                        <div class="w-full flex justify-center">
+                                            <p class="text-sm font-bold text-center text-red-500">Min</p>
+                                        </div>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="calendar-body">
+                                <!-- Dynamic Days -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- Agenda / Events Section -->
+                <div class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b">
+                    <div id="selected-date-events" class="px-4">
+                        <!-- Dynamic Event List -->
+                        <p class="text-center text-gray-400 text-sm">Pilih tanggal untuk melihat agenda.</p>
                     </div>
                 </div>
             </div>
-            </div>
+        </div>
+    </div>
 
-            <!-- Chart.js -->
-            <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-            <script>
-                document.addEventListener('DOMContentLoaded', function () {
-                    // Storage Chart
-                    const ctx = document.getElementById('storageChartSmall').getContext('2d');
-                    const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
-                    const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
-                    const freeGb = Math.max(0, limitGb - usageGb);
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Storage Chart
+            const ctx = document.getElementById('storageChartSmall').getContext('2d');
+            const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
+            const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
+            const freeGb = Math.max(0, limitGb - usageGb);
 
-                    new Chart(ctx, {
-                        type: 'doughnut',
-                        data: {
-                            labels: ['Used', 'Free'],
-                            datasets: [{
-                                data: [usageGb, freeGb],
-                                backgroundColor: ['#ef4444', '#22c55e'],
-                                borderWidth: 0,
-                                hoverOffset: 4
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
-                            cutout: '65%',
-                        }
-                    });
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Used', 'Free'],
+                    datasets: [{
+                        data: [usageGb, freeGb],
+                        backgroundColor: ['#ef4444', '#22c55e'],
+                        borderWidth: 0,
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
+                    cutout: '65%',
+                }
+            });
 
-                    // --- Custom Calendar Logic ---
-                    const calendarEvents = @json($calendarEvents);
-                    let currentMonth = new Date().getMonth();
-                    let currentYear = new Date().getFullYear();
-                    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+            // --- Custom Calendar Logic ---
+            const calendarEvents = @json($calendarEvents);
+            let currentMonth = new Date().getMonth();
+            let currentYear = new Date().getFullYear();
+            const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-                    function renderCalendar(month, year) {
-                        const firstDay = new Date(year, month).getDay(); // 0 = Sunday
-                        const daysInMonth = 32 - new Date(year, month, 32).getDate();
-                        const tbl = document.getElementById("calendar-body");
-                        const monthYearLabel = document.getElementById("month-year");
+            function renderCalendar(month, year) {
+                const firstDay = (new Date(year, month)).getDay();
+                // Convert Sunday(0) to 7 for easier logic if we start on Monday(1)
+                // Header: Sen(1), Sel(2), Rab(3), Kam(4), Jum(5), Sab(6), Min(0/7)
+                // JS getDay(): Sun=0, Mon=1...
+                // We want grid to start Mon. So if getDay() is 1 (Mon), offset is 0. If 0 (Sun), offset is 6.
+                let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
 
-                        // Adjust for Monday start if needed, but UI shows Mo first? 
-                        // The provided UI has Mo, Tu, We... so 0 Should be mapped to Monday? 
-                        // Standard JS getDay(): 0=Sun, 1=Mon. 
-                        // HTML Headers: Mo, Tu, We, Th, Fr, Sa, Su.
-                        // So if 1st is Sun (0), it should be in 7th cell?
+                const daysInMonth = 32 - new Date(year, month, 32).getDate();
+                const tbl = document.getElementById("calendar-body");
+                const monthYearLabel = document.getElementById("month-year");
 
-                        // Let's assume standard grid where Monday is first column.
-                        // JS Day: 0(Sun), 1(Mon), 2(Tue)... 6(Sat)
-                        // Grid Cols: 0(Mon), 1(Tue)... 5(Sat), 6(Sun)
+                tbl.innerHTML = "";
+                monthYearLabel.innerText = monthNames[month] + " " + year;
 
-                        // Calculate starting empty slots
-                        let startCol = (firstDay === 0) ? 6 : firstDay - 1;
+                let date = 1;
+                for (let i = 0; i < 6; i++) {
+                    const row = document.createElement("tr");
 
-                        tbl.innerHTML = "";
-                        monthYearLabel.innerText = `${monthNames[month]} ${year}`;
+                    // Optimization: Stop creating rows if we're done with days
+                    if (date > daysInMonth) break;
 
-                        let date = 1;
-                        for (let i = 0; i < 6; i++) {
-                            let row = document.createElement("tr");
-                            for (let j = 0; j < 7; j++) {
-                                let cell = document.createElement("td");
-                                cell.className = "pt-6";
+                    for (let j = 0; j < 7; j++) {
+                        const cell = document.createElement("td");
+                        cell.className = "w-14 h-14 border border-gray-200 align-top relative hover:bg-gray-50 transition cursor-pointer";
 
-                                let div = document.createElement("div");
-                                div.className = "px-2 py-2 cursor-pointer flex w-full justify-center";
-
-                                if (i === 0 && j < startCol) {
-                                    // Empty previous month days
-                                } else if (date > daysInMonth) {
-                                    // Empty next month days
-                                } else {
-                                    // Date Cell
-
-                                    // Check for events
-                                    // Convert date to YYYY-MM-DD local
-                                    const dateObj = new Date(year, month, date);
-                                    // Adjust for timezone offset to compare correctly with server strings usually? 
-                                    // Or just string manipulate:
-                                    const yearStr = year;
-                                    const monthStr = String(month + 1).padStart(2, '0');
-                                    const dayStr = String(date).padStart(2, '0');
-                                    const dateString = `${yearStr}-${monthStr}-${dayStr}`;
-
-                                    const dayEvents = calendarEvents.filter(e => e.start.startsWith(dateString));
-                                    const isToday = (date === new Date().getDate() && year === new Date().getFullYear() && month === new Date().getMonth());
-
-                                    let p = document.createElement("p");
-                                    p.className = `text-base font-medium`;
-                                    p.innerText = date;
-
-                                    if (isToday) {
-                                        // Today Style (Gold Circle)
-                                        let activeDiv = document.createElement("div");
-                                        activeDiv.className = "w-full h-full";
-                                        activeDiv.innerHTML = `<div class="flex items-center justify-center w-8 h-8 rounded-full bg-[#D4AF37] text-white shadow-md">
-                                                <span class="text-base font-medium">${date}</span>
-                                            </div>`;
-                                        div = document.createElement("div"); // Reset div
-                                        div.className = "w-full h-full flex items-center justify-center cursor-pointer";
-                                        div.appendChild(activeDiv);
-
-                                        // Click to show events
-                                        div.onclick = () => showEventDetails(dateString, dayEvents);
-                                    } else {
-                                        if (dayEvents.length > 0) {
-                                            // Has events
-                                            p.classList.add("text-gray-800", "font-bold");
-                                            // Add dot
-                                            let dot = document.createElement("span");
-                                            dot.className = "h-1 w-1 bg-[#D4AF37] rounded-full absolute bottom-1";
-                                            div.classList.add("relative", "flex-col", "items-center");
-                                            div.appendChild(p);
-                                            div.appendChild(dot);
-                                            // Click handler
-                                            div.onclick = () => showEventDetails(dateString, dayEvents);
-                                        } else {
-                                            p.classList.add("text-gray-500", "hover:text-[#D4AF37]");
-                                            div.appendChild(p);
-                                        }
-                                    }
-                                    date++;
-                                }
-
-                                cell.appendChild(div);
-                                row.appendChild(cell);
-                            }
-                            tbl.appendChild(row);
-                            if (date > daysInMonth) break;
-                        }
-                    }
-
-                    function showEventDetails(dateStr, events) {
-                        const container = document.getElementById('selected-date-events');
-                        container.innerHTML = ''; // Clear
-
-                        // Formatter
-                        const d = new Date(dateStr);
-                        const readableDate = d.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long' });
-
-                        // Header
-                        let header = document.createElement('div');
-                        header.className = "border-b pb-4 border-gray-400 border-dashed";
-                        header.innerHTML = `<p class="text-xs font-light leading-3 text-gray-500 uppercase tracking-widest">${readableDate}</p>`;
-                        container.appendChild(header);
-
-                        if (events.length === 0) {
-                            let empty = document.createElement('p');
-                            empty.className = "text-sm pt-2 text-gray-400 italic";
-                            empty.innerText = "Tidak ada agenda.";
-                            container.appendChild(empty);
+                        if (i === 0 && j < startOffset) {
+                            // Empty cells before start of month
+                            const cellText = document.createTextNode("");
+                            cell.appendChild(cellText);
+                        } else if (date > daysInMonth) {
+                            // Empty cells after end of month
+                            const cellText = document.createTextNode("");
+                            cell.appendChild(cellText);
                         } else {
-                            events.forEach(ev => {
-                                let item = document.createElement('div');
-                                item.className = "border-b pb-4 border-gray-400 border-dashed pt-5 last:border-0";
+                            // Actual Date Cell
+                            const dayVal = date;
+                            const currentDt = new Date(year, month, dayVal);
 
-                                // Parse time
-                                const time = ev.start.split('T')[1]?.slice(0, 5) || 'All Day';
+                            // Container for number and dots
+                            const con = document.createElement("div");
+                            con.className = "w-full h-full flex flex-col items-center justify-start py-1";
 
-                                item.innerHTML = `
-                                        <p class="text-xs font-bold leading-3 text-[#D4AF37]">${time}</p>
-                                        <a class="block text-md font-bold leading-5 text-gray-800 mt-1">${ev.title}</a>
-                                        <p class="text-xs pt-1 text-gray-500 capitalize">${ev.extendedProps?.description || ev.type || ''}</p>
-                                     `;
-                                container.appendChild(item);
+                            // Date Number
+                            const span = document.createElement("span");
+                            span.innerText = date;
+                            span.className = "text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1";
+
+                            // Highlight Today
+                            const today = new Date();
+                            if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                                span.classList.add("bg-[#D4AF37]", "text-white", "font-bold", "shadow-sm");
+                            }
+                            // Highlight Weekends & Holidays (Red Text)
+                            else if (j === 5 || j === 6) { // Sat or Sun
+                                span.classList.add("text-red-500");
+                                cell.classList.add("bg-red-50/20");
+                            }
+
+                            // Check Events (Range check)
+                            // Reset time for comparison
+                            const checkDate = new Date(year, month, date);
+                            checkDate.setHours(0, 0, 0, 0);
+
+                            const dayEvents = calendarEvents.filter(e => {
+                                const startData = new Date(e.start);
+                                startData.setHours(0, 0, 0, 0);
+                                // If end is null, assume single day
+                                const endData = e.end ? new Date(e.end) : new Date(startData);
+                                endData.setHours(0, 0, 0, 0);
+
+                                return checkDate >= startData && checkDate <= endData;
                             });
+
+                            // Check for Holiday Event to color red
+                            const isHoliday = dayEvents.some(e => e.extendedProps && e.extendedProps.isHoliday);
+                            if (isHoliday && !span.classList.contains("bg-[#D4AF37]")) {
+                                span.classList.add("text-red-500", "font-bold");
+                                cell.classList.add("bg-red-50/20");
+                            }
+
+                            con.appendChild(span);
+
+                            // Event Dots
+                            if (dayEvents.length > 0) {
+                                const dotsDiv = document.createElement("div");
+                                dotsDiv.className = "flex gap-0.5 justify-center flex-wrap px-1";
+
+                                // Filter distinct colors or just show up to 3 dots
+                                dayEvents.slice(0, 4).forEach(evt => {
+                                    const dot = document.createElement("div");
+                                    let dotColor = evt.backgroundColor || '#3b82f6';
+                                    if (evt.extendedProps && evt.extendedProps.isHoliday) dotColor = '#ef4444';
+                                    else if (evt.title.toLowerCase().includes('cuti')) dotColor = '#ef4444'; // Cuti dot red
+
+                                    dot.className = "w-1.5 h-1.5 rounded-full";
+                                    dot.style.backgroundColor = dotColor;
+                                    dotsDiv.appendChild(dot);
+                                });
+
+                                con.appendChild(dotsDiv);
+                            }
+
+                            cell.appendChild(con);
+
+                            // Click Event
+                            cell.addEventListener('click', () => {
+                                showEvents(dayEvents, dayVal, month, year);
+                                // Active state styling
+                                document.querySelectorAll('#calendar-body td div span').forEach(s => s.classList.remove('ring-2', 'ring-[#D4AF37]'));
+                                span.classList.add('ring-2', 'ring-[#D4AF37]');
+                            });
+
+                            date++;
                         }
+                        row.appendChild(cell);
                     }
-
-                    document.getElementById('prev-month').addEventListener('click', () => {
-                        currentMonth--;
-                        if (currentMonth < 0) {
-                            currentMonth = 11;
-                            currentYear--;
-                        }
-                        renderCalendar(currentMonth, currentYear);
-                    });
-
-                    document.getElementById('next-month').addEventListener('click', () => {
-                        currentMonth++;
-                        if (currentMonth > 11) {
-                            currentMonth = 0;
-                            currentYear++;
-                        }
-                        renderCalendar(currentMonth, currentYear);
-                    });
-
-                    // Initial Render
-                    renderCalendar(currentMonth, currentYear);
-
-                    // Show today's events initially
-                    const today = new Date();
-                    const todayStr = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-                    const todayEvents = calendarEvents.filter(e => e.start.startsWith(todayStr));
-                    showEventDetails(todayStr, todayEvents);
-
-                    // Clock
-                    function updateClock() {
-                        const now = new Date();
-                        const clockEl = document.getElementById('digital-clock');
-                        if (clockEl) clockEl.innerText = now.toLocaleTimeString('id-ID', { hour12: false });
-                        const dateEl = document.getElementById('date-display');
-                        if (dateEl) dateEl.innerText = now.toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
                     }
-                    setInterval(updateClock, 1000);
-                    updateClock();
-                });
-            </script>
+                        }
+
+                        function showEvents(events, day, month, year) {
+                            const container = document.getElementById("selected-date-events");
+                            const dateObj = new Date(year, month, day);
+                            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+                            const dateStr = dateObj.toLocaleDateString('id-ID', options);
+
+                            let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
+                                <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                ${dateStr}
+                            </h5>`;
+
+                            if (events.length === 0) {
+                                html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
+                            } else {
+                                html += `<div class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-1">`;
+                                events.forEach(e => {
+                                    const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
+                                    const isCuti = e.title.toLowerCase().includes('cuti') || e.extendedProps.type === 'leave';
+                                    let borderClass = "border-l-2 border-blue-500";
+                                    let bgClass = "bg-blue-50/50";
+
+                                    if (isHoliday || isCuti) {
+                                        borderClass = "border-l-2 border-red-500";
+                                        bgClass = "bg-red-50/50";
+                                    } else if (e.extendedProps.type === 'meeting') {
+                                        borderClass = "border-l-2 border-green-500";
+                                        bgClass = "bg-green-50/50";
+                                    }
+
+                                    html += `
+                                        <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
+                                            <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
+                                            ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
+                                                ${new Date(e.start).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'})} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', {hour:'2-digit', minute:'2-digit'}) : 'Selesai'}
+                                            </p>` : ''}
+                                        </div>
+                                    `;
+                                });
+                                html += `</div>`;
+                            }
+                            container.innerHTML = html;
+                        }
+
+                        document.getElementById("prev-month").addEventListener("click", () => {
+                            currentMonth--;
+                            if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+                            renderCalendar(currentMonth, currentYear);
+                        });
+
+                        document.getElementById("next-month").addEventListener("click", () => {
+                            currentMonth++;
+                            if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+                            renderCalendar(currentMonth, currentYear);
+                        });
+
+                        // Initial Render
+                        renderCalendar(currentMonth, currentYear);
+
+                        // Show today's events initially
+                        const today = new Date();
+                        const initialEvents = calendarEvents.filter(e => {
+                            const start = new Date(e.start); 
+                            start.setHours(0,0,0,0);
+                            const end = e.end ? new Date(e.end) : new Date(start);
+                            end.setHours(0,0,0,0);
+                            const todayCheck = new Date();
+                            todayCheck.setHours(0,0,0,0);
+                            return todayCheck >= start && todayCheck <= end;
+                        });
+                        showEvents(initialEvents, today.getDate(), today.getMonth(), today.getFullYear());
+                    });
+                    </script>
 @endsection
