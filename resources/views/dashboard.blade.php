@@ -240,53 +240,70 @@
             @endif
         </div>
 
-        <!-- Right Column (2/3): Large Calendar -->
-        <div class="lg:col-span-2 space-y-8">
-            <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                <div class="md:p-8 p-5 bg-white rounded-t">
-
-                    <div class="flex items-center justify-between pt-12 overflow-x-auto">
-                        <table class="w-full border-collapse border border-gray-200">
-
-                            <tbody id="calendar-body">
-                                <!-- Dynamic Days -->
-                            </tbody>
+        <!-- Right Column (2/3): Calendar & Agenda -->
+        <div class="lg:col-span-2">
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <!-- Left: Calendar (Smaller) -->
+                <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                    <h5 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
+                        <span class="w-2 h-2 rounded-full bg-blue-500"></span> Kalender
+                    </h5>
+                    <div class="overflow-x-auto">
+                        <table class="w-full border-collapse">
+                            <tbody id="calendar-body"></tbody>
                         </table>
                     </div>
                 </div>
-                <!-- Monthly Agenda List Section -->
-                <div class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b">
-                    <div class="flex items-center justify-between mb-6">
+
+                <!-- Right: Agenda List (Larger) -->
+                <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+                     <div class="flex items-center justify-between mb-4">
                         <button id="prev-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" fill="none">
-                                <path d="M15 6l-6 6l6 6" />
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M15 6l-6 6l6 6" /></svg>
                         </button>
-                        <h4 id="agenda-month-year"
-                            class="text-lg font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">
-                            <div class="w-2 h-2 rounded-full bg-blue-500"></div> Agenda
-                        </h4>
+                        <h4 id="agenda-month-year" class="text-lg font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">Agenda</h4>
                         <button id="next-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
-                                stroke="currentColor" fill="none">
-                                <path d="M9 6l6 6l-6 6" />
-                            </svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 6l6 6l-6 6" /></svg>
                         </button>
                     </div>
-
-                    <div id="agenda-list-content" class="space-y-6">
-                        <!-- Dynamic Monthly Agenda List -->
-                        <p class="text-center text-gray-400 text-sm italic py-10">Memuat agenda...</p>
+                    <div id="agenda-list-content" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                         <p class="text-center text-gray-400 text-sm italic py-10">Memuat agenda...</p>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Modal Daily Agenda -->
+    <div id="daily-agenda-modal" class="fixed inset-0 z-[100] hidden relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeModal()"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                    <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
+                        <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
+                            <h3 class="text-lg font-bold text-gray-900" id="modal-date-title">Agenda</h3>
+                            <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="modal-agenda-list" class="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
+                            <!-- Items -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
+        // Modal Functions (Global scope for onclick)
+        function closeModal() {
+            document.getElementById('daily-agenda-modal').classList.add('hidden');
+        }
             document.addEventListener('DOMContentLoaded', function                      () {
                         // Storage Chart
                         const ctx = document.getElementById('storageChartSmall').getContext('2d');
