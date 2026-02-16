@@ -245,8 +245,7 @@
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
                 <div class="md:p-8 p-5 bg-white rounded-t">
                     <div class="px-4 flex items-center justify-between">
-                        <span id="month-year" tabindex="0"
-                            class="focus:outline-none text-xl font-bold text-gray-800">
+                        <span id="month-year" tabindex="0" class="focus:outline-none text-xl font-bold text-gray-800">
                             <!-- Dynamic Month Year -->
                         </span>
                         <div class="flex items-center">
@@ -442,9 +441,22 @@
                                 return checkDate >= startData && checkDate <= endData;
                             });
 
+                            // Highlight Upcoming Events (Future dates with events)
+                            const todayCheck = new Date();
+                            todayCheck.setHours(0, 0, 0, 0);
+
+                            if (checkDate >= todayCheck && dayEvents.length > 0) {
+                                // Add a marker for upcoming events (Blue ring/border)
+                                if (!span.classList.contains("bg-[#D4AF37]")) { // Don't override today's style excessively
+                                    span.classList.add("ring-2", "ring-blue-200", "font-bold", "text-blue-600");
+                                    cell.classList.add("bg-blue-50/10");
+                                }
+                            }
+
                             // Check for Holiday Event to color red
                             const isHoliday = dayEvents.some(e => e.extendedProps && e.extendedProps.isHoliday);
                             if (isHoliday && !span.classList.contains("bg-[#D4AF37]")) {
+                                span.classList.remove("text-blue-600", "ring-blue-200"); // Override blue if holiday
                                 span.classList.add("text-red-500", "font-bold");
                                 cell.classList.add("bg-red-50/20");
                             }
@@ -495,9 +507,9 @@
                 const dateStr = dateObj.toLocaleDateString('id-ID', options);
 
                 let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-                                                        ${dateStr}
-                                                    </h5>`;
+                                                            <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                                            ${dateStr}
+                                                        </h5>`;
 
                 if (events.length === 0) {
                     html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
@@ -518,14 +530,14 @@
                         }
 
                         html += `
-                                                                <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
-                                                                    <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
-                                                                    ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
-                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
-                                                                        ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
-                                                                    </p>` : ''}
-                                                                </div>
-                                                            `;
+                                                                    <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
+                                                                        <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
+                                                                        ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
+                                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
+                                                                            ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
+                                                                        </p>` : ''}
+                                                                    </div>
+                                                                `;
                     });
                     html += `</div>`;
                 }

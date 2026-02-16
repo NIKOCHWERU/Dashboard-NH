@@ -81,7 +81,8 @@ class DashboardController extends Controller
         // b. Upcoming Meetings - Filter by type 'meeting'
         $upcomingMeetings = \App\Models\Event::with(['user', 'category'])
             ->where('type', 'meeting')
-            ->whereBetween('start', [now(), now()->addDays(7)])
+            ->where('type', 'meeting')
+            ->whereBetween('start', [now(), now()->endOfMonth()])
             ->orderBy('start')
             ->get();
 
