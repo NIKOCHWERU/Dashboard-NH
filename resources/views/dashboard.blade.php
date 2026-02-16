@@ -287,273 +287,276 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-            document.addEventListener('DOMContentLoaded', function              () {
-                // Storage Chart
-                const ctx = document.getElementById('storageChartSmall').getContext('2d');
-                const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
-                const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
-                const freeGb = Math.max(0, limitGb - usageGb);
+                document.addEventListener('DOMContentLoaded', func              tion              () {
+                    // Storage Chart
+                    const ctx = document.getElementById('storageChartSmall').getContext('2d');
+                    const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
+                    const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
+                    const freeGb = Math.max(0, limitGb - usageGb);
 
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Used', 'Free'],
-                        datasets: [{
-                            data: [usageGb, freeGb],
-                            backgroundColor: ['#ef4444', '#22c55e'],
-                            borderWidth: 0,
-                            hoverOffset: 4
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
-                        cutout: '65%',
-                    }
-                });
-
-                // --- Custom Calendar & Agenda Logic ---
-                const calendarEvents = @json($calendarEvents);
-                let currentMonth = new Date().getMonth();
-                let currentYear = new Date().getFullYear();
-                const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-
-                // Render Large Calendar Grid (Just the grid, no headers as requested)
-                function renderCalendarGrid(month, year) {
-                    const firstDay = (new Date(year, month)).getDay();
-                    let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
-                    const daysInMonth = 32 - new Date(year, month, 32).getDate();
-                    const tbl = document.getElementById("calendar-body");
-
-                    if(tbl) tbl.innerHTML = "";
-
-                    let date = 1;
-                    for (let i = 0; i < 6; i++) {
-                        const row = document.createElement("tr");
-                        if (date > daysInMonth) break;
-
-                        for (let j = 0; j < 7; j++) {
-                            const cell = document.createElement("td");
-                            cell.className = "w-14 h-14 border border-gray-200 align-top relative hover:bg-gray-50 transition cursor-pointer";
-
-                            if (i === 0 && j < startOffset) {
-                                cell.appendChild(document.createTextNode(""));
-                            } else if (date > daysInMonth) {
-                                cell.appendChild(document.createTextNode(""));
-                            } else {
-                                const dayVal = date;
-
-                                // Container
-                                const con = document.createElement("div");
-                                con.className = "w-full h-full flex flex-col items-center justify-start py-1";
-
-                                // Date Number
-                                const span = document.createElement("span");
-                                span.innerText = date;
-                                span.className = "text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1";
-
-                                // Highlight Today
-                                const today = new Date();
-                                if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
-                                    span.classList.add("bg-[#D4AF37]", "text-white", "font-bold", "shadow-sm");
-                                } else if (j === 5 || j === 6) { 
-                                    span.classList.add("text-red-500");
-                                    cell.classList.add("bg-red-50/20");
-                                }
-
-                                // Check events for dots/colors
-                                const checkDate = new Date(year, month, date);
-                                checkDate.setHours(0,0,0,0);
-                                 const dayEvents = calendarEvents.filter(e => {
-                                    const startData = new Date(e.start);
-                                    startData.setHours(0, 0, 0, 0);
-                                    const endData = e.end ? new Date(e.end) : new Date(startData);
-                                    endData.setHours(0, 0, 0, 0);
-                                    return checkDate >= startData && checkDate <= endData;
-                                });
-
-                                 // Holiday Red
-                                const isHoliday = dayEvents.some(e => e.extendedProps && e.extendedProps.isHoliday);
-                                if (isHoliday && !span.classList.contains("bg-[#D4AF37]")) {
-                                    span.classList.add("text-red-500", "font-bold");
-                                    cell.classList.add("bg-red-50/20");
-                                }
-
-                                con.appendChild(span);
-                                 // Dots
-                                if (dayEvents.length > 0) {
-                                    const dotsDiv = document.createElement("div");
-                                    dotsDiv.className = "flex gap-0.5 justify-center flex-wrap px-1";
-                                    dayEvents.slice(0, 4).forEach(evt => {
-                                        const dot = document.createElement("div");
-                                        let dotColor = evt.backgroundColor || '#3b82f6';
-                                        if (evt.extendedProps && evt.extendedProps.isHoliday) dotColor = '#ef4444';
-                                        else if (evt.title.toLowerCase().includes('cuti')) dotColor = '#ef4444';
-                                        dot.className = "w-1.5 h-1.5 rounded-full";
-                                        dot.style.backgroundColor = dotColor;
-                                        dotsDiv.appendChild(dot);
-                                    });
-                                    con.appendChild(dotsDiv);
-                                }
-                                cell.appendChild(con);
-                                date++;
-                            }
-                            row.appendChild(cell);
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: ['Used', 'Free'],
+                            datasets: [{
+                                data: [usageGb, freeGb],
+                                backgroundColor: ['#ef4444', '#22c55e'],
+                                borderWidth: 0,
+                                hoverOffset: 4
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
+                            cutout: '65%',
                         }
-                        if(tbl) tbl.appendChild(row);
-                    }
-                }
-
-                // Render Monthly Agenda List
-                function renderAgendaList(month, year) {
-                    const container = document.getElementById("agenda-list-content");
-                    const header = document.getElementById("agenda-month-year");
-                    if(!container || !header) return;
-
-                    // Update Header
-                    header.innerHTML = `<div class="w-2 h-2 rounded-full bg-blue-500"></div> Agenda ${monthNames[month]} ${year}`;
-
-                    // Filter events for this month
-                    const startOfMonth = new Date(year, month, 1);
-                    const endOfMonth = new Date(year, month + 1, 0);
-
-                    const monthEvents = calendarEvents.filter(e => {
-                        const start = new Date(e.start);
-                        // Check if event overlaps with this month
-                        const end = e.end ? new Date(e.end) : new Date(start);
-                        return start <= endOfMonth && end >= startOfMonth;
                     });
 
-                    if(monthEvents.length === 0) {
-                        container.innerHTML = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
-                        return;
-                    }
+                    // --- Custom Calendar & Agenda Logic ---
+                    const calendarEvents = @json($calendarEvents);
+                    let currentMonth = new Date().getMonth();
+                    let currentYear = new Date().getFullYear();
+                    const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-                    // Group by Date
-                    // We iterate through every day of the month to show empty days? 
-                    // User input: "Agenda Harian... Selasa, 17 Februari 2026... Kunjungan...". 
-                    // Likely only dates with events should be shown to be compact, or maybe all?
-                    // Given "Agenda Monthly List", usually only dates with events are shown.
-                    // Converting to map: DateString -> [Events]
+                    // Render Large Calendar Grid (Just the grid, no headers as requested)
+                    function renderCalendarGrid(month, year) {
+                        const firstDay = (new Date(year, month)).getDay();
+                        let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+                        const daysInMonth = 32 - new Date(year, month, 32).getDate();
+                        const tbl = document.getElementById("calendar-body");
 
-                    // Better approach: Sort events by start date, then group.
-                    monthEvents.sort((a,b) => new Date(a.start) - new Date(b.start));
+                        if(tbl) tbl.innerHTML = "";
 
-                    // But we need to handle multi-day events appearing on each day? 
-                    // For simplicity and "Agenda Harian" style, let's group by start date for now, 
-                    // OR duplicate multi-day events across days?
-                    // "Tahun Baru Imlek... dengan agenda selama bulan ini"
-                    // Let's iterate days of month and check events for each day.
+                        let date = 1;
+                        for (let i = 0; i < 6; i++) {
+                            const row = document.createElement("tr");
+                            if (date > daysInMonth) break;
 
-                    let html = "";
-                    const today = new Date();
-                    today.setHours(0,0,0,0);
+                            for (let j = 0; j < 7; j++) {
+                                const cell = document.createElement("td");
+                                cell.className = "w-14 h-14 border border-gray-200 align-top relative hover:bg-gray-50 transition cursor-pointer";
 
-                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+                                if (i === 0 && j < startOffset) {
+                                    cell.appendChild(document.createTextNode(""));
+                                } else if (date > daysInMonth) {
+                                    cell.appendChild(document.createTextNode(""));
+                                } else {
+                                    const dayVal = date;
 
-                    for(let d=1; d<=daysInMonth; d++) {
-                        const currentDt = new Date(year, month, d);
-                        // Check events for this day
-                         const dayEvents = monthEvents.filter(e => {
-                            const s = new Date(e.start); s.setHours(0,0,0,0);
-                            const end = e.end ? new Date(e.end) : new Date(s); end.setHours(0,0,0,0);
-                            return currentDt >= s && currentDt <= end;
-                        });
+                                    // Container
+                                    const con = document.createElement("div");
+                                    con.className = "w-full h-full flex flex-col items-center justify-start py-1";
 
-                        if(dayEvents.length > 0) {
-                            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                            const dateStr = currentDt.toLocaleDateString('id-ID', options);
-                            const isPast = currentDt < today;
+                                    // Date Number
+                                    const span = document.createElement("span");
+                                    span.innerText = date;
+                                    span.className = "text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1";
 
-                            html += `
-                            <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
-                                <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
-                                    <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
-                                    ${dateStr}
-                                </h5>
-                                <div class="space-y-2">`;
+                                    // Highlight Today
+                                    const today = new Date();
+                                    if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                                        span.classList.add("bg-[#D4AF37]", "text-white", "font-bold", "shadow-sm");
+                                    } else if (j === 5 || j === 6) { 
+                                        span.classList.add("text-red-500");
+                                        cell.classList.add("bg-red-50/20");
+                                    }
 
-                            dayEvents.forEach(e => {
-                                const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
-                                // Check strict past (if event ended before today)
-                                // Or use the day's "past" status. User said "jika sudah terlewat coret" (strike if passed).
-                                // If the specific event time is passed? Or just the day?
-                                // Let's use the day logic: if date < today, strike.
+                                    // Check events for dots/colors
+                                    const checkDate = new Date(year, month, date);
+                                    checkDate.setHours(0,0,0,0);
+                                     const dayEvents = calendarEvents.filter(e => {
+                                        const startData = new Date(e.start);
+                                        startData.setHours(0, 0, 0, 0);
+                                        const endData = e.end ? new Date(e.end) : new Date(startData);
+                                        endData.setHours(0, 0, 0, 0);
+                                        return checkDate >= startData && checkDate <= endData;
+                                    });
 
-                                let contentClass = isPast ? "line-through text-gray-400 grayscale opacity-70" : "text-gray-800";
+                                     // Holiday Red
+                                    const isHoliday = dayEvents.some(e => e.extendedProps && e.extendedProps.isHoliday);
+                                    if (isHoliday && !span.classList.contains("bg-[#D4AF37]")) {
+                                        span.classList.add("text-red-500", "font-bold");
+                                        cell.classList.add("bg-red-50/20");
+                                    }
 
-                                // Specific styling requests
-                                // "14.00 - 02.00"
-                                const timeStr = isHoliday ? '' : 
-                                    `${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` + 
-                                    (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
-
-                                html += `
-                                    <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
-                                        <p class="font-bold text-sm mb-1">${e.title}</p>
-                                        ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
-                                    </div>
-                                `;
-                            });
-
-                            html += `</div></div>`;
+                                    con.appendChild(span);
+                                     // Dots
+                                    if (dayEvents.length > 0) {
+                                        const dotsDiv = document.createElement("div");
+                                        dotsDiv.className = "flex gap-0.5 justify-center flex-wrap px-1";
+                                        dayEvents.slice(0, 4).forEach(evt => {
+                                            const dot = document.createElement("div");
+                                            let dotColor = evt.backgroundColor || '#3b82f6';
+                                            if (evt.extendedProps && evt.extendedProps.isHoliday) dotColor = '#ef4444';
+                                            else if (evt.title.toLowerCase().includes('cuti')) dotColor = '#ef4444';
+                                            dot.className = "w-1.5 h-1.5 rounded-full";
+                                            dot.style.backgroundColor = dotColor;
+                                            dotsDiv.appendChild(dot);
+                                        });
+                                        con.appendChild(dotsDiv);
+                                    }
+                                    cell.appendChild(con);
+                                    date++;
+                                }
+                                row.appendChild(cell);
+                            }
+                            if(tbl) tbl.appendChild(row);
                         }
                     }
 
-                    if(html === "") html = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
-                    container.innerHTML = html;
-                }
+                    // Render Monthly Agenda List
+                    function renderAgendaList(month, year) {
+                        const container = document.getElementById("agenda-list-content");
+                        const header = document.getElementById("agenda-month-year");
+                        if(!container || !header) return;
 
-                // Navigation Handlers
-                 const prevBtn = document.getElementById("prev-month-agenda");
-                 const nextBtn = document.getElementById("next-month-agenda");
+                        // Update Header
+                        header.innerHTML = `<div class="w-2 h-2 rounded-full bg-blue-500"></div> Agenda ${monthNames[month]} ${year}`;
 
-                 if(prevBtn) prevBtn.addEventListener("click", () => {
-                     currentMonth--;
-                     if(currentMonth < 0) { currentMonth = 11; currentYear--; }
-                     renderCalendarGrid(currentMonth, currentYear);
-                     renderAgendaList(currentMonth, currentYear);
-                 });
+                        // Filter events for this month
+                        const startOfMonth = new Date(year, month, 1);
+                        const endOfMonth = new Date(year, month + 1, 0);
 
-                 if(nextBtn) nextBtn.addEventListener("click", () => {
-                     currentMonth++;
-                     if(currentMonth > 11) { currentMonth = 0; currentYear++; }
-                     renderCalendarGrid(currentMonth, currentYear);
-                     renderAgendaList(currentMonth, currentYear);
-                 });
+                        const monthEvents = calendarEvents.filter(e => {
+                            const start = new Date(e.start);
+                            // Check if event overlaps with this month
+                            const end = e.end ? new Date(e.end) : new Date(start);
+                            return start <= endOfMonth && end >= startOfMonth;
+                        });
 
+                        if(monthEvents.length === 0) {
+                            container.innerHTML = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
+                            return;
+                        }
 
-                // Initial Render
-                renderCalendarGrid(currentMonth, currentYear);
-                renderAgendaList(currentMonth, currentYear);
+                        // Group by Date
+                        // We iterate through every day of the month to show empty days? 
+                        // User input: "Agenda Harian... Selasa, 17 Februari 2026... Kunjungan...". 
+                        // Likely only dates with events should be shown to be compact, or maybe all?
+                        // Given "Agenda Monthly List", usually only dates with events are shown.
+                        // Converting to map: DateString -> [Events]
 
-                // --- Helper Logic for Clock ---
-                function updateClock() {
-                    const now = new Date();
-                    const clockEl = document.getElementById('digital-clock');
-                    const secondsEl = document.getElementById('digital-clock-seconds');
-                    const dateFullEl = document.getElementById('date-display-full');
+                        // Better approach: Sort events by start date, then group.
+                        monthEvents.sort((a,b) => new Date(a.start) - new Date(b.start));
 
-                    if (clockEl) {
-                        const hours = String(now.getHours()).padStart(2, '0');
-                        const minutes = String(now.getMinutes()).padStart(2, '0');
-                        clockEl.innerText = `${hours}:${minutes}`;
+                        // But we need to handle multi-day events appearing on each day? 
+                        // For simplicity and "Agenda Harian" style, let's group by start date for now, 
+                        // OR duplicate multi-day events across days?
+                        // "Tahun Baru Imlek... dengan agenda selama bulan ini"
+                        // Let's iterate days of month and check events for each day.
+
+                        let html = "";
+                        const today = new Date();
+                        today.setHours(0,0,0,0);
+
+                        const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                        for(let d=1; d<=daysInMonth; d++) {
+                            const currentDt = new Date(year, month, d);
+                            // Check events for this day
+                             const dayEvents = monthEvents.filter(e => {
+                                const s = new Date(e.start); s.setHours(0,0,0,0);
+                                const end = e.end ? new Date(e.end) : new Date(s); end.setHours(0,0,0,0);
+                                return currentDt >= s && currentDt <= end;
+                            });
+
+                            if(dayEvents.length > 0) {
+                                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                                const dateStr = currentDt.toLocaleDateString('id-ID', options);
+                                const isPast = currentDt < today;
+
+                                html += `
+                                <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
+                                    <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
+                                        <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
+                                        ${dateStr}
+                                    </h5>
+                                    <div class="space-y-2">`;
+
+                                    dayEvents.forEach(e => {
+                                        const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
+                                        const isCuti = e.title.toLowerCase().includes('cuti') || e.extendedProps.type === 'leave';
+
+                                        let contentClass = "text-gray-800";
+                                        if(isPast) {
+                                            contentClass = "line-through grayscale opacity-70";
+                                            if(isCuti) contentClass += " text-red-400"; // Red but muted if past
+                                            else contentClass += " text-gray-400";
+                                        } else {
+                                            if(isCuti) contentClass = "text-red-600 font-bold";
+                                        }
+
+                                        // Specific styling requests
+                                        const timeStr = isHoliday ? '' : 
+                                            `${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` + 
+                                            (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
+
+                                        html += `
+                                            <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
+                                                <p class="font-bold text-sm mb-1">${e.title}</p>
+                                                ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
+                                            </div>
+                                        `;
+                                    });
+
+                                html += `</div></div>`;
+                            }
+                        }
+
+                        if(html === "") html = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
+                        container.innerHTML = html;
                     }
 
-                    if (secondsEl) {
-                        const seconds = String(now.getSeconds()).padStart(2, '0');
-                        secondsEl.innerText = seconds;
-                    }
+                    // Navigation Handlers
+                     const prevBtn = document.getElementById("prev-month-agenda");
+                     const nextBtn = document.getElementById("next-month-agenda");
 
-                    if (dateFullEl) {
-                        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                        // Indonesian locale
-                        dateFullEl.innerText = now.toLocaleDateString('id-ID', options);
+                     if(prevBtn) prevBtn.addEventListener("click", () => {
+                         currentMonth--;
+                         if(currentMonth < 0) { currentMonth = 11; currentYear--; }
+                         renderCalendarGrid(currentMonth, currentYear);
+                         renderAgendaList(currentMonth, currentYear);
+                     });
+
+                     if(nextBtn) nextBtn.addEventListener("click", () => {
+                         currentMonth++;
+                         if(currentMonth > 11) { currentMonth = 0; currentYear++; }
+                         renderCalendarGrid(currentMonth, currentYear);
+                         renderAgendaList(currentMonth, currentYear);
+                     });
+
+
+                    // Initial Render
+                    renderCalendarGrid(currentMonth, currentYear);
+                    renderAgendaList(currentMonth, currentYear);
+
+                    // --- Helper Logic for Clock ---
+                    function updateClock() {
+                        const now = new Date();
+                        const clockEl = document.getElementById('digital-clock');
+                        const secondsEl = document.getElementById('digital-clock-seconds');
+                        const dateFullEl = document.getElementById('date-display-full');
+
+                        if (clockEl) {
+                            const hours = String(now.getHours()).padStart(2, '0');
+                            const minutes = String(now.getMinutes()).padStart(2, '0');
+                            clockEl.innerText = `${hours}:${minutes}`;
+                        }
+
+                        if (secondsEl) {
+                            const seconds = String(now.getSeconds()).padStart(2, '0');
+                            secondsEl.innerText = seconds;
+                        }
+
+                        if (dateFullEl) {
+                            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                            // Indonesian locale
+                            dateFullEl.innerText = now.toLocaleDateString('id-ID', options);
+                        }
                     }
-                }
-                setInterval(updateClock, 1000);
-                updateClock();
-            });
-        </script>
+                    setInterval(updateClock, 1000);
+                    updateClock();
+                });
+            </script>
 @endsection
