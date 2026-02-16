@@ -8,51 +8,29 @@
     <!-- Top Row: Stats & Clock -->
     <div class="flex flex-col lg:flex-row gap-6 mb-8">
         <!-- Clock Widget -->
-        <!-- Clock & Mini Calendar Widget -->
+        <!-- Clock Widget -->
         <div
-            class="w-full lg:w-1/3 bg-white rounded-xl shadow-sm border border-gray-100 p-6 flex flex-col justify-between relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            class="w-full lg:w-1/3 bg-white rounded-xl shadow-sm border border-gray-100 p-8 flex flex-col justify-center relative overflow-hidden group hover:shadow-md transition-all duration-300">
             <!-- Decorative Background Blob -->
             <div
                 class="absolute -top-10 -right-10 w-32 h-32 bg-blue-50 rounded-full blur-2xl opacity-50 pointer-events-none">
             </div>
 
             <!-- Header / Clock Section -->
-            <div class="border-b border-gray-100 pb-4 mb-4 z-10">
-                <div class="flex items-center justify-between mb-2">
-                    <div class="flex items-center gap-2">
-                        <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]">
-                        </div>
-                        <h3 class="text-xs font-bold uppercase tracking-widest text-gray-500">Waktu Sekarang</h3>
-                    </div>
-                    <div class="text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full"
-                        id="mini-calendar-month-year">
-                        <!-- Dynamic Month Year -->
-                    </div>
+            <div class="z-10 text-center">
+                <div class="flex items-center justify-center gap-2 mb-6">
+                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                    <h3 class="text-xs font-bold uppercase tracking-widest text-gray-400">Waktu Sekarang</h3>
                 </div>
-                <div class="flex items-baseline gap-2">
-                    <div id="digital-clock" class="text-4xl font-black text-gray-800 tracking-tighter tabular-nums">--:--
-                    </div>
-                    <div id="digital-clock-seconds" class="text-xl font-bold text-gray-400 tracking-tight tabular-nums">--
-                    </div>
-                </div>
-                <div id="date-display-full" class="text-xs font-medium text-gray-500 mt-1 capitalize">...</div>
-            </div>
 
-            <!-- Mini Calendar Grid -->
-            <div class="w-full z-10">
-                <!-- Day Headers -->
-                <div class="grid grid-cols-7 mb-2">
-                    <div class="text-[10px] font-bold text-center text-gray-400">S</div>
-                    <div class="text-[10px] font-bold text-center text-gray-400">S</div>
-                    <div class="text-[10px] font-bold text-center text-gray-400">R</div>
-                    <div class="text-[10px] font-bold text-center text-gray-400">K</div>
-                    <div class="text-[10px] font-bold text-center text-gray-400">J</div>
-                    <div class="text-[10px] font-bold text-center text-red-400">S</div>
-                    <div class="text-[10px] font-bold text-center text-red-400">M</div>
+                <div class="flex items-baseline justify-center gap-2 mb-4">
+                    <div id="digital-clock"
+                        class="text-6xl font-black text-gray-800 tracking-tighter tabular-nums drop-shadow-sm">--:--</div>
+                    <div id="digital-clock-seconds" class="text-2xl font-bold text-gray-300 tracking-tight tabular-nums">--
+                    </div>
                 </div>
-                <!-- Dates -->
-                <div id="mini-calendar-grid" class="grid grid-cols-7 gap-y-1 gap-x-1">
-                    <!-- Dynamic Days -->
+                <div id="date-display-full"
+                    class="text-sm font-bold text-blue-600 bg-blue-50/50 py-2 px-4 rounded-full inline-block capitalize">...
                 </div>
             </div>
         </div>
@@ -265,15 +243,15 @@
         <!-- Right Column (2/3): Large Calendar -->
         <div class="lg:col-span-2 space-y-8">
             <div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-                <div class="md:p-8 p-5 dark:bg-gray-800 bg-white rounded-t">
+                <div class="md:p-8 p-5 bg-white rounded-t">
                     <div class="px-4 flex items-center justify-between">
                         <span id="month-year" tabindex="0"
-                            class="focus:outline-none text-xl font-bold dark:text-gray-100 text-gray-800">
+                            class="focus:outline-none text-xl font-bold text-gray-800">
                             <!-- Dynamic Month Year -->
                         </span>
                         <div class="flex items-center">
                             <button id="prev-month" aria-label="calendar backward"
-                                class="focus:text-gray-400 hover:text-gray-400 text-gray-800 dark:text-gray-100 p-2">
+                                class="focus:text-gray-400 hover:text-gray-400 text-gray-800 p-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left"
                                     width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                     fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -282,7 +260,7 @@
                                 </svg>
                             </button>
                             <button id="next-month" aria-label="calendar forward"
-                                class="focus:text-gray-400 hover:text-gray-400 ml-3 text-gray-800 dark:text-gray-100 p-2">
+                                class="focus:text-gray-400 hover:text-gray-400 ml-3 text-gray-800 p-2">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-right"
                                     width="24" height="24" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
                                     fill="none" stroke-linecap="round" stroke-linejoin="round">
@@ -298,31 +276,31 @@
                                 <tr>
                                     <th class="w-14 h-14 border border-gray-200">
                                         <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Sen
+                                            <p class="text-sm font-bold text-center text-gray-800">Sen
                                             </p>
                                         </div>
                                     </th>
                                     <th class="w-14 h-14 border border-gray-200">
                                         <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Sel
+                                            <p class="text-sm font-bold text-center text-gray-800">Sel
                                             </p>
                                         </div>
                                     </th>
                                     <th class="w-14 h-14 border border-gray-200">
                                         <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Rab
+                                            <p class="text-sm font-bold text-center text-gray-800">Rab
                                             </p>
                                         </div>
                                     </th>
                                     <th class="w-14 h-14 border border-gray-200">
                                         <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Kam
+                                            <p class="text-sm font-bold text-center text-gray-800">Kam
                                             </p>
                                         </div>
                                     </th>
                                     <th class="w-14 h-14 border border-gray-200">
                                         <div class="w-full flex justify-center">
-                                            <p class="text-sm font-bold text-center text-gray-800 dark:text-gray-100">Jum
+                                            <p class="text-sm font-bold text-center text-gray-800">Jum
                                             </p>
                                         </div>
                                     </th>
@@ -517,9 +495,9 @@
                 const dateStr = dateObj.toLocaleDateString('id-ID', options);
 
                 let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                                    <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-                                                    ${dateStr}
-                                                </h5>`;
+                                                        <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                                        ${dateStr}
+                                                    </h5>`;
 
                 if (events.length === 0) {
                     html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
@@ -540,14 +518,14 @@
                         }
 
                         html += `
-                                                            <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
-                                                                <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
-                                                                ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
-                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
-                                                                    ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
-                                                                </p>` : ''}
-                                                            </div>
-                                                        `;
+                                                                <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
+                                                                    <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
+                                                                    ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
+                                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
+                                                                        ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
+                                                                    </p>` : ''}
+                                                                </div>
+                                                            `;
                     });
                     html += `</div>`;
                 }
@@ -585,7 +563,7 @@
 
 
 
-            // --- Mini Calendar & Clock Logic ---
+            // --- Helper Logic for Clock ---
             function updateClock() {
                 const now = new Date();
                 const hours = String(now.getHours()).padStart(2, '0');
@@ -607,56 +585,6 @@
             }
             setInterval(updateClock, 1000);
             updateClock(); // Initial call
-
-            function renderMiniCalendar() {
-                const now = new Date();
-                const year = now.getFullYear();
-                const month = now.getMonth();
-
-                const monthNamesMini = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
-                const miniMonthLabel = document.getElementById('mini-calendar-month-year');
-                if (miniMonthLabel) miniMonthLabel.textContent = `${monthNamesMini[month]} ${year}`;
-
-                const firstDay = (new Date(year, month, 1)).getDay();
-                // 0=Sun, 1=Mon... we want Mon start.
-                let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
-                const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                const grid = document.getElementById('mini-calendar-grid');
-                if (!grid) return;
-
-                grid.innerHTML = '';
-
-                // Previous month padding
-                for (let i = 0; i < startOffset; i++) {
-                    const cell = document.createElement('div');
-                    cell.className = "h-6"; // spacer
-                    grid.appendChild(cell);
-                }
-
-                // Days
-                for (let d = 1; d <= daysInMonth; d++) {
-                    const cell = document.createElement('div');
-                    const isToday = (d === now.getDate());
-
-                    const currentDayOfWeek = new Date(year, month, d).getDay();
-                    const isWeekend = (currentDayOfWeek === 0 || currentDayOfWeek === 6);
-
-                    let baseClasses = "h-6 w-full flex items-center justify-center text-[10px] rounded-md font-medium transition-colors cursor-default";
-                    if (isToday) {
-                        baseClasses += " bg-blue-600 text-white font-bold shadow-sm shadow-blue-200";
-                    } else if (isWeekend) {
-                        baseClasses += " text-red-500 hover:bg-red-50";
-                    } else {
-                        baseClasses += " text-gray-600 hover:bg-gray-100";
-                    }
-
-                    cell.className = baseClasses;
-                    cell.textContent = d;
-                    grid.appendChild(cell);
-                }
-            }
-            renderMiniCalendar();
         });
     </script>
 @endsection
