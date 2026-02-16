@@ -517,9 +517,9 @@
                 const dateStr = dateObj.toLocaleDateString('id-ID', options);
 
                 let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-                                            ${dateStr}
-                                        </h5>`;
+                                                <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                                ${dateStr}
+                                            </h5>`;
 
                 if (events.length === 0) {
                     html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
@@ -540,14 +540,14 @@
                         }
 
                         html += `
-                                                    <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
-                                                        <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
-                                                        ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
-                                                            ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
-                                                        </p>` : ''}
-                                                    </div>
-                                                `;
+                                                        <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
+                                                            <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
+                                                            ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
+                                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
+                                                                ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
+                                                            </p>` : ''}
+                                                        </div>
+                                                    `;
                     });
                     html += `</div>`;
                 }
@@ -613,8 +613,7 @@
             const year = now.getFullYear();
             const month = now.getMonth();
 
-            const monthNamesMini = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September",
-                "Oktober", "November", "Desember"];
+            const monthNamesMini = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
             const miniMonthLabel = document.getElementById('mini-calendar-month-year');
             if (miniMonthLabel) miniMonthLabel.textContent = `${monthNamesMini[month]} ${year}`;
 
@@ -630,15 +629,34 @@
 
             // Previous month padding
             for (let i = 0; i < startOffset; i++) {
-                const cell = document.createElement('div'); cell.className = "h-6"; // spacer
+                const cell = document.createElement('div');
+                cell.className = "h-6"; // spacer
                 grid.appendChild(cell);
-            } // Days for(let d=1; d<=daysInMonth; d++) { const cell=document.createElement('div');
-            const isToday = (d === now.getDate()); const currentDayOfWeek = new Date(year, month, d).getDay(); const
-                isWeekend = (currentDayOfWeek === 0 || currentDayOfWeek === 6); let
-                    baseClasses = "h-6 w-full flex items-center justify-center text-[10px] rounded-md font-medium transition-colors cursor-default"
-                ; if (isToday) { baseClasses += " bg-blue-600 text-white font-bold shadow-sm shadow-blue-200"; } else if (isWeekend) {
+            }
+
+            // Days
+            for (let d = 1; d <= daysInMonth; d++) {
+                const cell = document.createElement('div');
+                const isToday = (d === now.getDate());
+
+                const currentDayOfWeek = new Date(year, month, d).getDay();
+                const isWeekend = (currentDayOfWeek === 0 || currentDayOfWeek === 6);
+
+                let baseClasses = "h-6 w-full flex items-center justify-center text-[10px] rounded-md font-medium transition-colors cursor-default";
+                if (isToday) {
+                    baseClasses += " bg-blue-600 text-white font-bold shadow-sm shadow-blue-200";
+                } else if (isWeekend) {
                     baseClasses += " text-red-500 hover:bg-red-50";
-                } else { baseClasses += " text-gray-600 hover:bg-gray-100"; }
-            cell.className = baseClasses; cell.textContent = d; grid.appendChild(cell);
-        } } renderMiniCalendar(); }); </script>
+                } else {
+                    baseClasses += " text-gray-600 hover:bg-gray-100";
+                }
+
+                cell.className = baseClasses;
+                cell.textContent = d;
+                grid.appendChild(cell);
+            }
+        }
+        renderMiniCalendar();
+            });
+    </script>
 @endsection
