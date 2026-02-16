@@ -322,10 +322,36 @@
                     </div>
                 </div>
                 <!-- Agenda / Events Section -->
-                <div class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b">
-                    <div id="selected-date-events" class="px-4">
+                <div
+                    class="md:py-8 py-5 md:px-16 px-5 dark:bg-gray-700 bg-gray-50 rounded-b flex flex-col md:flex-row gap-6 items-start">
+                    <div id="selected-date-events" class="px-4 flex-1 w-full">
                         <!-- Dynamic Event List -->
-                        <p class="text-center text-gray-400 text-sm">Pilih tanggal untuk melihat agenda.</p>
+                        <h5 class="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-blue-500"></div> Agenda Harian
+                        </h5>
+                        <div id="agenda-list-content">
+                            <p class="text-center text-gray-400 text-sm italic">Pilih tanggal untuk melihat agenda.</p>
+                        </div>
+                    </div>
+
+                    <!-- Mini Calendar (Bottom Right) -->
+                    <div class="bg-white rounded-xl p-4 border border-gray-200 w-full md:w-auto min-w-[240px] shadow-sm">
+                        <div class="flex items-center justify-between mb-3 border-b border-gray-100 pb-2">
+                            <span class="text-[11px] font-bold text-gray-500 uppercase tracking-wider"
+                                id="mini-calendar-month-year">...</span>
+                        </div>
+                        <div class="grid grid-cols-7 mb-2">
+                            <div class="text-[9px] font-bold text-center text-gray-400">S</div>
+                            <div class="text-[9px] font-bold text-center text-gray-400">S</div>
+                            <div class="text-[9px] font-bold text-center text-gray-400">R</div>
+                            <div class="text-[9px] font-bold text-center text-gray-400">K</div>
+                            <div class="text-[9px] font-bold text-center text-gray-400">J</div>
+                            <div class="text-[9px] font-bold text-center text-red-500">S</div>
+                            <div class="text-[9px] font-bold text-center text-red-500">M</div>
+                        </div>
+                        <div id="mini-calendar-grid" class="grid grid-cols-7 gap-1">
+                            <!-- Dynamic Days -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -503,15 +529,15 @@
             }
 
             function showEvents(events, day, month, year) {
-                const container = document.getElementById("selected-date-events");
+                const container = document.getElementById("agenda-list-content");
                 const dateObj = new Date(year, month, day);
                 const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
                 const dateStr = dateObj.toLocaleDateString('id-ID', options);
 
                 let html = `<h5 class="text-xs font-bold text-gray-800 mb-3 border-b border-gray-100 pb-2 flex items-center gap-2">
-                                                                                <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
-                                                                                ${dateStr}
-                                                                            </h5>`;
+                                                                                    <span class="w-1.5 h-1.5 rounded-full bg-[#D4AF37]"></span>
+                                                                                    ${dateStr}
+                                                                                </h5>`;
 
                 if (events.length === 0) {
                     html += `<p class="text-[10px] text-gray-400 italic text-center py-2">Tidak ada agenda.</p>`;
@@ -532,14 +558,14 @@
                         }
 
                         html += `
-                                                                                        <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
-                                                                                            <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
-                                                                                            ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
-                                                                                                <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
-                                                                                                ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
-                                                                                            </p>` : ''}
-                                                                                        </div>
-                                                                                    `;
+                                                                                            <div class="p-2 rounded-lg ${bgClass} border border-gray-100 ${borderClass} shadow-sm transition hover:shadow-md">
+                                                                                                <p class="text-[11px] font-bold text-gray-800 leading-tight">${e.title}</p>
+                                                                                                ${!isHoliday ? `<p class="text-[9px] text-gray-500 mt-1 font-medium flex items-center gap-1">
+                                                                                                    <svg xmlns="http://www.w3.org/2000/svg" class="w-3 h-3 opacity-70" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" /><path d="M12 12l3 2" /><path d="M12 7v5" /></svg>
+                                                                                                    ${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })} - ${e.end ? new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }) : 'Selesai'}
+                                                                                                </p>` : ''}
+                                                                                            </div>
+                                                                                        `;
                     });
                     html += `</div>`;
                 }
