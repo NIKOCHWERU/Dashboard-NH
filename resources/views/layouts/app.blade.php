@@ -90,18 +90,58 @@
                             <span :class="sidebarCollapsed ? 'hidden' : 'block'">Klien</span>
                         </a>
                     </li>
-                    <li>
-                        <a href="{{ route('files.index') }}"
-                            class="flex items-center px-4 py-2.5 text-gray-900 font-bold hover:bg-gray-100 rounded-lg {{ request()->routeIs('files.*') ? 'active-nav' : '' }}"
-                            :class="sidebarCollapsed ? 'justify-center transition-all' : ''">
+                    <li x-data="{ open: {{ request()->routeIs('files.*') ? 'true' : 'false' }} }">
+                        <button @click="open = !open"
+                            class="flex items-center w-full px-4 py-2.5 text-gray-900 font-bold hover:bg-gray-100 rounded-lg focus:outline-none"
+                            :class="{ 'active-nav': {{ request()->routeIs('files.*') ? 'true' : 'false' }}, 'justify-center transition-all': sidebarCollapsed }">
                             <svg class="w-5 h-5 flex-shrink-0" :class="sidebarCollapsed ? '' : 'mr-3'" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                                 </path>
                             </svg>
-                            <span :class="sidebarCollapsed ? 'hidden' : 'block'">Berkas</span>
-                        </a>
+                            <span :class="sidebarCollapsed ? 'hidden' : 'flex-1 text-left'">Berkas</span>
+                            <svg :class="{ 'rotate-180': open, 'hidden': sidebarCollapsed }"
+                                class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 9l-7 7-7-7">
+                                </path>
+                            </svg>
+                        </button>
+                        <!-- Sub-menu -->
+                        <ul x-show="open" x-transition:enter="transition ease-out duration-100"
+                            x-transition:enter-start="opacity-0 transform -translate-y-2"
+                            x-transition:enter-end="opacity-100 transform translate-y-0"
+                            x-transition:leave="transition ease-in duration-75"
+                            x-transition:leave-start="opacity-100 transform translate-y-0"
+                            x-transition:leave-end="opacity-0 transform -translate-y-2" class="space-y-1 mt-1"
+                            :class="sidebarCollapsed ? 'hidden' : ''">
+                            <li>
+                                <a href="{{ route('files.index') }}"
+                                    class="flex items-center pl-12 pr-4 py-2 text-sm text-gray-700 hover:text-primary rounded-lg transition-colors {{ request()->fullUrlIs(route('files.index')) ? 'text-primary font-bold bg-yellow-50' : '' }}">
+                                    Semua Berkas
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('files.index', ['category' => 'Retainer']) }}"
+                                    class="flex items-center pl-12 pr-4 py-2 text-sm text-gray-700 hover:text-primary rounded-lg transition-colors {{ request()->fullUrlIs(route('files.index', ['category' => 'Retainer'])) ? 'text-primary font-bold bg-yellow-50' : '' }}">
+                                    Retainer
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('files.index', ['category' => 'Perorangan']) }}"
+                                    class="flex items-center pl-12 pr-4 py-2 text-sm text-gray-700 hover:text-primary rounded-lg transition-colors {{ request()->fullUrlIs(route('files.index', ['category' => 'Perorangan'])) ? 'text-primary font-bold bg-yellow-50' : '' }}">
+                                    Klien Perorangan
+                                </a>
+                            </li>
+                            <li>
+                                <a href="{{ route('files.index', ['category' => 'Kantor Narasumber Hukum']) }}"
+                                    class="flex items-center pl-12 pr-4 py-2 text-sm text-gray-700 hover:text-primary rounded-lg transition-colors {{ request()->fullUrlIs(route('files.index', ['category' => 'Kantor Narasumber Hukum'])) ? 'text-primary font-bold bg-yellow-50' : '' }}">
+                                    Dokumen Internal
+                                </a>
+                            </li>
+                        </ul>
                     </li>
                     <li>
                         <a href="{{ route('events.index') }}"

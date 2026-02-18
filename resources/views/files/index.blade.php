@@ -243,7 +243,8 @@
                         </div>
                     </a>
                     @if(auth()->user()->isAdmin())
-                        <button onclick="confirmDeleteFolder('{{ $folder->description }}', {{ $folder->count }}, {{ $client->id }})"
+                        <button
+                            onclick="confirmDeleteFolder({{ json_encode($folder->description) }}, {{ $folder->count }}, {{ $client->id }})"
                             class="absolute -top-2 -right-2 bg-white text-red-500 hover:bg-red-500 hover:text-white p-1.5 rounded-full shadow-lg border border-red-100 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                             title="Hapus Folder">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -254,7 +255,7 @@
                         </button>
                     @endif
                     <!-- Email Folder Button -->
-                    <button onclick="emailFolder({{ $client->id }}, '{{ $folder->description }}')"
+                    <button onclick="emailFolder({{ $client->id }}, {{ json_encode($folder->description) }})"
                         class="absolute -top-2 -left-2 bg-white text-blue-600 hover:bg-blue-600 hover:text-white p-1.5 rounded-full shadow-lg border border-blue-100 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         title="Email Link Folder">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -490,11 +491,11 @@
                             const summary = document.createElement('div');
                             summary.className = 'mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg sticky top-0 z-10'; // Sticky summary
                             summary.innerHTML = `
-                                                                <div class="flex items-center justify-between text-xs">
-                                                                    <span class="font-bold text-blue-800">📁 ${this.files.length} file dipilih</span>
-                                                                    <span class="font-semibold text-blue-600">Total: ${formatSize(totalSize)}</span>
-                                                                </div>
-                                                            `;
+                                                                        <div class="flex items-center justify-between text-xs">
+                                                                            <span class="font-bold text-blue-800">📁 ${this.files.length} file dipilih</span>
+                                                                            <span class="font-semibold text-blue-600">Total: ${formatSize(totalSize)}</span>
+                                                                        </div>
+                                                                    `;
                             fileList.appendChild(summary);
 
                             Array.from(this.files).forEach((file, index) => {
@@ -542,14 +543,14 @@
                                 const item = document.createElement('div');
                                 item.className = 'text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 mb-2';
                                 item.innerHTML = `
-                                                                    <div class="flex justify-between mb-1">
-                                                                        <span class="truncate w-1/2 font-medium">${file.name}</span>
-                                                                        <span id="${progressId}-status" class="font-bold text-primary">Menunggu...</span>
-                                                                    </div>
-                                                                    <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                                                        <div id="${progressId}-bar" class="bg-primary h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-                                                                    </div>
-                                                                `;
+                                                                            <div class="flex justify-between mb-1">
+                                                                                <span class="truncate w-1/2 font-medium">${file.name}</span>
+                                                                                <span id="${progressId}-status" class="font-bold text-primary">Menunggu...</span>
+                                                                            </div>
+                                                                            <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                                                                <div id="${progressId}-bar" class="bg-primary h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                                                            </div>
+                                                                        `;
                                 progressList.appendChild(item);
                                 item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
@@ -715,7 +716,8 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($file->size / 1024, 2) }}
                                 KB</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $file->created_at->format('d M Y H:i') }}</td>
+                                {{ $file->created_at->format('d M Y H:i') }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" onclick="event.stopPropagation()">
                                 <div class="flex items-center gap-2">
                                     <a href="{{ route('files.download', $file) }}" class="text-green-600 hover:text-green-900"
@@ -828,111 +830,111 @@
             }
 
             async function copyToClipboardAndOpenGmail(items, confirmMessage) {
-                                if (items.length === 0) {
-                                    alert('Tidak ada file untuk di-email.');
-                                    return;
-                                }
+                if (items.length === 0) {
+                    alert('Tidak ada file untuk di-email.');
+                    return;
+                }
 
-                                if (!confirm(confirmMessage)) return;
+                if (!confirm(confirmMessage)) return;
 
-                                // Icons
-                                const iconDoc = "https://img.icons8.com/color/48/document--v1.png";
-                                const iconImg = "https://img.icons8.com/color/48/image-file.png";
+                // Icons
+                const iconDoc = "https://img.icons8.com/color/48/document--v1.png";
+                const iconImg = "https://img.icons8.com/color/48/image-file.png";
 
-                                let htmlContent = "<ul style='list-style: none; padding-left: 0;'>";
-                                let textContent = "";
+                let htmlContent = "<ul style='list-style: none; padding-left: 0;'>";
+                let textContent = "";
 
-                                items.forEach(item => {
-                                    const iconUrl = item.isImage ? iconImg : iconDoc;
-                                    htmlContent += `
-                                        <li style="margin-bottom: 8px; display: flex; align-items: center;">
-                                            <img src="${iconUrl}" width="24" height="24" style="vertical-align: middle; margin-right: 10px;">
-                                            <a href="${item.link}" style="color: #1a0dab; text-decoration: none; font-weight: bold;">${item.name}</a>
-                                        </li>`;
-                                    textContent += `- ${item.name}: ${item.link}\n`;
-                                });
-                                htmlContent += "</ul>";
+                items.forEach(item => {
+                    const iconUrl = item.isImage ? iconImg : iconDoc;
+                    htmlContent += `
+                                                <li style="margin-bottom: 8px; display: flex; align-items: center;">
+                                                    <img src="${iconUrl}" width="24" height="24" style="vertical-align: middle; margin-right: 10px;">
+                                                    <a href="${item.link}" style="color: #1a0dab; text-decoration: none; font-weight: bold;">${item.name}</a>
+                                                </li>`;
+                    textContent += `- ${item.name}: ${item.link}\n`;
+                });
+                htmlContent += "</ul>";
 
-                                try {
-                                    const htmlBlob = new Blob([htmlContent], { type: "text/html" });
-                                    const textBlob = new Blob([textContent], { type: "text/plain" });
+                try {
+                    const htmlBlob = new Blob([htmlContent], { type: "text/html" });
+                    const textBlob = new Blob([textContent], { type: "text/plain" });
 
-                                    await navigator.clipboard.write([
-                                        new ClipboardItem({
-                                            "text/html": htmlBlob,
-                                            "text/plain": textBlob
-                                        })
-                                    ]);
+                    await navigator.clipboard.write([
+                        new ClipboardItem({
+                            "text/html": htmlBlob,
+                            "text/plain": textBlob
+                        })
+                    ]);
 
-                                    // Open Gmail automatically
-                                    const subject = encodeURIComponent("Berkas Pilihan");
-                                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}`;
-                                    window.open(gmailUrl, '_blank');
+                    // Open Gmail automatically
+                    const subject = encodeURIComponent("Berkas Pilihan");
+                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}`;
+                    window.open(gmailUrl, '_blank');
 
-                                } catch (err) {
-                                    console.error('Gagal menyalin:', err);
-                                    alert('Gagal menyalin otomatis. Membuka Gmail dengan teks biasa.');
-                                    const subject = encodeURIComponent("Berkas Pilihan");
-                                    const body = encodeURIComponent(textContent);
-                                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
-                                    window.open(gmailUrl, '_blank');
-                                }
-                            }
+                } catch (err) {
+                    console.error('Gagal menyalin:', err);
+                    alert('Gagal menyalin otomatis. Membuka Gmail dengan teks biasa.');
+                    const subject = encodeURIComponent("Berkas Pilihan");
+                    const body = encodeURIComponent(textContent);
+                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&su=${subject}&body=${body}`;
+                    window.open(gmailUrl, '_blank');
+                }
+            }
 
-                            // Bulk Email (from Checkboxes)
-                            function emailLinks() {
-                                const checked = document.querySelectorAll('.file-checkbox:checked');
-                                if (checked.length === 0) {
-                                    alert('Pilih minimal satu file.');
-                                    return;
-                                }
+            // Bulk Email (from Checkboxes)
+            function emailLinks() {
+                const checked = document.querySelectorAll('.file-checkbox:checked');
+                if (checked.length === 0) {
+                    alert('Pilih minimal satu file.');
+                    return;
+                }
 
-                                const items = Array.from(checked).map(cb => ({
-                                    name: cb.getAttribute('data-file-name'),
-                                    link: cb.getAttribute('data-file-link'),
-                                    isImage: cb.getAttribute('data-file-is-image') === '1'
-                                }));
+                const items = Array.from(checked).map(cb => ({
+                    name: cb.getAttribute('data-file-name'),
+                    link: cb.getAttribute('data-file-link'),
+                    isImage: cb.getAttribute('data-file-is-image') === '1'
+                }));
 
-                                const msg = 'Agar link BISA DIKLIK, sistem akan menyalinnya ke Clipboard.\n\nKlik OK, lalu Paste (Ctrl+V) di Gmail.';
-                                copyToClipboardAndOpenGmail(items, msg);
-                            }
+                const msg = 'Agar link BISA DIKLIK, sistem akan menyalinnya ke Clipboard.\n\nKlik OK, lalu Paste (Ctrl+V) di Gmail.';
+                copyToClipboardAndOpenGmail(items, msg);
+            }
 
-                            // Folder Email (from API)
-                            async function emailFolder(clientId, folderName) {
-                                const btn = event.currentTarget;
-                                const oldHtml = btn.innerHTML;
-                                btn.disabled = true;
-                                // Spin icon
-                                btn.innerHTML = '<svg class="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
+            // Folder Email (from API)
+            async function emailFolder(clientId, folderName) {
+                const btn = event.currentTarget;
+                const oldHtml = btn.innerHTML;
+                btn.disabled = true;
+                // Spin icon
+                btn.innerHTML = '<svg class="animate-spin h-4 w-4 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>';
 
-                                try {
-                                    let url = `{{ route('files.folder-links') }}?client_id=${clientId}`;
-                                    if (folderName) url += `&folder=${encodeURIComponent(folderName)}`;
+                try {
+                    let url = `{{ route('files.folder-links') }}?client_id=${clientId}`;
+                    if (folderName) url += `&folder=${encodeURIComponent(folderName)}`;
 
-                                    const resp = await fetch(url);
-                                    if (!resp.ok) throw new Error('Network response was not ok');
+                    const resp = await fetch(url);
+                    if (!resp.ok) throw new Error('Network response was not ok');
 
-                                    const data = await resp.json();
-                                    if (data.error) throw new Error(data.error);
+                    const data = await resp.json();
+                    if (data.error) throw new Error(data.error);
 
-                                    const items = data.files.map(f => ({
-                                        name: f.name,
-                                        link: f.link,
-                                        isImage: f.is_image
-                                    }));
+                    const items = data.files.map(f => ({
+                        name: f.name,
+                        link: f.link,
+                        isImage: f.is_image
+                    }));
 
-                                    const msg = `Email ${data.count} file dari folder "${data.folder}"?\n\nSistem akan menyalin link ke Clipboard. Klik OK lalu Paste di Gmail.`;
-                                    copyToClipboardAndOpenGmail(items, msg);
+                    const msg = `Email ${data.count} file dari folder "${data.folder}"?\n\nSistem akan menyalin link ke Clipboard. Klik OK lalu Paste di Gmail.`;
+                    copyToClipboardAndOpenGmail(items, msg);
 
-                                } catch (err) {
-                                    console.error(err);
-                                    alert('Gagal mengambil data folder.');
-                                } finally {
-                                    btn.disabled = false;
-                                    btn.innerHTML = oldHtml;
-                                }
-                            }
-                        </script>
+                } catch (err) {
+                    console.error(err);
+                    alert('Gagal mengambil data folder.');
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = oldHtml;
+                }
+            }
+        </script>
     @endif
 
 
