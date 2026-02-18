@@ -139,27 +139,34 @@
                 <div class="px-6 pb-6 pt-4 border-t border-gray-100 bg-gray-50/30">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Cuti -->
-                         <div>
-                            <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                        <div>
+                            <h4
+                                class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-red-500"></span> Cuti Bulan Ini
                             </h4>
                             <div class="space-y-3">
                                 @forelse($leaves as $leave)
-                                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-red-50 hover:border-red-200 transition-all shadow-sm">
+                                    <div
+                                        class="flex items-center gap-3 p-3 rounded-xl bg-white border border-red-50 hover:border-red-200 transition-all shadow-sm">
                                         <div class="relative">
-                                            <div class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
+                                            <div
+                                                class="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center overflow-hidden border-2 border-white shadow-sm">
                                                 @if($leave->user && $leave->user->photo)
-                                                    <img src="{{ asset('storage/' . $leave->user->photo) }}" alt="{{ $leave->user->name }}" class="w-full h-full object-cover">
+                                                    <img src="{{ asset('storage/' . $leave->user->photo) }}"
+                                                        alt="{{ $leave->user->name }}" class="w-full h-full object-cover">
                                                 @else
-                                                    <span class="text-xs font-bold text-gray-500">{{ substr($leave->title, 0, 2) }}</span>
+                                                    <span
+                                                        class="text-xs font-bold text-gray-500">{{ substr($leave->title, 0, 2) }}</span>
                                                 @endif
                                             </div>
-                                            <span class="absolute bottom-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
+                                            <span
+                                                class="absolute bottom-0 right-0 w-3 h-3 bg-red-500 border-2 border-white rounded-full"></span>
                                         </div>
                                         <div class="min-w-0">
                                             <h5 class="text-xs font-bold text-black truncate">{{ $leave->title }}</h5>
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
-                                                {{ $leave->start->format('d M') }} - {{ $leave->end ? $leave->end->format('d M') : 'Sehari' }}
+                                                {{ $leave->start->format('d M') }} -
+                                                {{ $leave->end ? $leave->end->format('d M') : 'Sehari' }}
                                             </p>
                                         </div>
                                     </div>
@@ -170,20 +177,27 @@
                         </div>
                         <!-- Meetings -->
                         <div>
-                            <h4 class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
+                            <h4
+                                class="text-[11px] font-bold text-black uppercase tracking-widest mb-4 flex items-center gap-2">
                                 <span class="w-2 h-2 rounded-full bg-green-500"></span> Meeting & Agenda
                             </h4>
-                             <div class="space-y-3">
+                            <div class="space-y-3">
                                 @forelse($upcomingMeetings as $meeting)
-                                    <div class="flex items-center gap-3 p-3 rounded-xl bg-white border border-green-50 hover:border-green-200 transition-all shadow-sm group">
-                                        <div class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex flex-col items-center justify-center flex-shrink-0 border border-green-100">
-                                            <span class="text-[8px] font-bold uppercase">{{ $meeting->start->format('M') }}</span>
+                                    <div
+                                        class="flex items-center gap-3 p-3 rounded-xl bg-white border border-green-50 hover:border-green-200 transition-all shadow-sm group">
+                                        <div
+                                            class="w-10 h-10 rounded-lg bg-green-50 text-green-600 flex flex-col items-center justify-center flex-shrink-0 border border-green-100">
+                                            <span
+                                                class="text-[8px] font-bold uppercase">{{ $meeting->start->format('M') }}</span>
                                             <span class="text-sm font-black">{{ $meeting->start->format('d') }}</span>
                                         </div>
                                         <div class="min-w-0">
-                                            <h5 class="text-xs font-bold text-black truncate group-hover:text-green-600 transition-colors">{{ $meeting->title }}</h5>
+                                            <h5
+                                                class="text-xs font-bold text-black truncate group-hover:text-green-600 transition-colors">
+                                                {{ $meeting->title }}</h5>
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
-                                                {{ $meeting->start->format('H:i') }} • {{ $meeting->user ? $meeting->user->name : 'System' }}
+                                                {{ $meeting->start->format('H:i') }} •
+                                                {{ $meeting->user ? $meeting->user->name : 'System' }}
                                             </p>
                                         </div>
                                     </div>
@@ -196,11 +210,15 @@
                 </div>
             </div>
 
-             <!-- Contract Deadlines Alert -->
+            <!-- Contract Deadlines Alert -->
             @if($contractDeadlines->count() > 0)
                 <div class="bg-white rounded-xl shadow-sm border border-red-100 overflow-hidden">
                     <div class="px-6 py-4 bg-red-50 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z">
+                            </path>
+                        </svg>
                         <h3 class="text-red-800 font-bold text-sm">Deadline Kontrak</h3>
                     </div>
                     <div class="divide-y divide-red-50">
@@ -208,7 +226,8 @@
                             <div class="px-6 py-4 flex justify-between items-center hover:bg-red-50/30 transition-colors">
                                 <span class="text-xs font-bold text-black">{{ $client->name }}</span>
                                 <div class="text-right">
-                                    <p class="text-[10px] font-bold text-red-600 uppercase">{{ $client->retainer_contract_end->format('d/m/y') }}</p>
+                                    <p class="text-[10px] font-bold text-red-600 uppercase">
+                                        {{ $client->retainer_contract_end->format('d/m/y') }}</p>
                                 </div>
                             </div>
                         @endforeach
@@ -222,34 +241,55 @@
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-fit">
                 <div class="px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
                         File Berkas
                     </h3>
-                    <span class="text-[10px] uppercase font-bold tracking-widest bg-gray-100 text-gray-500 px-2 py-0.5 rounded">Retainer</span>
+                    <span
+                        class="text-[10px] uppercase font-bold tracking-widest bg-gray-100 text-gray-500 px-2 py-0.5 rounded">Retainer</span>
                 </div>
                 <div class="p-6 grid grid-cols-1 gap-4">
-                     <!-- Folder Item 1 -->
-                    <a href="{{ route('files.index', ['category' => 'perorangan']) }}" class="group flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 transition-all">
-                        <div class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z"></path></svg>
+                    <!-- Folder Item 1 -->
+                    <a href="{{ route('files.index', ['category' => 'perorangan']) }}"
+                        class="group flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 transition-all">
+                        <div
+                            class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z">
+                                </path>
+                            </svg>
                         </div>
                         <div>
                             <h4 class="font-bold text-gray-800 group-hover:text-blue-700">Klien Perorangan</h4>
                             <p class="text-xs text-gray-500">Berkas klien individu</p>
                         </div>
-                        <svg class="w-5 h-5 text-gray-300 ml-auto group-hover:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <svg class="w-5 h-5 text-gray-300 ml-auto group-hover:text-blue-400" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </a>
-    
-                     <!-- Folder Item 2 -->
-                    <a href="{{ route('files.index', ['category' => 'kantor']) }}" class="group flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 transition-all">
-                        <div class="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path></svg>
+
+                    <!-- Folder Item 2 -->
+                    <a href="{{ route('files.index', ['category' => 'kantor']) }}"
+                        class="group flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 transition-all">
+                        <div
+                            class="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                            </svg>
                         </div>
                         <div>
                             <h4 class="font-bold text-gray-800 group-hover:text-indigo-700">Kantor Narasumber Hukum</h4>
                             <p class="text-xs text-gray-500">Dokumen internal kantor</p>
                         </div>
-                         <svg class="w-5 h-5 text-gray-300 ml-auto group-hover:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+                        <svg class="w-5 h-5 text-gray-300 ml-auto group-hover:text-indigo-400" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                        </svg>
                     </a>
                 </div>
             </div>
@@ -259,11 +299,32 @@
     <!-- Bottom Row: Calendar & Agenda -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
         <!-- Left: Calendar (Smaller - 5 cols) -->
-        <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-            <h5 class="text-sm font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-blue-500"></span> Kalender
-            </h5>
-            <div class="overflow-x-auto">
+        <div class="lg:col-span-5 bg-white rounded-xl shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-4 px-5 pt-5">
+                <h5 class="text-sm font-bold text-gray-800 flex items-center gap-2">
+                    <span class="w-2 h-2 rounded-full bg-blue-500"></span>
+                    Kalender
+                </h5>
+                <div class="flex items-center gap-2 bg-gray-50 rounded-lg p-1">
+                    <button id="prev-month-calendar"
+                        class="p-1 hover:bg-white hover:shadow-sm rounded-md text-gray-600 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" fill="none">
+                            <path d="M15 6l-6 6l6 6" />
+                        </svg>
+                    </button>
+                    <span id="calendar-month-year"
+                        class="text-xs font-bold text-gray-700 min-w-[100px] text-center uppercase tracking-wide"></span>
+                    <button id="next-month-calendar"
+                        class="p-1 hover:bg-white hover:shadow-sm rounded-md text-gray-600 transition">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" stroke-width="2"
+                            stroke="currentColor" fill="none">
+                            <path d="M9 6l6 6l-6 6" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+            <div class="overflow-x-auto px-5 pb-5">
                 <table class="w-full border-collapse">
                     <tbody id="calendar-body"></tbody>
                 </table>
@@ -272,32 +333,44 @@
 
         <!-- Right: Agenda List (Larger - 7 cols) -->
         <div class="lg:col-span-7 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-                <div class="flex items-center justify-between mb-4">
+            <div class="flex items-center justify-between mb-4">
                 <button id="prev-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M15 6l-6 6l6 6" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" fill="none">
+                        <path d="M15 6l-6 6l6 6" />
+                    </svg>
                 </button>
-                <h4 id="agenda-month-year" class="text-lg font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">Agenda</h4>
+                <h4 id="agenda-month-year"
+                    class="text-lg font-bold text-gray-800 uppercase tracking-widest flex items-center gap-2">Agenda</h4>
                 <button id="next-month-agenda" class="p-2 hover:bg-gray-200 rounded-full text-gray-600 transition">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none"><path d="M9 6l6 6l-6 6" /></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" stroke-width="2"
+                        stroke="currentColor" fill="none">
+                        <path d="M9 6l6 6l-6 6" />
+                    </svg>
                 </button>
             </div>
             <div id="agenda-list-content" class="space-y-4 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
-                    <p class="text-center text-gray-400 text-sm italic py-10">Memuat agenda...</p>
+                <p class="text-center text-gray-400 text-sm italic py-10">Memuat agenda...</p>
             </div>
         </div>
     </div>
 
     <!-- Modal Daily Agenda -->
-    <div id="daily-agenda-modal" class="fixed inset-0 z-[100] hidden relative z-50" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeModal()"></div>
+    <div id="daily-agenda-modal" class="fixed inset-0 z-[100] hidden relative z-50" aria-labelledby="modal-title"
+        role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity backdrop-blur-sm" onclick="closeModal()">
+        </div>
         <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
             <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
-                <div class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
+                <div
+                    class="relative transform overflow-hidden rounded-lg bg-white text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg">
                     <div class="bg-white px-4 pb-4 pt-5 sm:p-6 sm:pb-4">
                         <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
                             <h3 class="text-lg font-bold text-gray-900" id="modal-date-title">Agenda</h3>
-                            <button type="button" onclick="closeModal()" class="text-gray-400 hover:text-gray-500 focus:outline-none">
-                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <button type="button" onclick="closeModal()"
+                                class="text-gray-400 hover:text-gray-500 focus:outline-none">
+                                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                                    stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                             </button>
@@ -310,283 +383,381 @@
             </div>
         </div>
 
-    <!-- Chart.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        // Modal Functions (Global scope for onclick)
-        function closeModal() {
-            document.getElementById('daily-agenda-modal').classList.add('hidden');
-        }
-            document.addEventListener('DOMContentLoaded', function                      () {
-                        // Storage Chart
-                        const ctx = document.getElementById('storageChartSmall').getContext('2d');
-                        const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
-                        const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
-                        const freeGb = Math.max(0, limitGb - usageGb);
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Modal Functions (Global scope for onclick)
+            function closeModal() {
+                document.getElementById('daily-agenda-modal').classList.add('hidden');
+            }
+            document.addEventListener('DOMContentLoaded', function () {
+                // Storage Chart
+                const ctx = document.getElementById('storageChartSmall').getContext('2d');
+                const usageGb = {{ number_format($stats['storage']['usage'] / 1024 / 1024 / 1024, 2, '.', '') }};
+                const limitGb = {{ number_format($stats['storage']['limit'] / 1024 / 1024 / 1024, 2, '.', '') }};
+                const freeGb = Math.max(0, limitGb - usageGb);
 
-                        new Chart(ctx, {
-                            type: 'doughnut',
-                            data: {
-                                labels: ['Used', 'Free'],
-                                datasets: [{
-                                    data: [usageGb, freeGb],
-                                    backgroundColor: ['#ef4444', '#22c55e'],
-                                    borderWidth: 0,
-                                    hoverOffset: 4
-                                }]
-                            },
-                            options: {
-                                responsive: true,
-                                maintainAspectRatio: false,
-                                plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
-                                cutout: '65%',
-                            }
-                        });
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Used', 'Free'],
+                        datasets: [{
+                            data: [usageGb, freeGb],
+                            backgroundColor: ['#ef4444', '#22c55e'],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false }, tooltip: { callbacks: { label: function (context) { return context.label + ': ' + context.raw.toFixed(2) + ' GB'; } } } },
+                        cutout: '65%',
+                    }
+                });
 
-                        // --- Custom Calendar & Agenda Logic ---
-                        const calendarEvents = @json($calendarEvents);
-                        let currentMonth = new Date().getMonth();
-                        let currentYear = new Date().getFullYear();
-                        const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
+                // --- Custom Calendar & Agenda Logic ---
+                const calendarEvents = @json($calendarEvents);
+                let currentMonth = new Date().getMonth();
+                let currentYear = new Date().getFullYear();
+                const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
 
-                        // Render Large Calendar Grid (Just the grid, no headers as requested)
-                        function renderCalendarGrid(month, year) {
-                            const firstDay = (new Date(year, month)).getDay();
-                            let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
-                            const daysInMonth = 32 - new Date(year, month, 32).getDate();
-                            const tbl = document.getElementById("calendar-body");
+                // Render Large Calendar Grid (Just the grid, no headers as requested)
+                function renderCalendarGrid(month, year) {
+                    // Update Header
+                    const calTitle = document.getElementById("calendar-month-year");
+                    if (calTitle) calTitle.innerText = `${monthNames[month]} ${year}`;
 
-                            if(tbl) tbl.innerHTML = "";
+                    const firstDay = (new Date(year, month)).getDay();
+                    let startOffset = (firstDay === 0 ? 6 : firstDay - 1);
+                    const daysInMonth = 32 - new Date(year, month, 32).getDate();
+                    const tbl = document.getElementById("calendar-body");
 
-                            let date = 1;
-                            for (let i = 0; i < 6; i++) {
-                                const row = document.createElement("tr");
-                                if (date > daysInMonth) break;
+                    if (tbl) tbl.innerHTML = "";
 
-                                for (let j = 0; j < 7; j++) {
-                                    const cell = document.createElement("td");
-                                    cell.className = "w-14 h-14 border border-gray-200 align-top relative hover:bg-gray-50 transition cursor-pointer";
+                    let date = 1;
+                    for (let i = 0; i < 6; i++) {
+                        const row = document.createElement("tr");
+                        if (date > daysInMonth) break;
 
-                                    if (i === 0 && j < startOffset) {
-                                        cell.appendChild(document.createTextNode(""));
-                                    } else if (date > daysInMonth) {
-                                        cell.appendChild(document.createTextNode(""));
-                                    } else {
-                                        const dayVal = date;
+                        for (let j = 0; j < 7; j++) {
+                            const cell = document.createElement("td");
+                            cell.className = "w-14 h-14 border border-gray-200 align-top relative hover:bg-gray-50 transition cursor-pointer";
 
-                                        // Container
-                                        const con = document.createElement("div");
-                                        con.className = "w-full h-full flex flex-col items-center justify-start py-1";
+                            if (i === 0 && j < startOffset) {
+                                cell.appendChild(document.createTextNode(""));
+                            } else if (date > daysInMonth) {
+                                cell.appendChild(document.createTextNode(""));
+                            } else {
+                                const currentDay = date; // Capture for closure
+                                const currentMonth = month;
+                                const currentYear = year;
 
-                                        // Date Number
-                                        const span = document.createElement("span");
-                                        span.innerText = date;
-                                        span.className = "text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1";
+                                cell.onclick = () => showDailyAgenda(currentYear, currentMonth, currentDay);
 
-                                        // Highlight Today
-                                        const today = new Date();
-                                        if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
-                                            span.classList.add("bg-[#D4AF37]", "text-white", "font-bold", "shadow-sm");
-                                        } else if (j === 5 || j === 6) { 
-                                            span.classList.add("text-red-500");
-                                            cell.classList.add("bg-red-50/20");
-                                        }
+                                // Container
+                                const con = document.createElement("div");
+                                con.className = "w-full h-full flex flex-col items-center justify-start py-1";
 
-                                        // Check events for dots/colors
-                                        const checkDate = new Date(year, month, date);
-                                        checkDate.setHours(0,0,0,0);
-                                         const dayEvents = calendarEvents.filter(e => {
-                                            const startData = new Date(e.start);
-                                            startData.setHours(0, 0, 0, 0);
-                                            const endData = e.end ? new Date(e.end) : new Date(startData);
-                                            endData.setHours(0, 0, 0, 0);
-                                            return checkDate >= startData && checkDate <= endData;
-                                        });
+                                // Date Number
+                                const span = document.createElement("span");
+                                span.innerText = date;
+                                span.className = "text-sm font-medium w-6 h-6 flex items-center justify-center rounded-full mb-1";
 
-                                         // Holiday Red
-                                        const isHoliday = dayEvents.some(e => e.extendedProps && e.extendedProps.isHoliday);
-                                        if (isHoliday && !span.classList.contains("bg-[#D4AF37]")) {
-                                            span.classList.add("text-red-500", "font-bold");
-                                            cell.classList.add("bg-red-50/20");
-                                        }
-
-                                        con.appendChild(span);
-                                         // Dots
-                                        if (dayEvents.length > 0) {
-                                            const dotsDiv = document.createElement("div");
-                                            dotsDiv.className = "flex gap-0.5 justify-center flex-wrap px-1";
-                                            dayEvents.slice(0, 4).forEach(evt => {
-                                                const dot = document.createElement("div");
-                                                let dotColor = evt.backgroundColor || '#3b82f6';
-                                                if (evt.extendedProps && evt.extendedProps.isHoliday) dotColor = '#ef4444';
-                                                else if (evt.title.toLowerCase().includes('cuti')) dotColor = '#ef4444';
-                                                dot.className = "w-1.5 h-1.5 rounded-full";
-                                                dot.style.backgroundColor = dotColor;
-                                                dotsDiv.appendChild(dot);
-                                            });
-                                            con.appendChild(dotsDiv);
-                                        }
-                                        cell.appendChild(con);
-                                        date++;
-                                    }
-                                    row.appendChild(cell);
+                                // Highlight Today
+                                const today = new Date();
+                                if (date === today.getDate() && year === today.getFullYear() && month === today.getMonth()) {
+                                    span.classList.add("bg-[#D4AF37]", "text-white", "font-bold", "shadow-sm");
+                                } else if (j === 5 || j === 6) {
+                                    span.classList.add("text-red-500");
+                                    cell.classList.add("bg-red-50/20");
                                 }
-                                if(tbl) tbl.appendChild(row);
-                            }
-                        }
 
-                        // Render Monthly Agenda List
-                        function renderAgendaList(month, year) {
-                            const container = document.getElementById("agenda-list-content");
-                            const header = document.getElementById("agenda-month-year");
-                            if(!container || !header) return;
-
-                            // Update Header
-                            header.innerHTML = `<div class="w-2 h-2 rounded-full bg-blue-500"></div> Agenda ${monthNames[month]} ${year}`;
-
-                            // Filter events for this month
-                            const startOfMonth = new Date(year, month, 1);
-                            const endOfMonth = new Date(year, month + 1, 0);
-
-                            const monthEvents = calendarEvents.filter(e => {
-                                const start = new Date(e.start);
-                                // Check if event overlaps with this month
-                                const end = e.end ? new Date(e.end) : new Date(start);
-                                return start <= endOfMonth && end >= startOfMonth;
-                            });
-
-                            if(monthEvents.length === 0) {
-                                container.innerHTML = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
-                                return;
-                            }
-
-                            // Group by Date
-                            // We iterate through every day of the month to show empty days? 
-                            // User input: "Agenda Harian... Selasa, 17 Februari 2026... Kunjungan...". 
-                            // Likely only dates with events should be shown to be compact, or maybe all?
-                            // Given "Agenda Monthly List", usually only dates with events are shown.
-                            // Converting to map: DateString -> [Events]
-
-                            // Better approach: Sort events by start date, then group.
-                            monthEvents.sort((a,b) => new Date(a.start) - new Date(b.start));
-
-                            // But we need to handle multi-day events appearing on each day? 
-                            // For simplicity and "Agenda Harian" style, let's group by start date for now, 
-                            // OR duplicate multi-day events across days?
-                            // "Tahun Baru Imlek... dengan agenda selama bulan ini"
-                            // Let's iterate days of month and check events for each day.
-
-                            let html = "";
-                            const today = new Date();
-                            today.setHours(0,0,0,0);
-
-                            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-                            for(let d=1; d<=daysInMonth; d++) {
-                                const currentDt = new Date(year, month, d);
-                                // Check events for this day
-                                 const dayEvents = monthEvents.filter(e => {
-                                    const s = new Date(e.start); s.setHours(0,0,0,0);
-                                    const end = e.end ? new Date(e.end) : new Date(s); end.setHours(0,0,0,0);
-                                    return currentDt >= s && currentDt <= end;
+                                // Check events for dots/colors
+                                const checkDate = new Date(year, month, date);
+                                checkDate.setHours(0, 0, 0, 0);
+                                const dayEvents = calendarEvents.filter(e => {
+                                    const startData = new Date(e.start);
+                                    startData.setHours(0, 0, 0, 0);
+                                    const endData = e.end ? new Date(e.end) : new Date(startData);
+                                    endData.setHours(0, 0, 0, 0);
+                                    return checkDate >= startData && checkDate <= endData;
                                 });
 
-                                if(dayEvents.length > 0) {
-                                    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                                    const dateStr = currentDt.toLocaleDateString('id-ID', options);
-                                    const isPast = currentDt < today;
-
-                                    html += `
-                                    <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
-                                        <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
-                                            <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
-                                            ${dateStr}
-                                        </h5>
-                                        <div class="space-y-2">`;
-
-                                        dayEvents.forEach(e => {
-                                            const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
-                                            const isCuti = e.title.toLowerCase().includes('cuti') || e.extendedProps.type === 'leave';
-
-                                            let contentClass = "text-gray-800";
-                                            if(isPast) {
-                                                contentClass = "line-through grayscale opacity-70";
-                                                if(isCuti) contentClass += " text-red-400"; // Red but muted if past
-                                                else contentClass += " text-gray-400";
-                                            } else {
-                                                if(isCuti) contentClass = "text-red-600 font-bold";
-                                            }
-
-                                            // Specific styling requests
-                                            const timeStr = isHoliday ? '' : 
-                                                `${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` + 
-                                                (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
-
-                                            html += `
-                                                <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
-                                                    <p class="font-bold text-sm mb-1">${e.title}</p>
-                                                    ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
-                                                </div>
-                                            `;
-                                        });
-
-                                    html += `</div></div>`;
+                                // Holiday Red
+                                const isHoliday = dayEvents.some(e => e.extendedProps && e.extendedProps.isHoliday);
+                                if (isHoliday && !span.classList.contains("bg-[#D4AF37]")) {
+                                    span.classList.add("text-red-500", "font-bold");
+                                    cell.classList.add("bg-red-50/20");
                                 }
-                            }
 
-                            if(html === "") html = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
-                            container.innerHTML = html;
+                                con.appendChild(span);
+                                // Dots
+                                if (dayEvents.length > 0) {
+                                    const dotsDiv = document.createElement("div");
+                                    dotsDiv.className = "flex gap-0.5 justify-center flex-wrap px-1";
+                                    dayEvents.slice(0, 4).forEach(evt => {
+                                        const dot = document.createElement("div");
+                                        let dotColor = evt.backgroundColor || '#3b82f6';
+                                        if (evt.extendedProps && evt.extendedProps.isHoliday) dotColor = '#ef4444';
+                                        else if (evt.title.toLowerCase().includes('cuti')) dotColor = '#ef4444';
+                                        dot.className = "w-1.5 h-1.5 rounded-full";
+                                        dot.style.backgroundColor = dotColor;
+                                        dotsDiv.appendChild(dot);
+                                    });
+                                    con.appendChild(dotsDiv);
+                                }
+                                cell.appendChild(con);
+                                date++;
+                            }
+                            row.appendChild(cell);
                         }
+                        if (tbl) tbl.appendChild(row);
+                    }
+                }
 
-                        // Navigation Handlers
-                         const prevBtn = document.getElementById("prev-month-agenda");
-                         const nextBtn = document.getElementById("next-month-agenda");
+                // Render Monthly Agenda List
+                function renderAgendaList(month, year) {
+                    const container = document.getElementById("agenda-list-content");
+                    const header = document.getElementById("agenda-month-year");
+                    if (!container || !header) return;
 
-                         if(prevBtn) prevBtn.addEventListener("click", () => {
-                             currentMonth--;
-                             if(currentMonth < 0) { currentMonth = 11; currentYear--; }
-                             renderCalendarGrid(currentMonth, currentYear);
-                             renderAgendaList(currentMonth, currentYear);
-                         });
+                    // Update Header
+                    header.innerHTML = `<div class="w-2 h-2 rounded-full bg-blue-500"></div> Agenda ${monthNames[month]} ${year}`;
 
-                         if(nextBtn) nextBtn.addEventListener("click", () => {
-                             currentMonth++;
-                             if(currentMonth > 11) { currentMonth = 0; currentYear++; }
-                             renderCalendarGrid(currentMonth, currentYear);
-                             renderAgendaList(currentMonth, currentYear);
-                         });
+                    // Filter events for this month
+                    const startOfMonth = new Date(year, month, 1);
+                    const endOfMonth = new Date(year, month + 1, 0);
 
-
-                        // Initial Render
-                        renderCalendarGrid(currentMonth, currentYear);
-                        renderAgendaList(currentMonth, currentYear);
-
-                        // --- Helper Logic for Clock ---
-                        function updateClock() {
-                            const now = new Date();
-                            const clockEl = document.getElementById('digital-clock');
-                            const secondsEl = document.getElementById('digital-clock-seconds');
-                            const dateFullEl = document.getElementById('date-display-full');
-
-                            if (clockEl) {
-                                const hours = String(now.getHours()).padStart(2, '0');
-                                const minutes = String(now.getMinutes()).padStart(2, '0');
-                                clockEl.innerText = `${hours}:${minutes}`;
-                            }
-
-                            if (secondsEl) {
-                                const seconds = String(now.getSeconds()).padStart(2, '0');
-                                secondsEl.innerText = seconds;
-                            }
-
-                            if (dateFullEl) {
-                                const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
-                                // Indonesian locale
-                                dateFullEl.innerText = now.toLocaleDateString('id-ID', options);
-                            }
-                        }
-                        setInterval(updateClock, 1000);
-                        updateClock();
+                    const monthEvents = calendarEvents.filter(e => {
+                        const start = new Date(e.start);
+                        // Check if event overlaps with this month
+                        const end = e.end ? new Date(e.end) : new Date(start);
+                        return start <= endOfMonth && end >= startOfMonth;
                     });
-                </script>
+
+                    if (monthEvents.length === 0) {
+                        container.innerHTML = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
+                        return;
+                    }
+
+                    // Group by Date
+                    // We iterate through every day of the month to show empty days? 
+                    // User input: "Agenda Harian... Selasa, 17 Februari 2026... Kunjungan...". 
+                    // Likely only dates with events should be shown to be compact, or maybe all?
+                    // Given "Agenda Monthly List", usually only dates with events are shown.
+                    // Converting to map: DateString -> [Events]
+
+                    // Better approach: Sort events by start date, then group.
+                    monthEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+                    // But we need to handle multi-day events appearing on each day? 
+                    // For simplicity and "Agenda Harian" style, let's group by start date for now, 
+                    // OR duplicate multi-day events across days?
+                    // "Tahun Baru Imlek... dengan agenda selama bulan ini"
+                    // Let's iterate days of month and check events for each day.
+
+                    let html = "";
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+
+                    const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+                    for (let d = 1; d <= daysInMonth; d++) {
+                        const currentDt = new Date(year, month, d);
+                        // Check events for this day
+                        const dayEvents = monthEvents.filter(e => {
+                            const s = new Date(e.start); s.setHours(0, 0, 0, 0);
+                            const end = e.end ? new Date(e.end) : new Date(s); end.setHours(0, 0, 0, 0);
+                            return currentDt >= s && currentDt <= end;
+                        });
+
+                        if (dayEvents.length > 0) {
+                            const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                            const dateStr = currentDt.toLocaleDateString('id-ID', options);
+                            const isPast = currentDt < today;
+
+                            html += `
+                                        <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
+                                            <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
+                                                <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
+                                                ${dateStr}
+                                            </h5>
+                                            <div class="space-y-2">`;
+
+                            dayEvents.forEach(e => {
+                                const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
+                                const isCuti = e.title.toLowerCase().includes('cuti') || e.extendedProps.type === 'leave';
+
+                                let contentClass = "text-gray-800";
+                                if (isPast) {
+                                    contentClass = "line-through grayscale opacity-70";
+                                    if (isCuti) contentClass += " text-red-400"; // Red but muted if past
+                                    else contentClass += " text-gray-400";
+                                } else {
+                                    if (isCuti) contentClass = "text-red-600 font-bold";
+                                }
+
+                                // Specific styling requests
+                                const timeStr = isHoliday ? '' :
+                                    `${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` +
+                                    (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
+
+                                html += `
+                                                    <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
+                                                        <p class="font-bold text-sm mb-1">${e.title}</p>
+                                                        ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
+                                                    </div>
+                                                `;
+                            });
+
+                            html += `</div></div>`;
+                        }
+                    }
+
+                    if (html === "") html = `<p class="text-center text-gray-400 text-sm italic py-10">Tidak ada agenda bulan ini.</p>`;
+                    container.innerHTML = html;
+                }
+
+                // Navigation Handlers
+                const prevBtn = document.getElementById("prev-month-agenda");
+                const nextBtn = document.getElementById("next-month-agenda");
+
+                if (prevBtn) prevBtn.addEventListener("click", () => {
+                    currentMonth--;
+                    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+                    renderCalendarGrid(currentMonth, currentYear);
+                    renderAgendaList(currentMonth, currentYear);
+                });
+
+
+                if (nextBtn) nextBtn.addEventListener("click", () => {
+                    currentMonth++;
+                    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+                    renderCalendarGrid(currentMonth, currentYear);
+                    renderAgendaList(currentMonth, currentYear);
+                });
+
+                // Calendar Nav Buttons (New)
+                const prevCalBtn = document.getElementById("prev-month-calendar");
+                const nextCalBtn = document.getElementById("next-month-calendar");
+
+                if (prevCalBtn) prevCalBtn.addEventListener("click", () => {
+                    currentMonth--;
+                    if (currentMonth < 0) { currentMonth = 11; currentYear--; }
+                    renderCalendarGrid(currentMonth, currentYear);
+                    // Optional: Sync agenda? User might want to navigate them separately, 
+                    // but usually "Dashboard Calendar" implies they are synced. 
+                    // Let's sync them for consistency.
+                    renderAgendaList(currentMonth, currentYear);
+                });
+
+                if (nextCalBtn) nextCalBtn.addEventListener("click", () => {
+                    currentMonth++;
+                    if (currentMonth > 11) { currentMonth = 0; currentYear++; }
+                    renderCalendarGrid(currentMonth, currentYear);
+                    renderAgendaList(currentMonth, currentYear);
+                });
+
+
+                // Initial Render
+                renderCalendarGrid(currentMonth, currentYear);
+                renderAgendaList(currentMonth, currentYear);
+
+                // --- Daily Agenda Modal Logic ---
+                window.showDailyAgenda = function (year, month, date) {
+                    const modal = document.getElementById('daily-agenda-modal');
+                    const listContainer = document.getElementById('modal-agenda-list');
+                    const title = document.getElementById('modal-date-title');
+
+                    const selectedDate = new Date(year, month, date);
+                    const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                    title.innerText = `Agenda: ${selectedDate.toLocaleDateString('id-ID', options)}`;
+
+                    // Filter Events
+                    selectedDate.setHours(0, 0, 0, 0);
+                    const dayEvents = calendarEvents.filter(e => {
+                        const start = new Date(e.start); start.setHours(0, 0, 0, 0);
+                        const end = e.end ? new Date(e.end) : new Date(start); end.setHours(0, 0, 0, 0);
+                        return selectedDate >= start && selectedDate <= end;
+                    });
+
+                    let html = "";
+                    if (dayEvents.length === 0) {
+                        html = `<div class="text-center py-8 bg-gray-50 rounded-lg dashed-border border-2 border-gray-200 border-dashed">
+                                        <p class="text-gray-400 font-bold">Tidak ada agenda.</p>
+                                        <p class="text-xs text-gray-400 mt-1">Klik tanggal lain untuk melihat agenda.</p>
+                                    </div>`;
+                    } else {
+                        dayEvents.forEach(e => {
+                            const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
+                            const isCuti = e.title.toLowerCase().includes('cuti') || (e.extendedProps && e.extendedProps.type === 'leave');
+
+                            let borderClass = "border-l-4 border-blue-500";
+                            let bgClass = "bg-blue-50";
+                            let textClass = "text-blue-800";
+
+                            if (isHoliday) {
+                                borderClass = "border-l-4 border-red-500";
+                                bgClass = "bg-red-50";
+                                textClass = "text-red-800";
+                            } else if (isCuti) {
+                                borderClass = "border-l-4 border-orange-500";
+                                bgClass = "bg-orange-50";
+                                textClass = "text-orange-800";
+                            }
+
+                            const timeStr = isHoliday ? 'Sepanjang Hari' :
+                                `${new Date(e.start).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` +
+                                (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
+
+                            html += `
+                                            <div class="p-4 rounded-lg bg-white border border-gray-100 shadow-sm flex items-start gap-3 hover:shadow-md transition-all">
+                                                <div class="flex-shrink-0 w-12 text-center pt-1">
+                                                    <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">${timeStr.split(' ')[0]}</div>
+                                                </div>
+                                                <div class="flex-grow pl-3 border-l-2 ${isHoliday ? 'border-red-200' : 'border-blue-100'}">
+                                                    <h4 class="font-bold text-gray-900">${e.title}</h4>
+                                                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                        ${timeStr}
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        `;
+                        });
+                    }
+
+                    listContainer.innerHTML = html;
+                    modal.classList.remove('hidden');
+                };
+
+                // --- Helper Logic for Clock ---
+                function updateClock() {
+                    const now = new Date();
+                    const clockEl = document.getElementById('digital-clock');
+                    const secondsEl = document.getElementById('digital-clock-seconds');
+                    const dateFullEl = document.getElementById('date-display-full');
+
+                    if (clockEl) {
+                        const hours = String(now.getHours()).padStart(2, '0');
+                        const minutes = String(now.getMinutes()).padStart(2, '0');
+                        clockEl.innerText = `${hours}:${minutes}`;
+                    }
+
+                    if (secondsEl) {
+                        const seconds = String(now.getSeconds()).padStart(2, '0');
+                        secondsEl.innerText = seconds;
+                    }
+
+                    if (dateFullEl) {
+                        const options = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+                        // Indonesian locale
+                        dateFullEl.innerText = now.toLocaleDateString('id-ID', options);
+                    }
+                }
+                setInterval(updateClock, 1000);
+                updateClock();
+            });
+        </script>
 @endsection

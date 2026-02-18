@@ -88,7 +88,7 @@ class DashboardController extends Controller
 
         $contractDeadlines = Client::where('category', 'Retainer')
             ->whereNotNull('retainer_contract_end')
-            ->whereBetween('retainer_contract_end', [now(), now()->addDays(30)])
+            ->whereBetween('retainer_contract_end', [now(), now()->addMonths(1)])
             ->orderBy('retainer_contract_end')
             ->get();
 
