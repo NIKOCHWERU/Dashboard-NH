@@ -12,7 +12,7 @@ class ClientController extends Controller
      */
     public function index()
     {
-        $clients = Client::latest()->get();
+        $clients = Client::with('users')->latest()->get();
         $users = \App\Models\User::all();
         return view('clients.index', compact('clients', 'users'));
     }
@@ -30,9 +30,15 @@ class ClientController extends Controller
             'pic_id' => 'nullable|exists:users,id',
             'retainer_contract_end' => 'nullable|date',
             'status' => 'required|in:active,inactive,pending',
+            'access_user_ids' => 'nullable|array',
+            'access_user_ids.*' => 'exists:users,id',
         ]);
 
-        Client::create($validated);
+        $client = Client::create($validated);
+
+        if ($request->has('access_user_ids')) {
+            $client->users()->attach($request->access_user_ids);
+        }
 
         return redirect()->route('clients.index')->with('success', 'Client created successfully.');
     }
@@ -50,9 +56,29 @@ class ClientController extends Controller
             'pic_id' => 'nullable|exists:users,id',
             'retainer_contract_end' => 'nullable|date',
             'status' => 'required|in:active,inactive,pending',
+            'access_user_ids' => 'nullable|array',
+            'access_user_ids.*' => 'exists:users,id',
         ]);
 
         $client->update($validated);
+
+        if ($request->has('access_user_ids')) {
+            $client->users()->sync($request->access_user_ids);
+        } else {
+            // If field exists but empty array/null passed (e.g. unchecked all), sync empty
+            // However, HTML forms don't send array if no checkboxes checked.
+            // We should handle the case where it's missing from request but intended to be empty?
+            // Usually simpler to just sync([]) if missing IF we know the form always submits it.
+            // But let's assume if it's not present, we might not want to clear it?
+            // Actually for checkbox list, standard pattern is to add a hidden input or handle it.
+            // Let's assume the View sends an array or nothing.
+            // Better to explicitly sync what is provided, or empty if we detect it's an update.
+            // To be safe, let's use `sync` with the provided array or defaulting to []. 
+            // But wait, if we use `if ($request->has('access_user_ids'))`, we skip if unchecked.
+            // Strategy: Add `<input type="hidden" name="access_user_ids" value="" />` before checkboxes
+            // OR just correct logic here:
+            $client->users()->sync($request->input('access_user_ids', []));
+        }
 
         return redirect()->route('clients.index')->with('success', 'Client updated successfully.');
     }
