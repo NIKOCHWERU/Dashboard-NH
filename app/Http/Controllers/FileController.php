@@ -336,7 +336,11 @@ class FileController extends Controller
         }
 
         try {
-            $this->driveService->deleteFile($file->drive_file_id);
+            try {
+                $this->driveService->deleteFile($file->drive_file_id);
+            } catch (\Exception $e) {
+                Log::warning('File missing from Drive or delete failed, proceeding to DB delete: ' . $e->getMessage());
+            }
             $file->delete();
             return redirect()->back()->with('success', 'File deleted.');
         } catch (\Exception $e) {
@@ -380,7 +384,11 @@ class FileController extends Controller
         try {
             foreach ($files as $file) {
                 // Delete from Google Drive
-                $this->driveService->deleteFile($file->drive_file_id);
+                try {
+                    $this->driveService->deleteFile($file->drive_file_id);
+                } catch (\Exception $e) {
+                    Log::warning('File missing from Drive or delete failed during folder delete: ' . $e->getMessage());
+                }
                 // Delete from database
                 $file->delete();
             }
