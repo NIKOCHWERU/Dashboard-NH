@@ -18,7 +18,7 @@ class InfoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'is_public' => 'boolean',
+            'is_public' => 'nullable|boolean',
             'image' => 'nullable|image|max:5120', // Max 5MB
             'expires_at' => 'nullable|date|after:today',
         ]);
@@ -42,7 +42,7 @@ class InfoController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'content' => 'required|string',
-            'is_public' => 'boolean',
+            'is_public' => 'nullable|boolean',
             'image' => 'nullable|image|max:5120',
             'expires_at' => 'nullable|date|after:today',
         ]);
