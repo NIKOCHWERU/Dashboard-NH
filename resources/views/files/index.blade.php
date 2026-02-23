@@ -349,7 +349,7 @@
                     @endforeach
                 </div>
             </div>
-        </div>
+        </div> {{-- End files-container --}}
 
     @endif
 

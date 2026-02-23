@@ -177,7 +177,7 @@ class FileController extends Controller
         $fixedCategories = ['Retainer', 'Perorangan', 'Kantor Narasumber Hukum'];
         $dbCategories = Client::select('category')->distinct()->pluck('category')->toArray();
 
-        $all = array_merge($fixedCategories, $dbCategories);
+        $all = array_merge($fixedCategories, array_filter($dbCategories));
         $allNormalized = array_map(fn($c) => ucfirst($c), $all);
         $categories = array_unique($allNormalized);
         $items = $categories;
