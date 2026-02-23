@@ -189,6 +189,35 @@
             </div>
         </div>
 
+        {{-- Global Search Bar (Only on Front Page) --}}
+        <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 mb-6">
+            <form method="GET" action="{{ route('files.index') }}" class="max-w-3xl mx-auto">
+                <div class="relative group">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <svg class="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
+                    </div>
+                    <input type="text" name="search" value="{{ request('search') }}"
+                        placeholder="Cari file client atau dokumen apa saja..."
+                        class="block w-full pl-12 pr-24 py-4 rounded-2xl border-2 border-gray-100 text-base font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all bg-gray-50/50">
+                    <div class="absolute inset-y-2 right-2 flex items-center">
+                        <button type="submit" class="px-5 py-2 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-primary/20">
+                            Cari
+                        </button>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4 mt-3 px-2">
+                    <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pencarian Cepat:</span>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="document.querySelector('input[name=search]').value='Contract'; this.form.submit()" class="text-[10px] font-bold text-primary hover:underline">Contract</button>
+                        <button type="button" onclick="document.querySelector('input[name=search]').value='Invoice'; this.form.submit()" class="text-[10px] font-bold text-primary hover:underline">Invoice</button>
+                        <button type="button" onclick="document.querySelector('input[name=search]').value='.pdf'; this.form.submit()" class="text-[10px] font-bold text-primary hover:underline">PDF Files</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {{-- Recent Files --}}
             <div class="lg:col-span-2">
@@ -482,87 +511,98 @@
     {{-- ============================================================ --}}
     {{-- UNIVERSAL SEARCH & FILTERS --}}
     {{-- ============================================================ --}}
-    @if($viewMode != 'categories')
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 mb-4">
-            <form method="GET" action="{{ route('files.index') }}" id="filter-form">
-                @if(isset($category))
-                    <input type="hidden" name="category" value="{{ $category }}">
-                @endif
-                @if(isset($client))
-                    <input type="hidden" name="client_id" value="{{ $client->id }}">
-                @endif
-                @if(isset($folderName))
-                    <input type="hidden" name="folder" value="{{ $folderName }}">
-                @endif
-
-                <div class="flex flex-col lg:flex-row gap-3">
-                    {{-- Search --}}
-                    <div class="relative flex-1">
-                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
-                            <svg class="h-4 w-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                            </svg>
-                        </div>
-                        <input type="text" name="search" value="{{ request('search') }}"
-                            placeholder="@if($viewMode == 'clients') Cari nama klien... @elseif($viewMode == 'folders') Cari folder... @else Cari nama berkas... @endif"
-                            class="block w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary transition-all bg-gray-50/50">
-                    </div>
-
-                    @if($viewMode == 'files')
-                        {{-- Type Filter --}}
-                        <select name="type" onchange="this.form.submit()"
-                            class="px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-gray-50/50 min-w-[140px]">
-                            <option value="">Semua Tipe</option>
-                            <option value="image/" {{ request('type') == 'image/' ? 'selected' : '' }}>🖼️ Gambar</option>
-                            <option value="application/pdf" {{ request('type') == 'application/pdf' ? 'selected' : '' }}>📕 PDF
-                            </option>
-                            <option value="application/vnd.openxmlformats" {{ request('type') == 'application/vnd.openxmlformats' ? 'selected' : '' }}>📝 Office</option>
-                            <option value="video/" {{ request('type') == 'video/' ? 'selected' : '' }}>🎬 Video</option>
-                        </select>
-                        {{-- Uploader Filter --}}
-                        @if($uploaders->count() > 1)
-                            <select name="uploader_id" onchange="this.form.submit()"
-                                class="px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-gray-50/50 min-w-[140px]">
-                                <option value="">Semua Uploader</option>
-                                @foreach($uploaders as $u)
-                                    <option value="{{ $u->id }}" {{ request('uploader_id') == $u->id ? 'selected' : '' }}>{{ $u->name }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        @endif
-                        {{-- Date Range --}}
-                        <input type="date" name="date_from" value="{{ request('date_from') }}" onchange="this.form.submit()"
-                            class="px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-gray-50/50">
-                    @endif
-                </div>
-            </form>
-        </div>
-    @endif
 
     {{-- ============================================================ --}}
     {{-- VIEW MODE 3: FILES LIST --}}
     {{-- ============================================================ --}}
-    @if($viewMode == 'files')
+    {{-- ============================================================ --}}
+    {{-- VIEW MODE: SEARCH RESULTS --}}
+    {{-- ============================================================ --}}
+    @if($viewMode == 'search_results')
+        <div class="mb-6 flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-800">Ditemukan {{ $items->total() }} hasil untuk "{{ $searchTerm }}"</h3>
+            <a href="{{ route('files.index') }}" class="text-sm font-bold text-primary hover:underline">&larr; Kembali ke Home</a>
+        </div>
 
-        {{-- Upload Modal --}}
-        @include('files._upload_modal', ['uploadClients' => collect([$client]), 'suggestions' => $suggestions, 'defaultClient' => $client, 'defaultFolder' => $folderName])
-
-        {{-- Search & Filter Bar Removed - Now Universal --}}
-        title="Dari tanggal">
-        <input type="date" name="date_to" value="{{ request('date_to') }}" onchange="this.form.submit()"
-            class="px-3 py-2.5 rounded-xl border border-gray-200 text-sm text-gray-600 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary bg-gray-50/50"
-            title="Sampai tanggal">
-        {{-- Buttons --}}
-        <button type="submit"
-            class="px-5 py-2.5 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl text-sm transition-all flex-shrink-0">Cari</button>
-        @if(request()->hasAny(['search', 'type', 'uploader_id', 'date_from', 'date_to']))
-            <a href="{{ route('files.index', ['client_id' => $client->id, 'folder' => $folderName]) }}"
-                class="px-5 py-2.5 border border-gray-200 text-gray-600 font-semibold rounded-xl text-sm hover:bg-gray-50 transition-all flex-shrink-0">Reset</a>
+        @if($items->isEmpty())
+             <div class="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+                <div class="mx-auto w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
+                    <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                    </svg>
+                </div>
+                <h3 class="text-gray-700 font-bold text-lg">Tidak ada hasil</h3>
+                <p class="text-gray-400 text-sm mt-1">Coba kata kunci lain atau periksa ejaan Anda.</p>
+            </div>
+        @else
+            <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-100">
+                        <thead class="bg-gray-50/50">
+                            <tr>
+                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">File</th>
+                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Klien / Folder</th>
+                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Info</th>
+                                <th class="px-5 py-3.5 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-50">
+                            @foreach($items as $file)
+                                <tr class="hover:bg-gray-50/50 transition-colors group">
+                                    <td class="px-5 py-3.5">
+                                        <div class="flex items-center gap-3">
+                                            <span class="text-xl">{{ fileIcon($file->mime_type) }}</span>
+                                            <div>
+                                                <p class="text-sm font-bold text-gray-800">{{ $file->name }}</p>
+                                                <p class="text-[11px] text-gray-400">{{ formatBytes($file->size) }}</p>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <div class="flex flex-col gap-1">
+                                            <span class="inline-flex px-2 py-0.5 rounded-lg text-[10px] font-bold bg-blue-50 text-blue-600 w-fit">{{ $file->client?->name ?? 'N/A' }}</span>
+                                            <span class="text-[11px] text-gray-400 flex items-center gap-1 leading-none">
+                                                <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                                                    <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                                                </svg>
+                                                {{ $file->description ?: 'Tanpa Folder' }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5">
+                                        <div class="text-[11px] text-gray-500 leading-tight">
+                                            <p class="font-bold text-gray-700">{{ $file->uploader?->name ?? 'System' }}</p>
+                                            <p class="text-gray-400">{{ $file->created_at->format('d M Y') }}</p>
+                                        </div>
+                                    </td>
+                                    <td class="px-5 py-3.5 text-right">
+                                        <div class="flex items-center justify-end gap-2">
+                                            <a href="{{ route('files.index', ['client_id' => $file->client_id, 'folder' => $file->description]) }}" 
+                                               class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors" title="Buka Folder">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </a>
+                                            <a href="{{ route('files.download', $file) }}" class="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Download">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="mt-6">
+                {{ $items->appends(['search' => $searchTerm])->links() }}
+            </div>
         @endif
-        </div>
-        </form>
-        </div>
+    @endif
 
         {{-- Bulk Actions Bar --}}
         <div id="bulk-actions"

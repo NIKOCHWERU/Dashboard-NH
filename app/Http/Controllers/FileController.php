@@ -34,9 +34,6 @@ class FileController extends Controller
                 ->where('client_id', $client->id)
                 ->where('description', $folderName);
 
-            if ($request->filled('search')) {
-                $query->where('name', 'like', '%' . $request->search . '%');
-            }
             if ($request->filled('uploader_id')) {
                 $query->where('uploaded_by', $request->uploader_id);
             }
@@ -84,10 +81,6 @@ class FileController extends Controller
             $query = File::where('client_id', $client->id)
                 ->select('description', DB::raw('count(*) as count'), DB::raw('MAX(created_at) as last_uploaded_at'));
 
-            if ($request->filled('search')) {
-                $query->where('description', 'like', '%' . $request->search . '%');
-            }
-
             $items = $query->groupBy('description')
                 ->orderBy('description')
                 ->get();
@@ -133,10 +126,6 @@ class FileController extends Controller
 
             $query = Client::where('category', $category);
 
-            if ($request->filled('search')) {
-                $query->where('name', 'like', '%' . $request->search . '%');
-            }
-
             // Filter by assignment if not admin
             if (!$user->isAdmin()) {
                 $query->whereHas('users', function ($q) use ($user) {
@@ -154,7 +143,29 @@ class FileController extends Controller
             return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'category'));
         }
 
-        // Level 0: Root (Categories)
+        // Level 0: Root (Categories) or Global Search Results
+        if ($request->filled('search')) {
+            $viewMode = 'search_results';
+            $searchTerm = $request->search;
+
+            $query = File::with(['client', 'uploader'])
+                ->where('name', 'like', '%' . $searchTerm . '%');
+
+            // Filter by permitted clients if not admin
+            if (!$user->isAdmin()) {
+                $permittedClientIds = $user->clients()->pluck('clients.id');
+                $query->whereIn('client_id', $permittedClientIds);
+            }
+
+            $items = $query->latest()->paginate(50);
+            $breadcrumbs = [
+                ['label' => 'Home', 'url' => route('files.index')],
+                ['label' => 'Hasil Pencarian', 'url' => '#'],
+            ];
+
+            return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'searchTerm'));
+        }
+
         $viewMode = 'categories';
 
         $fixedCategories = ['Retainer', 'Perorangan', 'Kantor Narasumber Hukum'];
