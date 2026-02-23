@@ -35,6 +35,10 @@ class GoogleDriveService
 
         $this->service = new Drive($client);
         $this->folderId = config('services.google.drive_folder_id', env('GOOGLE_DRIVE_FOLDER_ID'));
+
+        if (!$this->folderId) {
+            Log::warning('GoogleDriveService: GOOGLE_DRIVE_FOLDER_ID is not configured.');
+        }
     }
 
     /**
@@ -198,6 +202,11 @@ class GoogleDriveService
      */
     public function findFolderByName($name, $parentId)
     {
+        if (!$name || !$parentId) {
+            Log::warning("GoogleDriveService findFolderByName: Invalid arguments - Name: [$name], ParentId: [$parentId]");
+            return null;
+        }
+
         $query = "mimeType='application/vnd.google-apps.folder' and name = '{$name}' and '{$parentId}' in parents and trashed = false";
         $response = $this->service->files->listFiles([
             'q' => $query,
@@ -263,14 +272,21 @@ class GoogleDriveService
      */
     public function ensureCategoryFolder($categoryName)
     {
+        if (!$this->folderId) {
+            throw new \Exception("Google Drive Root Folder ID is not configured. Please check your .env file.");
+        }
+
         // Sanitize category name for folder usage
-        $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $categoryName);
+        $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $categoryName) ?: 'Uncategorized';
+
+        Log::info("GoogleDriveService: Ensuring category folder exists: [{$safeCategoryName}] in parent [{$this->folderId}]");
 
         // Check if folder exists
         $categoryFolderId = $this->findFolderByName($safeCategoryName, $this->folderId);
 
         // Create if doesn't exist
         if (!$categoryFolderId) {
+            Log::info("GoogleDriveService: Category folder not found, creating: [{$safeCategoryName}]");
             $categoryFolderId = $this->createFolder($safeCategoryName, $this->folderId);
         }
 

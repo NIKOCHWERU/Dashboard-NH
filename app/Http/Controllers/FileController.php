@@ -230,35 +230,40 @@ class FileController extends Controller
         $category = $client->category;
         $safeCategoryName = preg_replace('/[^A-Za-z0-9 _-]/', '', $category);
 
-        // Ensure category folder exists
-        $categoryFolderId = $this->driveService->ensureCategoryFolder($category);
+        try {
+            // Ensure category folder exists
+            $categoryFolderId = $this->driveService->ensureCategoryFolder($category);
 
-        // Build path based on category
-        if (strtolower($category) === 'kantor narasumber hukum') {
-            // Public category: use folder name directly (description becomes folder name)
-            $folderName = $description ?: 'Umum';
-            $safeFolderName = preg_replace('/[^A-Za-z0-9 _-]/', '', $folderName);
-            $drivePath = "{$safeCategoryName}/{$safeFolderName}";
-        } else {
-            // Regular categories: use client name
-            $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
-            $drivePath = "{$safeCategoryName}/{$safeClientName}/Berkas";
+            // Build path based on category
+            if (strtolower($category) === 'kantor narasumber hukum') {
+                // Public category: use folder name directly (description becomes folder name)
+                $folderName = $description ?: 'Umum';
+                $safeFolderName = preg_replace('/[^A-Za-z0-9 _-]/', '', $folderName);
+                $drivePath = "{$safeCategoryName}/{$safeFolderName}";
+            } else {
+                // Regular categories: use client name
+                $safeClientName = preg_replace('/[^A-Za-z0-9 _-]/', '', $client->name);
+                $drivePath = "{$safeCategoryName}/{$safeClientName}/Berkas";
 
-            if ($description) {
-                $drivePath .= "/" . preg_replace('/[^A-Za-z0-9 _-]/', '', $description);
+                if ($description) {
+                    $drivePath .= "/" . preg_replace('/[^A-Za-z0-9 _-]/', '', $description);
+                }
             }
+
+            // Ensure folder exists recursively
+            $driveFolderId = $this->driveService->ensureFolderExists($drivePath);
+        } catch (\Exception $e) {
+            Log::error("FileController: Google Drive preparation failed: " . $e->getMessage());
+            return back()->with('error', "Gagal menyiapkan folder Google Drive: " . $e->getMessage());
         }
 
         $uploadedCount = 0;
 
         DB::beginTransaction();
         try {
-            // Ensure folder exists recursively
-            $targetFolderId = $this->driveService->ensureFolderExists($drivePath);
-
             foreach ($request->file('files') as $file) {
                 // Upload to Drive (Streamed) with specific folder ID
-                $driveFileId = $this->driveService->uploadFile($file, $targetFolderId);
+                $driveFileId = $this->driveService->uploadFile($file, $driveFolderId);
 
                 // Save to DB
                 File::create([
