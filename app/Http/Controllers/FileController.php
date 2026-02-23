@@ -158,6 +158,12 @@ class FileController extends Controller
             }
 
             $items = $query->latest()->paginate(50);
+
+            // Handle AJAX Live Search
+            if ($request->ajax()) {
+                return view('files._search_results_partial', compact('items', 'searchTerm'));
+            }
+
             $breadcrumbs = [
                 ['label' => 'Home', 'url' => route('files.index')],
                 ['label' => 'Hasil Pencarian', 'url' => '#'],

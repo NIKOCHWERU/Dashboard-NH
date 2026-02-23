@@ -198,9 +198,16 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
-                    <input type="text" name="search" value="{{ request('search') }}"
+                    <input type="text" name="search" id="search-input" value="{{ request('search') }}"
                         placeholder="Cari file client atau dokumen apa saja..."
+                        autocomplete="off"
                         class="block w-full pl-12 pr-24 py-4 rounded-2xl border-2 border-gray-100 text-base font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all bg-gray-50/50">
+                    <div id="search-loading" class="hidden absolute inset-y-0 right-28 flex items-center">
+                        <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
                     <div class="absolute inset-y-2 right-2 flex items-center">
                         <button type="submit" class="px-5 py-2 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-primary/20">
                             Cari
@@ -218,7 +225,8 @@
             </form>
         </div>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div id="files-container" class="transition-all duration-300">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {{-- Recent Files --}}
             <div class="lg:col-span-2">
                 <div class="flex items-center justify-between mb-3">
@@ -900,6 +908,66 @@
             const flash = document.getElementById('flash-success');
             if (flash) flash.style.transition = 'opacity 0.5s', flash.style.opacity = '0', setTimeout(() => flash.remove(), 500);
         }, 5000);
+
+        // ---- Live Search Logic ----
+        let searchTimeout = null;
+        const searchInput = document.getElementById('search-input');
+        const searchLoading = document.getElementById('search-loading');
+        const filesContainer = document.getElementById('files-container');
+        
+        // Save initial content (Categories View) if we are on the front page
+        const initialContent = filesContainer ? filesContainer.innerHTML : null;
+
+        if (searchInput) {
+            searchInput.addEventListener('input', function() {
+                const query = this.value.trim();
+                
+                clearTimeout(searchTimeout);
+                
+                if (query.length === 0) {
+                    if (initialContent && filesContainer) {
+                        filesContainer.innerHTML = initialContent;
+                        filesContainer.style.opacity = '0';
+                        setTimeout(() => filesContainer.style.opacity = '1', 50);
+                    }
+                    searchLoading.classList.add('hidden');
+                    return;
+                }
+
+                // Show loading spinner
+                searchLoading.classList.remove('hidden');
+
+                searchTimeout = setTimeout(() => {
+                    const url = new URL('{{ route("files.index") }}');
+                    url.searchParams.append('search', query);
+
+                    fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) throw new Error('Search failed');
+                        return response.text();
+                    })
+                    .then(html => {
+                        if (filesContainer) {
+                            filesContainer.style.opacity = '0.5';
+                            setTimeout(() => {
+                                filesContainer.innerHTML = html;
+                                filesContainer.style.opacity = '1';
+                            }, 100);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Search error:', error);
+                    })
+                    .finally(() => {
+                        searchLoading.classList.add('hidden');
+                    });
+                }, 300); // 300ms debounce
+            });
+        }
     </script>
 
 @endsection
