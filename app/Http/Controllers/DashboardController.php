@@ -94,7 +94,14 @@ class DashboardController extends Controller
 
         $infos = \App\Models\Info::with('creator')->active()->latest()->take(3)->get();
 
-        return view('dashboard', compact('stats', 'contractDeadlines', 'upcomingMeetings', 'leaves', 'infos', 'calendarEvents'));
+        $tasks = \App\Models\Task::where('user_id', auth()->id())
+            ->where('status', 'pending')
+            ->orderByRaw("FIELD(priority, 'Q1', 'Q2', 'Q3')")
+            ->orderBy('due_date', 'asc')
+            ->take(5)
+            ->get();
+
+        return view('dashboard', compact('stats', 'contractDeadlines', 'upcomingMeetings', 'leaves', 'infos', 'calendarEvents', 'tasks'));
     }
 
     private function formatBytes($bytes, $precision = 2)

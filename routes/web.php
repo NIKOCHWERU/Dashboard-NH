@@ -41,6 +41,12 @@ Route::middleware(['auth'])->group(function () {
 
     Route::resource('files', FileController::class);
 
+    // Tasks Management
+    Route::get('tasks', [App\Http\Controllers\TaskController::class, 'index'])->name('tasks.index');
+    Route::post('tasks', [App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
+    Route::patch('tasks/{task}/toggle', [App\Http\Controllers\TaskController::class, 'toggleStatus'])->name('tasks.toggle');
+    Route::delete('tasks/{task}', [App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
+
     // Clients - Read access for all, write for admin only
     Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
 

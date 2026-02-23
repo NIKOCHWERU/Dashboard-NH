@@ -251,61 +251,49 @@
             @endif
         </div>
 
-        <!-- Right: File Berkas (NEW) -->
+        <!-- Right: Daftar Tugas ( Eisenhower Matrix ) -->
         <div class="space-y-8">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden h-fit">
                 <div class="px-6 py-4 bg-white border-b border-gray-100 flex justify-between items-center">
                     <h3 class="font-bold text-gray-800 flex items-center gap-2">
-                        <svg class="w-5 h-5 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
                         </svg>
-                        File Berkas
+                        Daftar Tugas
                     </h3>
-                    <span
-                        class="text-[10px] uppercase font-bold tracking-widest bg-gray-100 text-gray-500 px-2 py-0.5 rounded">Retainer</span>
+                    <a href="{{ route('tasks.index') }}"
+                        class="text-[10px] uppercase font-bold tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded hover:bg-primary hover:text-white transition-colors">Lihat Semua</a>
                 </div>
-                <div class="p-6 grid grid-cols-1 gap-4">
-                    <!-- Folder Item 1 -->
-                    <a href="{{ route('files.index', ['category' => 'perorangan']) }}"
-                        class="group flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 transition-all">
-                        <div
-                            class="w-12 h-12 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M5 19a2 2 0 01-2-2V7a2 2 0 012-2h4l2 2h4a2 2 0 012 2v1M5 19h14a2 2 0 002-2v-5a2 2 0 00-2-2H9a2 2 0 00-2 2v5a2 2 0 01-2 2z">
-                                </path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800 group-hover:text-blue-700">Klien Perorangan</h4>
-                            <p class="text-xs text-gray-500">Berkas klien individu</p>
-                        </div>
-                        <svg class="w-5 h-5 text-gray-300 ml-auto group-hover:text-blue-400" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
-
-                    <!-- Folder Item 2 -->
-                    <a href="{{ route('files.index', ['category' => 'kantor']) }}"
-                        class="group flex items-center p-4 rounded-xl border border-gray-100 bg-gray-50 hover:bg-blue-50 hover:border-blue-200 transition-all">
-                        <div
-                            class="w-12 h-12 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center mr-4 group-hover:scale-110 transition-transform">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                            </svg>
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-gray-800 group-hover:text-indigo-700">Kantor Narasumber Hukum</h4>
-                            <p class="text-xs text-gray-500">Dokumen internal kantor</p>
-                        </div>
-                        <svg class="w-5 h-5 text-gray-300 ml-auto group-hover:text-indigo-400" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-                        </svg>
-                    </a>
+                <div class="p-6">
+                    <div class="space-y-3">
+                        @forelse($tasks as $task)
+                            <div class="flex items-center justify-between p-3 rounded-xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:shadow-sm transition-all group">
+                                <div class="flex items-center gap-3">
+                                    <div @class([
+                                        'w-2 h-2 rounded-full',
+                                        'bg-red-500 shadow-[0_0_8px_rgba(239,68,68,0.4)]' => $task->priority == 'Q1',
+                                        'bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.4)]' => $task->priority == 'Q2',
+                                        'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]' => $task->priority == 'Q3',
+                                    ])></div>
+                                    <span class="text-xs font-bold text-gray-700">{{ $task->title }}</span>
+                                </div>
+                                <form action="{{ route('tasks.toggle', $task) }}" method="POST">
+                                    @csrf
+                                    @method('PATCH')
+                                    <button type="submit" class="p-1.5 text-gray-300 hover:text-green-500 transition-colors opacity-0 group-hover:opacity-100">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                        </svg>
+                                    </button>
+                                </form>
+                            </div>
+                        @empty
+                            <div class="text-center py-4">
+                                <p class="text-[10px] text-gray-400 font-bold italic">Tidak ada tugas mendesak.</p>
+                            </div>
+                        @endforelse
+                    </div>
                 </div>
             </div>
         </div>

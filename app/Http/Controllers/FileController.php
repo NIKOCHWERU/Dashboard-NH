@@ -81,9 +81,14 @@ class FileController extends Controller
             }
 
             // Get unique descriptions (Folders)
-            $items = File::where('client_id', $client->id)
-                ->select('description', DB::raw('count(*) as count'), DB::raw('MAX(created_at) as last_uploaded_at'))
-                ->groupBy('description')
+            $query = File::where('client_id', $client->id)
+                ->select('description', DB::raw('count(*) as count'), DB::raw('MAX(created_at) as last_uploaded_at'));
+
+            if ($request->filled('search')) {
+                $query->where('description', 'like', '%' . $request->search . '%');
+            }
+
+            $items = $query->groupBy('description')
                 ->orderBy('description')
                 ->get();
 
@@ -127,6 +132,10 @@ class FileController extends Controller
             $viewMode = 'clients';
 
             $query = Client::where('category', $category);
+
+            if ($request->filled('search')) {
+                $query->where('name', 'like', '%' . $request->search . '%');
+            }
 
             // Filter by assignment if not admin
             if (!$user->isAdmin()) {
