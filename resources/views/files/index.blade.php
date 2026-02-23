@@ -125,22 +125,27 @@
             <form method="GET" action="{{ route('files.index') }}" class="max-w-3xl mx-auto">
                 <div class="relative group">
                     <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg class="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <svg class="h-5 w-5 text-gray-400 group-focus-within:text-primary transition-colors" fill="none"
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                         </svg>
                     </div>
                     <input type="text" name="search" id="search-input" value="{{ request('search') }}"
-                        placeholder="Cari file client atau dokumen apa saja..."
-                        autocomplete="off"
+                        placeholder="Cari file client atau dokumen apa saja..." autocomplete="off"
                         class="block w-full pl-12 pr-24 py-4 rounded-2xl border-2 border-gray-100 text-base font-medium focus:outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all bg-gray-50/50">
                     <div id="search-loading" class="hidden absolute inset-y-0 right-28 flex items-center">
-                        <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <svg class="animate-spin h-5 w-5 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
                         </svg>
                     </div>
                     <div class="absolute inset-y-2 right-2 flex items-center">
-                        <button type="submit" class="px-5 py-2 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-primary/20">
+                        <button type="submit"
+                            class="px-5 py-2 bg-primary hover:bg-primary-hover text-white font-bold rounded-xl text-sm transition-all shadow-md shadow-primary/20">
                             Cari
                         </button>
                     </div>
@@ -148,9 +153,15 @@
                 <div class="flex items-center gap-4 mt-3 px-2">
                     <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pencarian Cepat:</span>
                     <div class="flex flex-wrap gap-2">
-                        <button type="button" onclick="document.querySelector('input[name=search]').value='Contract'; this.form.submit()" class="text-[10px] font-bold text-primary hover:underline">Contract</button>
-                        <button type="button" onclick="document.querySelector('input[name=search]').value='Invoice'; this.form.submit()" class="text-[10px] font-bold text-primary hover:underline">Invoice</button>
-                        <button type="button" onclick="document.querySelector('input[name=search]').value='.pdf'; this.form.submit()" class="text-[10px] font-bold text-primary hover:underline">PDF Files</button>
+                        <button type="button"
+                            onclick="document.querySelector('input[name=search]').value='Contract'; this.form.submit()"
+                            class="text-[10px] font-bold text-primary hover:underline">Contract</button>
+                        <button type="button"
+                            onclick="document.querySelector('input[name=search]').value='Invoice'; this.form.submit()"
+                            class="text-[10px] font-bold text-primary hover:underline">Invoice</button>
+                        <button type="button"
+                            onclick="document.querySelector('input[name=search]').value='.pdf'; this.form.submit()"
+                            class="text-[10px] font-bold text-primary hover:underline">PDF Files</button>
                     </div>
                 </div>
             </form>
@@ -158,130 +169,130 @@
 
         <div id="files-container" class="transition-all duration-300">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {{-- Recent Files --}}
-            <div class="lg:col-span-2">
-                <div class="flex items-center justify-between mb-3">
-                    <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
-                        <span class="p-1.5 bg-primary/10 text-primary rounded-lg"><svg class="w-4 h-4" fill="none"
+                {{-- Recent Files --}}
+                <div class="lg:col-span-2">
+                    <div class="flex items-center justify-between mb-3">
+                        <h3 class="text-base font-bold text-gray-800 flex items-center gap-2">
+                            <span class="p-1.5 bg-primary/10 text-primary rounded-lg"><svg class="w-4 h-4" fill="none"
+                                    stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg></span>
+                            Berkas Terbaru
+                        </h3>
+                    </div>
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-100">
+                                <thead class="bg-gray-50/50">
+                                    <tr>
+                                        <th
+                                            class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            Berkas</th>
+                                        <th
+                                            class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            Klien</th>
+                                        <th
+                                            class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            Diupload</th>
+                                        <th
+                                            class="px-5 py-3.5 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                            Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-gray-50">
+                                    @forelse($recentFiles as $file)
+                                        <tr class="hover:bg-gray-50/50 transition-colors group">
+                                            <td class="px-5 py-3.5">
+                                                <div class="flex items-center gap-3">
+                                                    <span class="text-lg">{{ fileIcon($file->mime_type) }}</span>
+                                                    <div>
+                                                        <p class="text-sm font-semibold text-gray-800 truncate max-w-[160px]"
+                                                            title="{{ $file->name }}">{{ $file->name }}</p>
+                                                        <p class="text-[11px] text-gray-400">{{ formatBytes($file->size) }}</p>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-3.5">
+                                                <span
+                                                    class="inline-flex px-2 py-1 rounded-lg text-[10px] font-bold bg-gray-100 text-gray-600">{{ $file->client?->name ?? 'N/A' }}</span>
+                                            </td>
+                                            <td class="px-5 py-3.5">
+                                                <div class="text-[11px] text-gray-500">
+                                                    <p class="font-medium">{{ $file->uploader?->name ?? 'N/A' }}</p>
+                                                    <p class="text-gray-400">{{ $file->created_at->diffForHumans() }}</p>
+                                                </div>
+                                            </td>
+                                            <td class="px-5 py-3.5 text-right">
+                                                <a href="{{ route('files.download', $file) }}"
+                                                    class="inline-flex p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                                    title="Download">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                    </svg>
+                                                </a>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="4" class="px-5 py-12 text-center text-gray-400 text-sm italic">Belum ada
+                                                berkas.</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Category Cards --}}
+                <div>
+                    <h3 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3">
+                        <span class="p-1.5 bg-yellow-50 text-yellow-600 rounded-lg"><svg class="w-4 h-4" fill="none"
                                 stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                             </svg></span>
-                        Berkas Terbaru
+                        Kategori
                     </h3>
-                </div>
-                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                    <div class="overflow-x-auto">
-                        <table class="min-w-full divide-y divide-gray-100">
-                            <thead class="bg-gray-50/50">
-                                <tr>
-                                    <th
-                                        class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                        Berkas</th>
-                                    <th
-                                        class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                        Klien</th>
-                                    <th
-                                        class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                        Diupload</th>
-                                    <th
-                                        class="px-5 py-3.5 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                        Aksi</th>
-                                </tr>
-                            </thead>
-                            <tbody class="divide-y divide-gray-50">
-                                @forelse($recentFiles as $file)
-                                    <tr class="hover:bg-gray-50/50 transition-colors group">
-                                        <td class="px-5 py-3.5">
-                                            <div class="flex items-center gap-3">
-                                                <span class="text-lg">{{ fileIcon($file->mime_type) }}</span>
-                                                <div>
-                                                    <p class="text-sm font-semibold text-gray-800 truncate max-w-[160px]"
-                                                        title="{{ $file->name }}">{{ $file->name }}</p>
-                                                    <p class="text-[11px] text-gray-400">{{ formatBytes($file->size) }}</p>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td class="px-5 py-3.5">
-                                            <span
-                                                class="inline-flex px-2 py-1 rounded-lg text-[10px] font-bold bg-gray-100 text-gray-600">{{ $file->client?->name ?? 'N/A' }}</span>
-                                        </td>
-                                        <td class="px-5 py-3.5">
-                                            <div class="text-[11px] text-gray-500">
-                                                <p class="font-medium">{{ $file->uploader?->name ?? 'N/A' }}</p>
-                                                <p class="text-gray-400">{{ $file->created_at->diffForHumans() }}</p>
-                                            </div>
-                                        </td>
-                                        <td class="px-5 py-3.5 text-right">
-                                            <a href="{{ route('files.download', $file) }}"
-                                                class="inline-flex p-1.5 text-gray-400 hover:text-primary hover:bg-primary/5 rounded-lg transition-colors"
-                                                title="Download">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                                                </svg>
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="4" class="px-5 py-12 text-center text-gray-400 text-sm italic">Belum ada
-                                            berkas.</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
+                    <div class="flex flex-col gap-3">
+                        @php
+                            $catColors = ['Retainer' => 'bg-blue-50 text-blue-600', 'Perorangan' => 'bg-green-50 text-green-600', 'Kantor Narasumber Hukum' => 'bg-amber-50 text-amber-600'];
+                        @endphp
+                        @foreach($items as $cat)
+                            <a href="{{ route('files.index', ['category' => $cat]) }}" class="group">
+                                <div
+                                    class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/20 transition-all flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <div
+                                            class="p-3 {{ $catColors[$cat] ?? 'bg-gray-50 text-gray-400' }} rounded-xl group-hover:scale-110 transition-transform">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors">
+                                                {{ ucfirst($cat) }}
+                                            </h4>
+                                            <p class="text-[11px] text-gray-400">
+                                                {{ $categoryCounts[strtolower($cat)] ?? $categoryCounts[$cat] ?? $categoryCounts[ucfirst($cat)] ?? 0 }}
+                                                berkas
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <svg class="w-4 h-4 text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                                        fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </div>
+                            </a>
+                        @endforeach
                     </div>
                 </div>
             </div>
-
-            {{-- Category Cards --}}
-            <div>
-                <h3 class="text-base font-bold text-gray-800 flex items-center gap-2 mb-3">
-                    <span class="p-1.5 bg-yellow-50 text-yellow-600 rounded-lg"><svg class="w-4 h-4" fill="none"
-                            stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                        </svg></span>
-                    Kategori
-                </h3>
-                <div class="flex flex-col gap-3">
-                    @php
-                        $catColors = ['Retainer' => 'bg-blue-50 text-blue-600', 'Perorangan' => 'bg-green-50 text-green-600', 'Kantor Narasumber Hukum' => 'bg-amber-50 text-amber-600'];
-                    @endphp
-                    @foreach($items as $cat)
-                        <a href="{{ route('files.index', ['category' => $cat]) }}" class="group">
-                            <div
-                                class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/20 transition-all flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div
-                                        class="p-3 {{ $catColors[$cat] ?? 'bg-gray-50 text-gray-400' }} rounded-xl group-hover:scale-110 transition-transform">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
-                                        </svg>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-sm font-bold text-gray-900 group-hover:text-primary transition-colors">
-                                            {{ ucfirst($cat) }}
-                                        </h4>
-                                        <p class="text-[11px] text-gray-400">
-                                            {{ $categoryCounts[strtolower($cat)] ?? $categoryCounts[$cat] ?? $categoryCounts[ucfirst($cat)] ?? 0 }}
-                                            berkas
-                                        </p>
-                                    </div>
-                                </div>
-                                <svg class="w-4 h-4 text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all"
-                                    fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                                </svg>
-                            </div>
-                        </a>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </div> {{-- End files-container --}}
+        </div> {{-- End files-container --}}
 
     @endif
 
@@ -461,14 +472,16 @@
     @if($viewMode == 'search_results')
         <div class="mb-6 flex items-center justify-between">
             <h3 class="text-lg font-bold text-gray-800">Ditemukan {{ $items->total() }} hasil untuk "{{ $searchTerm }}"</h3>
-            <a href="{{ route('files.index') }}" class="text-sm font-bold text-primary hover:underline">&larr; Kembali ke Home</a>
+            <a href="{{ route('files.index') }}" class="text-sm font-bold text-primary hover:underline">&larr; Kembali ke
+                Home</a>
         </div>
 
         @if($items->isEmpty())
-             <div class="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
+            <div class="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
                 <div class="mx-auto w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
                     <svg class="w-10 h-10 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                     </svg>
                 </div>
                 <h3 class="text-gray-700 font-bold text-lg">Tidak ada hasil</h3>
@@ -480,10 +493,14 @@
                     <table class="min-w-full divide-y divide-gray-100">
                         <thead class="bg-gray-50/50">
                             <tr>
-                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">File</th>
-                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Klien / Folder</th>
-                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Info</th>
-                                <th class="px-5 py-3.5 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Aksi</th>
+                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">File
+                                </th>
+                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    Klien / Folder</th>
+                                <th class="px-5 py-3.5 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Info
+                                </th>
+                                <th class="px-5 py-3.5 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                    Aksi</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-50">
@@ -500,7 +517,8 @@
                                     </td>
                                     <td class="px-5 py-3.5">
                                         <div class="flex flex-col gap-1">
-                                            <span class="inline-flex px-2 py-0.5 rounded-lg text-[10px] font-bold bg-blue-50 text-blue-600 w-fit">{{ $file->client?->name ?? 'N/A' }}</span>
+                                            <span
+                                                class="inline-flex px-2 py-0.5 rounded-lg text-[10px] font-bold bg-blue-50 text-blue-600 w-fit">{{ $file->client?->name ?? 'N/A' }}</span>
                                             <span class="text-[11px] text-gray-400 flex items-center gap-1 leading-none">
                                                 <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                                                     <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
@@ -517,16 +535,22 @@
                                     </td>
                                     <td class="px-5 py-3.5 text-right">
                                         <div class="flex items-center justify-end gap-2">
-                                            <a href="{{ route('files.index', ['client_id' => $file->client_id, 'folder' => $file->description]) }}" 
-                                               class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors" title="Buka Folder">
+                                            <a href="{{ route('files.index', ['client_id' => $file->client_id, 'folder' => $file->description]) }}"
+                                                class="p-2 text-primary hover:bg-primary/5 rounded-lg transition-colors"
+                                                title="Buka Folder">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                                 </svg>
                                             </a>
-                                            <a href="{{ route('files.download', $file) }}" class="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors" title="Download">
+                                            <a href="{{ route('files.download', $file) }}"
+                                                class="p-2 text-gray-400 hover:text-green-600 hover:bg-green-50 rounded-lg transition-colors"
+                                                title="Download">
                                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                                 </svg>
                                             </a>
                                         </div>
@@ -537,12 +561,14 @@
                     </table>
                 </div>
             </div>
-            
+
             <div class="mt-6">
                 {{ $items->appends(['search' => $searchTerm])->links() }}
             </div>
         @endif
     @endif
+
+    @if($viewMode == 'files')
 
         {{-- Bulk Actions Bar --}}
         <div id="bulk-actions"
@@ -730,176 +756,176 @@
     {{-- SHARED SCRIPTS --}}
     {{-- ============================================================ --}}
     <script>
-        // ---- Select All Checkbox ----
-        const selectAll = document.getElementById('select-all');
-        if (selectAll) {
-            selectAll.addEventListener('change', function () {
-                document.querySelectorAll('.file-checkbox').forEach(cb => cb.checked = this.checked);
-                updateBulkBar();
-            });
-            document.querySelectorAll('.file-checkbox').forEach(cb => {
-                cb.addEventListener('change', updateBulkBar);
-            });
-        }
-        function updateBulkBar() {
-            const checked = document.querySelectorAll('.file-checkbox:checked');
-            const bar = document.getElementById('bulk-actions');
-            const count = document.getElementById('selected-count');
-            if (bar) {
-                bar.style.display = checked.length > 0 ? 'flex' : 'none';
-                if (count) count.textContent = checked.length;
+            // ---- Select All Checkbox ----
+            const selectAll = document.getElementById('select-all');
+            if (selectAll) {
+                selectAll.addEventListener('change', function () {
+                    document.querySelectorAll('.file-checkbox').forEach(cb => cb.checked = this.checked);
+                    updateBulkBar();
+                });
+                document.querySelectorAll('.file-checkbox').forEach(cb => {
+                    cb.addEventListener('change', updateBulkBar);
+                });
             }
-        }
-
-        // ---- Bulk Download ----
-        function downloadSelected() {
-            const checked = document.querySelectorAll('.file-checkbox:checked');
-            if (!checked.length) return;
-            const form = document.getElementById('bulk-download-form');
-            const container = document.getElementById('bulk-file-inputs');
-            if (!form || !container) return;
-            container.innerHTML = '';
-            checked.forEach(cb => {
-                const input = document.createElement('input');
-                input.type = 'hidden';
-                input.name = 'file_ids[]';
-                input.value = cb.value;
-                container.appendChild(input);
-            });
-            form.submit();
-        }
-
-        // ---- Email Links (Bulk) ----
-        function emailLinks() {
-            const checked = document.querySelectorAll('.file-checkbox:checked');
-            if (!checked.length) { alert('Pilih minimal satu berkas.'); return; }
-            const ids = Array.from(checked).map(cb => cb.value);
-            const clientId = document.querySelector('[data-client-id]')?.dataset.clientId || null;
-            const folder = document.querySelector('[data-folder-name]')?.dataset.folderName || '';
-            const url = '{{ route("files.folder-links") }}?client_id=' + clientId + '&folder=' + encodeURIComponent(folder);
-            fetch(url, { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.files) {
-                        const selectedLinks = data.files.filter(f => ids.some(id => f.link.includes(id)));
-                        const subject = encodeURIComponent('Berkas: ' + (folder || 'Tanpa Keterangan'));
-                        const body = encodeURIComponent(
-                            'Berikut link berkas dari folder "' + (folder || 'Tanpa Keterangan') + '":\n\n' +
-                            selectedLinks.map(f => f.name + ':\n' + f.link).join('\n\n') +
-                            '\n\nDikirim dari Dashboard NH'
-                        );
-                        window.open('mailto:?subject=' + subject + '&body=' + body);
-                    }
-                });
-        }
-
-        // ---- Email Single File ----
-        function emailSingleFile(driveId, name) {
-            const link = 'https://drive.google.com/file/d/' + driveId + '/view?usp=sharing';
-            const subject = encodeURIComponent('Berkas: ' + name);
-            const body = encodeURIComponent('Berikut link berkas "' + name + '":\n\n' + link + '\n\nDikirim dari Dashboard NH');
-            window.open('mailto:?subject=' + subject + '&body=' + body);
-        }
-
-        // ---- Email Folder (from folder view) ----
-        function emailFolder(clientId, folderName) {
-            const baseUrl = '{{ route("files.folder-links") }}';
-            fetch(baseUrl + '?client_id=' + clientId + '&folder=' + encodeURIComponent(folderName || ''), {
-                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
-            })
-                .then(r => r.json())
-                .then(data => {
-                    if (data.files && data.files.length > 0) {
-                        const subject = encodeURIComponent('Berkas Folder: ' + (data.folder || 'Tanpa Keterangan'));
-                        const body = encodeURIComponent(
-                            'Berikut link berkas dari folder "' + data.folder + '" (' + data.count + ' berkas):\n\n' +
-                            data.files.map(f => '• ' + f.name + ':\n  ' + f.link).join('\n\n') +
-                            '\n\nDikirim dari Dashboard NH'
-                        );
-                        window.open('mailto:?subject=' + subject + '&body=' + body);
-                    } else {
-                        alert('Tidak ada berkas di folder ini.');
-                    }
-                });
-        }
-
-        // ---- Delete Folder Modal ----
-        function confirmDeleteFolder(folderName, count, clientId) {
-            document.getElementById('delFolderName').textContent = folderName || 'Tanpa Keterangan';
-            document.getElementById('delFileCount').textContent = count;
-            document.getElementById('delClientId').value = clientId;
-            document.getElementById('delFolderNameInput').value = folderName || '';
-            document.getElementById('deleteFolderModal').classList.remove('hidden');
-        }
-        function closeDeleteFolderModal() {
-            document.getElementById('deleteFolderModal').classList.add('hidden');
-        }
-
-        // ---- Auto-hide flash after 5s ----
-        setTimeout(() => {
-            const flash = document.getElementById('flash-success');
-            if (flash) flash.style.transition = 'opacity 0.5s', flash.style.opacity = '0', setTimeout(() => flash.remove(), 500);
-        }, 5000);
-
-        // ---- Live Search Logic ----
-        let searchTimeout = null;
-        const searchInput = document.getElementById('search-input');
-        const searchLoading = document.getElementById('search-loading');
-        const filesContainer = document.getElementById('files-container');
-        
-        // Save initial content (Categories View) if we are on the front page
-        const initialContent = filesContainer ? filesContainer.innerHTML : null;
-
-        if (searchInput) {
-            searchInput.addEventListener('input', function() {
-                const query = this.value.trim();
-                
-                clearTimeout(searchTimeout);
-                
-                if (query.length === 0) {
-                    if (initialContent && filesContainer) {
-                        filesContainer.innerHTML = initialContent;
-                        filesContainer.style.opacity = '0';
-                        setTimeout(() => filesContainer.style.opacity = '1', 50);
-                    }
-                    searchLoading.classList.add('hidden');
-                    return;
+            function updateBulkBar() {
+                const checked = document.querySelectorAll('.file-checkbox:checked');
+                const bar = document.getElementById('bulk-actions');
+                const count = document.getElementById('selected-count');
+                if (bar) {
+                    bar.style.display = checked.length > 0 ? 'flex' : 'none';
+                    if (count) count.textContent = checked.length;
                 }
+            }
 
-                // Show loading spinner
-                searchLoading.classList.remove('hidden');
+            // ---- Bulk Download ----
+            function downloadSelected() {
+                const checked = document.querySelectorAll('.file-checkbox:checked');
+                if (!checked.length) return;
+                const form = document.getElementById('bulk-download-form');
+                const container = document.getElementById('bulk-file-inputs');
+                if (!form || !container) return;
+                container.innerHTML = '';
+                checked.forEach(cb => {
+                    const input = document.createElement('input');
+                    input.type = 'hidden';
+                    input.name = 'file_ids[]';
+                    input.value = cb.value;
+                    container.appendChild(input);
+                });
+                form.submit();
+            }
 
-                searchTimeout = setTimeout(() => {
-                    const url = new URL('{{ route("files.index") }}');
-                    url.searchParams.append('search', query);
-
-                    fetch(url, {
-                        headers: {
-                            'X-Requested-With': 'XMLHttpRequest'
+            // ---- Email Links (Bulk) ----
+            function emailLinks() {
+                const checked = document.querySelectorAll('.file-checkbox:checked');
+                if (!checked.length) { alert('Pilih minimal satu berkas.'); return; }
+                const ids = Array.from(checked).map(cb => cb.value);
+                const clientId = document.querySelector('[data-client-id]')?.dataset.clientId || null;
+                const folder = document.querySelector('[data-folder-name]')?.dataset.folderName || '';
+                const url = '{{ route("files.folder-links") }}?client_id=' + clientId + '&folder=' + encodeURIComponent(folder);
+                fetch(url, { headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' } })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.files) {
+                            const selectedLinks = data.files.filter(f => ids.some(id => f.link.includes(id)));
+                            const subject = encodeURIComponent('Berkas: ' + (folder || 'Tanpa Keterangan'));
+                            const body = encodeURIComponent(
+                                'Berikut link berkas dari folder "' + (folder || 'Tanpa Keterangan') + '":\n\n' +
+                                selectedLinks.map(f => f.name + ':\n' + f.link).join('\n\n') +
+                                '\n\nDikirim dari Dashboard NH'
+                            );
+                            window.open('mailto:?subject=' + subject + '&body=' + body);
                         }
-                    })
-                    .then(response => {
-                        if (!response.ok) throw new Error('Search failed');
-                        return response.text();
-                    })
-                    .then(html => {
-                        if (filesContainer) {
-                            filesContainer.style.opacity = '0.5';
-                            setTimeout(() => {
-                                filesContainer.innerHTML = html;
-                                filesContainer.style.opacity = '1';
-                            }, 100);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Search error:', error);
-                    })
-                    .finally(() => {
-                        searchLoading.classList.add('hidden');
                     });
-                }, 300); // 300ms debounce
-            });
-        }
-    </script>
+            }
+
+            // ---- Email Single File ----
+            function emailSingleFile(driveId, name) {
+                const link = 'https://drive.google.com/file/d/' + driveId + '/view?usp=sharing';
+                const subject = encodeURIComponent('Berkas: ' + name);
+                const body = encodeURIComponent('Berikut link berkas "' + name + '":\n\n' + link + '\n\nDikirim dari Dashboard NH');
+                window.open('mailto:?subject=' + subject + '&body=' + body);
+            }
+
+            // ---- Email Folder (from folder view) ----
+            function emailFolder(clientId, folderName) {
+                const baseUrl = '{{ route("files.folder-links") }}';
+                fetch(baseUrl + '?client_id=' + clientId + '&folder=' + encodeURIComponent(folderName || ''), {
+                    headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' }
+                })
+                    .then(r => r.json())
+                    .then(data => {
+                        if (data.files && data.files.length > 0) {
+                            const subject = encodeURIComponent('Berkas Folder: ' + (data.folder || 'Tanpa Keterangan'));
+                            const body = encodeURIComponent(
+                                'Berikut link berkas dari folder "' + data.folder + '" (' + data.count + ' berkas):\n\n' +
+                                data.files.map(f => '• ' + f.name + ':\n  ' + f.link).join('\n\n') +
+                                '\n\nDikirim dari Dashboard NH'
+                            );
+                            window.open('mailto:?subject=' + subject + '&body=' + body);
+                        } else {
+                            alert('Tidak ada berkas di folder ini.');
+                        }
+                    });
+            }
+
+            // ---- Delete Folder Modal ----
+            function confirmDeleteFolder(folderName, count, clientId) {
+                document.getElementById('delFolderName').textContent = folderName || 'Tanpa Keterangan';
+                document.getElementById('delFileCount').textContent = count;
+                document.getElementById('delClientId').value = clientId;
+                document.getElementById('delFolderNameInput').value = folderName || '';
+                document.getElementById('deleteFolderModal').classList.remove('hidden');
+            }
+            function closeDeleteFolderModal() {
+                document.getElementById('deleteFolderModal').classList.add('hidden');
+            }
+
+            // ---- Auto-hide flash after 5s ----
+            setTimeout(() => {
+                const flash = document.getElementById('flash-success');
+                if (flash) flash.style.transition = 'opacity 0.5s', flash.style.opacity = '0', setTimeout(() => flash.remove(), 500);
+            }, 5000);
+
+            // ---- Live Search Logic ----
+            let searchTimeout = null;
+            const searchInput = document.getElementById('search-input');
+            const searchLoading = document.getElementById('search-loading');
+            const filesContainer = document.getElementById('files-container');
+
+            // Save initial content (Categories View) if we are on the front page
+            const initialContent = filesContainer ? filesContainer.innerHTML : null;
+
+            if (searchInput) {
+                searchInput.addEventListener('input', function() {
+                    const query = this.value.trim();
+
+                    clearTimeout(searchTimeout);
+
+                    if (query.length === 0) {
+                        if (initialContent && filesContainer) {
+                            filesContainer.innerHTML = initialContent;
+                            filesContainer.style.opacity = '0';
+                            setTimeout(() => filesContainer.style.opacity = '1', 50);
+                        }
+                        searchLoading.classList.add('hidden');
+                        return;
+                    }
+
+                    // Show loading spinner
+                    searchLoading.classList.remove('hidden');
+
+                    searchTimeout = setTimeout(() => {
+                        const url = new URL('{{ route("files.index") }}');
+                        url.searchParams.append('search', query);
+
+                        fetch(url, {
+                            headers: {
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        })
+                        .then(response => {
+                            if (!response.ok) throw new Error('Search failed');
+                            return response.text();
+                        })
+                        .then(html => {
+                            if (filesContainer) {
+                                filesContainer.style.opacity = '0.5';
+                                setTimeout(() => {
+                                    filesContainer.innerHTML = html;
+                                    filesContainer.style.opacity = '1';
+                                }, 100);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Search error:', error);
+                        })
+                        .finally(() => {
+                            searchLoading.classList.add('hidden');
+                        });
+                    }, 300); // 300ms debounce
+                });
+            }
+        </script>
 
 @endsection
