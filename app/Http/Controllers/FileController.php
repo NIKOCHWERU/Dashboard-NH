@@ -213,6 +213,19 @@ class FileController extends Controller
         $clientId = $request->client_id;
         $description = $request->description;
 
+        Log::info("FileController: Upload attempt for client [$clientId]", [
+            'file_count' => count($request->file('files') ?? []),
+            'description' => $description,
+            'user_id' => auth()->id()
+        ]);
+
+        if (!$request->hasFile('files')) {
+            if ($request->wantsJson()) {
+                return response()->json(['error' => 'Tidak ada berkas yang diterima. Pastikan Anda memilih file, bukan hanya folder.'], 400);
+            }
+            return back()->with('error', 'Tidak ada berkas yang diterima.');
+        }
+
         // Check permission if user is not admin
         // Skip check for "Kantor Narasumber Hukum" - public category
         $client = Client::find($clientId);
@@ -254,6 +267,11 @@ class FileController extends Controller
             $driveFolderId = $this->driveService->ensureFolderExists($drivePath);
         } catch (\Exception $e) {
             Log::error("FileController: Google Drive preparation failed: " . $e->getMessage());
+
+            if ($request->wantsJson()) {
+                return response()->json(['error' => "Gagal menyiapkan folder Google Drive: " . $e->getMessage()], 500);
+            }
+
             return back()->with('error', "Gagal menyiapkan folder Google Drive: " . $e->getMessage());
         }
 

@@ -226,7 +226,12 @@
                     } else {
                         if (bar) bar.classList.replace('bg-primary', 'bg-red-500');
                         let msg = 'Gagal';
-                        try { const r = JSON.parse(xhr.responseText); msg = r.error || r.message || msg; } catch (e) { }
+                        try {
+                            const r = JSON.parse(xhr.responseText);
+                            msg = r.error || r.message || msg;
+                        } catch (e) {
+                            console.error('Error parsing response:', e);
+                        }
                         if (status) { status.textContent = msg; status.className = 'text-xs font-bold text-red-600 ml-2'; }
                         reject(new Error(msg));
                     }
