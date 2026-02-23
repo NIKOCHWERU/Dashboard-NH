@@ -288,23 +288,24 @@
                                     {{-- Real-time Timer indicator for dashboard --}}
                                     @if($task->timer_started_at || $task->total_seconds > 0)
                                         <div x-data="{ 
-                                                    active: {{ $task->timer_started_at ? 'true' : 'false' }},
-                                                    total: {{ $task->total_seconds }},
-                                                    startedAt: {{ $task->timer_started_at ? 'new Date(\'' . $task->timer_started_at->toIso8601String() . '\').getTime()' : 'null' }},
-                                                    display: '00:00:00',
-                                                    updateDisplay() {
-                                                        let seconds = this.total;
-                                                        if (this.active && this.startedAt) {
-                                                            seconds += Math.floor((Date.now() - this.startedAt) / 1000);
-                                                        }
-                                                        const h = Math.floor(seconds / 3600);
-                                                        const m = Math.floor((seconds % 3600) / 60);
-                                                        const s = seconds % 60;
-                                                        this.display = [h, m, s].map(v => v < 10 ? '0' + v : v).join(':');
-                                                    }
-                                                }" x-init="updateDisplay(); if(active) setInterval(() => updateDisplay(), 1000)"
-                                            class="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-gray-100/80 text-[10px] font-mono font-bold"
-                                            :class="active ? 'text-primary' : 'text-gray-400'">
+                                                                active: {{ $task->timer_started_at ? 'true' : 'false' }},
+                                                                total: {{ $task->total_seconds }},
+                                                                startedAt: {{ $task->timer_started_at ? 'new Date(\'' . $task->timer_started_at->toIso8601String() . '\').getTime()' : 'null' }},
+                                                                display: '00:00:00',
+                                                                updateDisplay() {
+                                                                    let seconds = this.total;
+                                                                    if (this.active && this.startedAt) {
+                                                                        seconds += Math.floor((Date.now() - this.startedAt) / 1000);
+                                                                    }
+                                                                    const h = Math.floor(seconds / 3600);
+                                                                    const m = Math.floor((seconds % 3600) / 60);
+                                                                    const s = seconds % 60;
+                                                                    this.display = [h, m, s].map(v => v < 10 ? '0' + v : v).join(':');
+                                                                }
+                                                            }"
+                                            x-init="updateDisplay(); if(active) setInterval(() => updateDisplay(), 1000)"
+                                            class="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-white border border-gray-100 shadow-sm text-[10px] font-mono font-bold"
+                                            :class="active ? 'text-primary' : 'text-gray-700'">
                                             <svg class="w-2.5 h-2.5" :class="active ? 'animate-spin-slow' : ''" fill="none"
                                                 stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
@@ -619,12 +620,12 @@
                             const isPast = currentDt < today;
 
                             html += `
-                                            <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
-                                                <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
-                                                    <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
-                                                    ${dateStr}
-                                                </h5>
-                                                <div class="space-y-2">`;
+                                                <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
+                                                    <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
+                                                        <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
+                                                        ${dateStr}
+                                                    </h5>
+                                                    <div class="space-y-2">`;
 
                             dayEvents.forEach(e => {
                                 const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
@@ -645,11 +646,11 @@
                                     (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
 
                                 html += `
-                                                        <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
-                                                            <p class="font-bold text-sm mb-1">${e.title}</p>
-                                                            ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
-                                                        </div>
-                                                    `;
+                                                            <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
+                                                                <p class="font-bold text-sm mb-1">${e.title}</p>
+                                                                ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
+                                                            </div>
+                                                        `;
                             });
 
                             html += `</div></div>`;
@@ -726,9 +727,9 @@
                     let html = "";
                     if (dayEvents.length === 0) {
                         html = `<div class="text-center py-8 bg-gray-50 rounded-lg dashed-border border-2 border-gray-200 border-dashed">
-                                            <p class="text-gray-400 font-bold">Tidak ada agenda.</p>
-                                            <p class="text-xs text-gray-400 mt-1">Klik tanggal lain untuk melihat agenda.</p>
-                                        </div>`;
+                                                <p class="text-gray-400 font-bold">Tidak ada agenda.</p>
+                                                <p class="text-xs text-gray-400 mt-1">Klik tanggal lain untuk melihat agenda.</p>
+                                            </div>`;
                     } else {
                         dayEvents.forEach(e => {
                             const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
@@ -753,19 +754,19 @@
                                 (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
 
                             html += `
-                                                <div class="p-4 rounded-lg bg-white border border-gray-100 shadow-sm flex items-start gap-3 hover:shadow-md transition-all">
-                                                    <div class="flex-shrink-0 w-12 text-center pt-1">
-                                                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">${timeStr.split(' ')[0]}</div>
+                                                    <div class="p-4 rounded-lg bg-white border border-gray-100 shadow-sm flex items-start gap-3 hover:shadow-md transition-all">
+                                                        <div class="flex-shrink-0 w-12 text-center pt-1">
+                                                            <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">${timeStr.split(' ')[0]}</div>
+                                                        </div>
+                                                        <div class="flex-grow pl-3 border-l-2 ${isHoliday ? 'border-red-200' : 'border-blue-100'}">
+                                                            <h4 class="font-bold text-gray-900">${e.title}</h4>
+                                                            <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                                ${timeStr}
+                                                            </p>
+                                                        </div>
                                                     </div>
-                                                    <div class="flex-grow pl-3 border-l-2 ${isHoliday ? 'border-red-200' : 'border-blue-100'}">
-                                                        <h4 class="font-bold text-gray-900">${e.title}</h4>
-                                                        <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                            ${timeStr}
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            `;
+                                                `;
                         });
                     }
 

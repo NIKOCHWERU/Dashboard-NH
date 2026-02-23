@@ -99,7 +99,7 @@
                                             }
                                         }" x-init="updateDisplay(); if(active) setInterval(() => updateDisplay(), 1000)" 
                                         class="flex items-center gap-2 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold tracking-tight"
-                                        :class="active ? 'bg-dark text-primary animate-pulse' : 'bg-gray-100 text-gray-500'">
+                                        :class="active ? 'bg-gray-900 text-white animate-pulse shadow-sm shadow-black/20' : 'bg-gray-100/80 text-gray-700'">
                                             <svg class="w-3 h-3" :class="active ? 'animate-spin-slow' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                             </svg>
