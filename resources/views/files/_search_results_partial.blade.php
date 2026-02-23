@@ -1,3 +1,4 @@
+@include('files._helpers')
 @if($items->isEmpty())
     <div class="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm">
         <div class="mx-auto w-20 h-20 bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
