@@ -34,24 +34,40 @@ class FileController extends Controller
                 ->where('client_id', $client->id)
                 ->where('description', $folderName);
 
-            if ($request->has('search') && !empty($request->search)) {
+            if ($request->filled('search')) {
                 $query->where('name', 'like', '%' . $request->search . '%');
+            }
+            if ($request->filled('uploader_id')) {
+                $query->where('uploaded_by', $request->uploader_id);
+            }
+            if ($request->filled('type')) {
+                $query->where('mime_type', 'like', $request->type . '%');
+            }
+            if ($request->filled('date_from')) {
+                $query->whereDate('created_at', '>=', $request->date_from);
+            }
+            if ($request->filled('date_to')) {
+                $query->whereDate('created_at', '<=', $request->date_to);
             }
 
             $query->latest();
-
             $items = $query->paginate(50);
 
             $breadcrumbs = [
                 ['label' => 'Home', 'url' => route('files.index')],
                 ['label' => ucfirst($client->category), 'url' => route('files.index', ['category' => $client->category])],
                 ['label' => $client->name, 'url' => route('files.index', ['client_id' => $client->id])],
-                ['label' => $folderName, 'url' => '#'],
+                ['label' => $folderName ?: 'Tanpa Keterangan', 'url' => '#'],
             ];
 
             $suggestions = File::select('description')->distinct()->pluck('description');
+            // Uploaders for the filter dropdown
+            $uploaders = \App\Models\User::whereIn(
+                'id',
+                File::where('client_id', $client->id)->distinct()->pluck('uploaded_by')
+            )->get(['id', 'name']);
 
-            return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'client', 'folderName', 'suggestions'));
+            return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'client', 'folderName', 'suggestions', 'uploaders'));
         }
 
         // Level 2: Folders (Descriptions) List for a Client
@@ -66,7 +82,7 @@ class FileController extends Controller
 
             // Get unique descriptions (Folders)
             $items = File::where('client_id', $client->id)
-                ->select('description', DB::raw('count(*) as count'))
+                ->select('description', DB::raw('count(*) as count'), DB::raw('MAX(created_at) as last_uploaded_at'))
                 ->groupBy('description')
                 ->orderBy('description')
                 ->get();
@@ -135,22 +151,28 @@ class FileController extends Controller
         $fixedCategories = ['Retainer', 'Perorangan', 'Kantor Narasumber Hukum'];
         $dbCategories = Client::select('category')->distinct()->pluck('category')->toArray();
 
-        // Merge
         $all = array_merge($fixedCategories, $dbCategories);
+        $allNormalized = array_map(fn($c) => ucfirst($c), $all);
+        $categories = array_unique($allNormalized);
+        $items = $categories;
 
-        // Normalize everything to Title Case (ucfirst) to deduplicate 'retainer' vs 'Retainer'
-        $allNormalized = array_map(function ($c) {
-            return ucfirst($c);
-        }, $all);
-
-        $items = array_unique($allNormalized);
+        // Category file counts
+        $categoryCounts = File::join('clients', 'files.client_id', '=', 'clients.id')
+            ->select('clients.category', DB::raw('count(*) as count'))
+            ->groupBy('clients.category')
+            ->pluck('count', 'clients.category');
 
         $breadcrumbs = [];
+
+        // Aggregated stats
+        $totalFiles = File::count();
+        $totalSize = File::sum('size');
+        $totalClients = Client::count();
 
         // Fetch recent files for this view
         $recentFiles = File::with(['client', 'uploader'])->latest()->take(10)->get();
 
-        return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'recentFiles'));
+        return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'recentFiles', 'totalFiles', 'totalSize', 'totalClients', 'categoryCounts'));
     }
 
     public function store(Request $request)
