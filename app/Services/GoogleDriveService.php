@@ -17,6 +17,7 @@ class GoogleDriveService
         $client = new Client();
 
         $tokenPath = storage_path('app/google-drive-token.json');
+        $serviceAccountPath = storage_path('app/google-drive-service-account.json');
 
         if (file_exists($tokenPath)) {
             // Priority: Use the Stored User Token (Admin's Token)
@@ -26,9 +27,13 @@ class GoogleDriveService
             $client->setClientId(config('services.google.client_id'));
             $client->setClientSecret(config('services.google.client_secret'));
             $client->refreshToken($tokenData['refresh_token']);
-        } else {
+        } elseif (file_exists($serviceAccountPath)) {
             // Fallback: Service Account (Limited to 15GB usually)
-            $client->setAuthConfig(storage_path('app/google-drive-service-account.json'));
+            $client->setAuthConfig($serviceAccountPath);
+        } else {
+            // CRITICAL: No credentials found
+            Log::error('GoogleDriveService: No Google Drive credentials found. Missing both google-drive-token.json and google-drive-service-account.json in storage/app/');
+            throw new \Exception("Konfigurasi kredensial Google Drive tidak ditemukan di server. Silakan hubungi admin untuk mengupload file kredensial.");
         }
 
         $client->addScope(Drive::DRIVE);
