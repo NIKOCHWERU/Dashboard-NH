@@ -114,20 +114,35 @@
                 <div class="p-6">
                     @forelse($infos as $info)
                         <div class="group border-b border-black/5 pb-6 mb-6 last:mb-0 last:border-0 last:pb-0">
+                            {{-- Info Image --}}
+                            @if($info->image)
+                                <div class="mb-3 rounded-xl overflow-hidden bg-gray-100">
+                                    <img src="{{ asset('storage/' . $info->image) }}"
+                                        alt="{{ $info->title }}"
+                                        class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300">
+                                </div>
+                            @endif
                             <h4
                                 class="text-md font-bold text-black border-l-4 border-primary pl-3 mb-2 group-hover:text-primary-hover transition-colors">
                                 {{ $info->title }}
                             </h4>
-                            <p class="text-xs text-black font-medium leading-relaxed">{{ Str::limit($info->content, 100) }}</p>
+                            <p class="text-xs text-black font-medium leading-relaxed">{{ Str::limit($info->content, 120) }}</p>
                             <div class="text-[10px] uppercase font-bold text-black/60 mt-4 flex items-center gap-4">
                                 <span class="flex items-center gap-1.5"><svg class="w-3.5 h-3.5" fill="none"
                                         stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>{{ $info->creator->name }}</span>
+                                @if($info->expires_at)
+                                <span class="flex items-center gap-1.5 text-amber-600">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    {{ $info->expires_at->format('d M Y') }}
+                                </span>
+                                @endif
                             </div>
                         </div>
                     @empty
+
                         <div class="text-center py-6">
                             <p class="text-black/40 text-xs italic font-bold">Belum ada informasi terbaru.</p>
                         </div>
