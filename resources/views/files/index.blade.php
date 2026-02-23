@@ -3,44 +3,78 @@
 @section('content')
 
     <!-- Header & Breadcrumbs -->
-    <div class="flex items-center justify-between mb-6">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-            <h2 class="text-2xl font-bold text-gray-800">Manajemen Berkas</h2>
-            <nav class="flex mt-1 text-sm text-gray-500" aria-label="Breadcrumb">
-                <ol class="inline-flex items-center space-x-1 md:space-x-3">
-                    @if(empty($breadcrumbs))
-                        <li><span class="text-gray-400">Home</span></li>
-                    @else
+            <h2 class="text-2xl font-extrabold text-gray-900 tracking-tight">Manajemen Berkas</h2>
+            <nav class="flex mt-2" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-2">
+                    <li class="inline-flex items-center">
+                        <a href="{{ route('files.index') }}"
+                            class="text-sm font-medium text-gray-500 hover:text-primary transition-colors flex items-center">
+                            <svg class="w-4 h-4 mr-1.5" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z">
+                                </path>
+                            </svg>
+                            Home
+                        </a>
+                    </li>
+                    @if(!empty($breadcrumbs))
                         @foreach($breadcrumbs as $crumb)
-                            <li class="inline-flex items-center">
-                                @if(!$loop->first)
-                                    <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20"
-                                        xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                                            clip-rule="evenodd"></path>
-                                    </svg>
+                            @if(!$loop->first) {{-- Skip 'Home' if it's already in the $breadcrumbs list to avoid duplication --}}
+                                @if($crumb['label'] !== 'Home')
+                                    <li class="flex items-center">
+                                        <svg class="w-4 h-4 text-gray-400 mx-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd"
+                                                d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                                                clip-rule="evenodd"></path>
+                                        </svg>
+                                        @if($crumb['url'] != '#' && !$loop->last)
+                                            <a href="{{ $crumb['url'] }}"
+                                                class="text-sm font-medium text-gray-500 hover:text-primary transition-colors">{{ $crumb['label'] }}</a>
+                                        @else
+                                            <span class="text-sm font-bold text-gray-900">{{ $crumb['label'] }}</span>
+                                        @endif
+                                    </li>
                                 @endif
-                                @if($crumb['url'] != '#')
-                                    <a href="{{ $crumb['url'] }}" class="hover:text-primary font-medium">{{ $crumb['label'] }}</a>
-                                @else
-                                    <span class="font-medium text-gray-800">{{ $crumb['label'] }}</span>
-                                @endif
-                            </li>
+                            @endif
                         @endforeach
                     @endif
                 </ol>
             </nav>
         </div>
 
-        <!-- Upload Button (Only show inside a Client Folder) -->
-        @if(isset($viewMode) && $viewMode == 'folders')
-            <button onclick="document.getElementById('uploadModal').classList.remove('hidden')"
-                class="bg-primary hover:bg-primary-hover text-white font-bold py-2 px-4 rounded shadow">
-                + Upload File Here
-            </button>
-        @endif
+        <!-- Action Buttons (Search & Upload) -->
+        <div class="flex items-center gap-3">
+            @if(isset($viewMode) && $viewMode == 'files')
+                <form action="{{ url()->current() }}" method="GET" class="relative group">
+                    @foreach(request()->except(['search', 'page']) as $key => $value)
+                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari berkas..."
+                        class="w-48 md:w-64 pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none">
+                    <div
+                        class="absolute inset-y-0 left-3.5 flex items-center pointer-events-none text-gray-400 group-focus-within:text-primary transition-colors">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </div>
+                </form>
+            @endif
+
+            @if(isset($viewMode) && ($viewMode == 'folders' || $viewMode == 'files'))
+                <button onclick="document.getElementById('uploadModal').classList.remove('hidden')"
+                    class="inline-flex items-center px-4 py-2.5 bg-primary hover:bg-primary-hover text-white rounded-xl shadow-lg shadow-primary/20 transition-all font-bold text-sm">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                    </svg>
+                    Unggah Berkas Baru
+                </button>
+            @endif
+        </div>
     </div>
+
 
     <!-- Checks server limits for UI rendering -->
     @php
@@ -58,149 +92,141 @@
 
     <!-- VIEW MODE 0: CATEGORIES -->
     @if($viewMode == 'categories')
-        <!-- Recent Files List -->
-        <div class="mb-10">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
-                    <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Berkas Terbaru
-                </h3>
-            </div>
-            <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-100">
-                        <thead class="bg-gray-50/50">
-                            <tr>
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                    Nama Berkas</th>
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                    Klien / Folder</th>
-                                <th class="px-6 py-3 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                    Waktu Unggah</th>
-                                <th class="px-6 py-3 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                    Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody class="divide-y divide-gray-5">
-                            @forelse($recentFiles as $file)
-                                <tr class="hover:bg-gray-50/50 transition-colors group">
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center gap-3">
-                                            <div
-                                                class="p-2 bg-gray-100 rounded text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
-                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                                    </path>
-                                                </svg>
-                                            </div>
-                                            <span class="text-sm font-medium text-gray-700 truncate max-w-[200px]"
-                                                title="{{ $file->name }}">{{ $file->name }}</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        <span
-                                            class="text-xs font-bold text-gray-500 uppercase tracking-tight">{{ $file->client->name }}</span>
-                                        @if($file->description)
-                                            <span class="text-[10px] text-gray-400 block">{{ $file->description }}</span>
-                                        @endif
-                                    </td>
-                                    <td class="px-6 py-4 text-xs text-gray-400 font-medium">
-                                        {{ $file->created_at->diffForHumans() }}
-                                    </td>
-                                    <td class="px-6 py-4 text-right">
-                                        <a href="{{ route('files.download', $file) }}"
-                                            class="text-xs font-bold text-primary hover:underline">Download</a>
-                                    </td>
-                                </tr>
-                            @empty
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <!-- Left Side: Recent Files (Span 2) -->
+            <div class="lg:col-span-2 space-y-6">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                        <span class="p-2 bg-primary/10 text-primary rounded-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </span>
+                        Berkas Terbaru
+                    </h3>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-100">
+                            <thead class="bg-gray-50/50">
                                 <tr>
-                                    <td colspan="4" class="px-6 py-8 text-center text-gray-400 italic text-sm">Belum ada berkas yang
-                                        diunggah.</td>
+                                    <th
+                                        class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                        Berkas</th>
+                                    <th
+                                        class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                        Klien</th>
+                                    <th
+                                        class="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                        Aksi</th>
                                 </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody class="divide-y divide-gray-50">
+                                @forelse($recentFiles as $file)
+                                    <tr class="hover:bg-gray-50/50 transition-colors group">
+                                        <td class="px-6 py-4">
+                                            <div class="flex items-center gap-3">
+                                                <div
+                                                    class="p-2 bg-gray-50 rounded-lg text-gray-400 group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                                        </path>
+                                                    </svg>
+                                                </div>
+                                                <div class="flex flex-col">
+                                                    <span class="text-sm font-semibold text-gray-700 truncate max-w-[180px]"
+                                                        title="{{ $file->name }}">{{ $file->name }}</span>
+                                                    <span
+                                                        class="text-[10px] text-gray-400 font-medium">{{ $file->created_at->diffForHumans() }}</span>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td class="px-6 py-4">
+                                            <span
+                                                class="inline-flex items-center px-2 py-1 rounded-md text-[10px] font-bold bg-gray-100 text-gray-600 uppercase">{{ $file->client->name }}</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="{{ route('files.download', $file) }}"
+                                                class="p-2 text-gray-400 hover:text-primary transition-colors">
+                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                                </svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-12 text-center text-gray-400 italic text-sm">Belum ada
+                                            berkas.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-            <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Kategori
-                            </th>
-                            <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Jenis /
-                                Keterangan</th>
-                            <th class="px-6 py-3 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Aksi</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @foreach($items as $cat)
-                            <tr class="hover:bg-gray-50 transition-colors group">
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="flex items-center">
-                                        <div
-                                            class="p-2 bg-yellow-50 rounded-lg text-primary mr-3 group-hover:bg-yellow-100 transition-colors">
-                                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
-                                                </path>
-                                            </svg>
-                                        </div>
-                                        <span class="text-sm font-bold text-gray-900">{{ ucfirst($cat) }}</span>
-                                    </div>
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap">
-                                    @if(strtolower($cat) === 'kantor narasumber hukum')
-                                        <div class="flex items-center gap-2">
-                                            <span
-                                                class="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-green-100 text-green-800">
-                                                <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path fill-rule="evenodd"
-                                                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                                        clip-rule="evenodd"></path>
-                                                </svg>
-                                                Akses Publik
-                                            </span>
-                                            <span class="text-xs text-gray-500">Semua user bisa upload</span>
-                                        </div>
-                                    @else
-                                        <span class="text-xs text-gray-500 font-medium">Kategori Klien</span>
-                                    @endif
-                                </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <a href="{{ route('files.index', ['category' => $cat]) }}"
-                                        class="inline-flex items-center px-3 py-1.5 bg-primary/10 text-primary hover:bg-primary hover:text-white rounded-lg transition-colors text-xs font-bold uppercase tracking-wider">
-                                        Buka
-                                        <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+            <!-- Right Side: Categories -->
+            <div class="space-y-6">
+                <h3 class="text-lg font-bold text-gray-800 flex items-center gap-2">
+                    <span class="p-2 bg-yellow-50 text-yellow-600 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                    </span>
+                    Kategori Utama
+                </h3>
+
+                <div class="flex flex-col gap-3">
+                    @foreach($items as $cat)
+                        <a href="{{ route('files.index', ['category' => $cat]) }}" class="group">
+                            <div
+                                class="bg-white p-4 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md hover:border-primary/20 transition-all flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div
+                                        class="p-3 bg-gray-50 text-gray-400 group-hover:bg-primary/10 group-hover:text-primary rounded-xl transition-colors">
+                                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10">
                                             </path>
                                         </svg>
-                                    </a>
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-sm font-bold text-gray-900">{{ ucfirst($cat) }}</h4>
+                                        <p class="text-[10px] text-gray-500 font-medium">Buka Berkas &rarr;</p>
+                                    </div>
+                                </div>
+                                <div class="text-gray-300 group-hover:text-primary transition-colors">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
             </div>
         </div>
     @endif
 
+
     <!-- VIEW MODE 1: CLIENTS -->
     @if($viewMode == 'clients')
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @foreach($items as $client)
-                <a href="{{ route('files.index', ['client_id' => $client->id]) }}" class="block group">
-                    <div class="bg-white rounded-lg shadow p-6 hover:shadow-lg transition-shadow">
+                <a href="{{ route('files.index', ['client_id' => $client->id]) }}" class="group">
+                    <div
+                        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-md hover:border-primary/20 transition-all">
                         <div class="flex items-center justify-between">
-                            <div class="flex items-center">
-                                <div class="p-2 bg-blue-50 rounded-lg text-blue-600 mr-3">
+                            <div class="flex items-center gap-4">
+                                <div
+                                    class="p-3 bg-blue-50 text-blue-600 rounded-xl group-hover:bg-primary group-hover:text-white transition-colors">
                                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
@@ -208,11 +234,23 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <h4 class="font-bold text-gray-800">{{ $client->name }}</h4>
-                                    <span class="text-xs text-gray-500">{{ $client->files_count }} Files</span>
+                                    <h4 class="font-extrabold text-gray-900 group-hover:text-primary transition-colors text-sm">
+                                        {{ $client->name }}
+                                    </h4>
+                                    <div class="flex items-center gap-2 mt-1">
+                                        <span
+                                            class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">{{ $client->files_count }}
+                                            Berkas</span>
+                                        <span class="w-1 h-1 bg-gray-300 rounded-full"></span>
+                                        <span class="text-[10px] font-bold text-primary uppercase">Lihat Detail</span>
+                                    </div>
                                 </div>
                             </div>
-                            <span class="text-gray-400 group-hover:text-primary">&rarr;</span>
+                            <div class="text-gray-300 group-hover:text-primary group-hover:translate-x-1 transition-all">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                </svg>
+                            </div>
                         </div>
                     </div>
                 </a>
@@ -222,51 +260,57 @@
 
     <!-- VIEW MODE 2: FOLDERS (DESCRIPTIONS) -->
     @if($viewMode == 'folders')
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
             @foreach($items as $folder)
                 <div class="relative group">
                     <a href="{{ route('files.index', ['client_id' => $client->id, 'folder' => $folder->description]) }}"
                         class="block">
                         <div
-                            class="bg-white rounded-xl shadow-sm hover:shadow-md transition-all p-5 text-center border border-gray-100 hover:border-primary group-hover:-translate-y-1">
-                            <div class="mx-auto w-16 h-16 mb-3">
-                                <svg class="w-full h-full text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                            class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center hover:shadow-md hover:border-primary/20 transition-all group-hover:-translate-y-1">
+                            <div
+                                class="mx-auto w-16 h-16 mb-4 flex items-center justify-center bg-yellow-50 rounded-2xl text-yellow-500 group-hover:bg-yellow-100 transition-colors">
+                                <svg class="w-10 h-10" fill="currentColor" viewBox="0 0 20 20">
                                     <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"></path>
                                 </svg>
                             </div>
-                            <h5 class="font-bold text-gray-800 truncate px-2 text-sm" title="{{ $folder->description }}">
+                            <h5 class="font-bold text-gray-900 truncate px-2 text-sm mb-1" title="{{ $folder->description }}">
                                 {{ $folder->description ?: 'Tanpa Keterangan' }}
                             </h5>
                             <span
-                                class="inline-block mt-1 px-2 py-0.5 bg-gray-100 text-[10px] font-bold text-gray-500 rounded-full">{{ $folder->count }}
-                                Berkas</span>
+                                class="inline-flex items-center px-2 py-0.5 bg-gray-100 text-[10px] font-bold text-gray-500 rounded-lg group-hover:bg-primary/10 group-hover:text-primary transition-colors">
+                                {{ $folder->count }} Berkas
+                            </span>
                         </div>
                     </a>
-                    @if(auth()->user()->isAdmin())
-                        <button
-                            onclick="confirmDeleteFolder({{ json_encode($folder->description) }}, {{ $folder->count }}, {{ $client->id }})"
-                            class="absolute -top-2 -right-2 bg-white text-red-500 hover:bg-red-500 hover:text-white p-1.5 rounded-full shadow-lg border border-red-100 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                            title="Hapus Folder">
+
+                    <div
+                        class="absolute top-2 right-2 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        @if(auth()->user()->isAdmin())
+                            <button
+                                onclick="confirmDeleteFolder({{ json_encode($folder->description) }}, {{ $folder->count }}, {{ $client->id }})"
+                                class="bg-white/80 backdrop-blur-sm text-red-500 hover:bg-red-500 hover:text-white p-2 rounded-xl shadow-sm border border-red-100 transition-all"
+                                title="Hapus Folder">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                    </path>
+                                </svg>
+                            </button>
+                        @endif
+                        <button onclick="emailFolder({{ $client->id }}, {{ json_encode($folder->description) }})"
+                            class="bg-white/80 backdrop-blur-sm text-blue-600 hover:bg-blue-600 hover:text-white p-2 rounded-xl shadow-sm border border-blue-100 transition-all"
+                            title="Email Link Folder">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
                                 </path>
                             </svg>
                         </button>
-                    @endif
-                    <!-- Email Folder Button -->
-                    <button onclick="emailFolder({{ $client->id }}, {{ json_encode($folder->description) }})"
-                        class="absolute -top-2 -left-2 bg-white text-blue-600 hover:bg-blue-600 hover:text-white p-1.5 rounded-full shadow-lg border border-blue-100 opacity-0 group-hover:opacity-100 transition-opacity z-10"
-                        title="Email Link Folder">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
-                            </path>
-                        </svg>
-                    </button>
+                    </div>
                 </div>
             @endforeach
         </div>
+
 
         <!-- Delete Folder Modal -->
         <div id="deleteFolderModal"
@@ -308,7 +352,7 @@
         </div>
 
         <script>
-            function confirmD        eleteFolder(folderName, count, clientId) {
+            function confirmDeleteFolder(folderName, count, clientId) {
                 // folderName can be empty string for 'No Description'
                 document.getElementById('delFolderName').textContent = folderName || 'Tanpa Keterangan';
                 document.getElementById('delFileCount').textContent = count;
@@ -340,12 +384,15 @@
 
         <!-- Upload Modal with Datalist -->
         <div id="uploadModal"
-            class="hidden fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center z-[60] backdrop-blur-sm transition-opacity duration-300 p-4">
-            <div class="bg-white rounded-xl shadow-2xl w-full max-w-lg overflow-hidden transform transition-all">
-                <div class="px-6 py-4 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-gray-800">Upload Berkas: {{ $client->name }}</h3>
+            class="hidden fixed inset-0 bg-gray-900/40 flex items-center justify-center z-[60] backdrop-blur-sm p-4 animate-in fade-in duration-200">
+            <div class="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden transform scale-100 transition-all">
+                <div class="px-8 py-5 border-b border-gray-100 bg-gray-50/50 flex justify-between items-center">
+                    <div>
+                        <h3 class="text-xl font-extrabold text-gray-900 tracking-tight">Unggah Berkas</h3>
+                        <p class="text-[10px] font-bold text-primary uppercase tracking-widest mt-0.5">{{ $client->name }}</p>
+                    </div>
                     <button onclick="document.getElementById('uploadModal').classList.add('hidden')"
-                        class="text-gray-400 hover:text-gray-600">
+                        class="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-xl transition-all">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
                             </path>
@@ -353,57 +400,65 @@
                     </button>
                 </div>
 
-                <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="p-6">
+                <form action="{{ route('files.store') }}" method="POST" enctype="multipart/form-data" class="p-8">
                     @csrf
                     <input type="hidden" name="client_id" value="{{ $client->id }}">
 
-                    <div class="space-y-4">
+                    <div class="space-y-6">
                         <div>
-                            <div class="relative mt-2">
+                            <label for="description"
+                                class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Keterangan
+                                Folder / Sub-Folder</label>
+                            <div class="relative">
                                 <input list="descriptions-list" name="description" id="description"
-                                    class="peer h-10 w-full border-b-2 border-gray-300 text-gray-900 placeholder-transparent focus:outline-none focus:border-primary transition-colors bg-transparent pt-4 pb-1"
-                                    placeholder="Keterangan Folder" autocomplete="off">
-                                <label for="description"
-                                    class="absolute left-0 -top-3.5 text-gray-600 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-400 peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-gray-600 peer-focus:text-sm">
-                                    Keterangan Folder / Sub-Folder
-                                </label>
+                                    value="{{ $folderName ?? '' }}"
+                                    class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-medium focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all outline-none"
+                                    placeholder="Ketik atau pilih keterangan..." autocomplete="off">
                                 <datalist id="descriptions-list">
                                     @foreach($suggestions as $s)
                                         @if($s) <option value="{{ $s }}"> @endif
                                     @endforeach
                                 </datalist>
+                                <div class="absolute inset-y-0 right-4 flex items-center pointer-events-none text-gray-400">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M19 9l-7 7-7-7"></path>
+                                    </svg>
+                                </div>
                             </div>
-                            <p class="mt-1 text-[10px] text-gray-400 italic">Pilih atau ketik baru untuk mengelompokkan file.
-                            </p>
+                            <p class="mt-2 text-[10px] text-gray-400 font-medium italic">File akan dikelompokkan berdasarkan
+                                keterangan ini.</p>
                         </div>
 
                         <div>
-                            <label class="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">Pilih File (Bisa
-                                Banyak)</label>
-                            <div class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-primary transition-colors cursor-pointer relative"
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Pilih
+                                Berkas</label>
+                            <div class="mt-1 flex justify-center px-6 pt-8 pb-10 border-2 border-gray-300 border-dashed rounded-2xl hover:border-primary hover:bg-primary/5 transition-all cursor-pointer relative group"
                                 onclick="document.getElementById('file-input').click()">
-                                <div class="space-y-1 text-center">
-                                    <svg class="mx-auto h-12 w-12 text-gray-400" stroke="currentColor" fill="none"
-                                        viewBox="0 0 48 48" aria-hidden="true">
-                                        <path
-                                            d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
-                                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                    <div class="flex text-sm text-gray-600 justify-center">
-                                        <span
-                                            class="relative cursor-pointer bg-white rounded-md font-medium text-primary hover:text-primary-dark">Upload
-                                            a file</span>
-                                        <p class="pl-1">or drag and drop</p>
+                                <div class="space-y-2 text-center">
+                                    <div
+                                        class="mx-auto w-12 h-12 bg-gray-100 text-gray-400 rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+                                        <svg class="w-6 h-6" stroke="currentColor" fill="none" viewBox="0 0 48 48">
+                                            <path
+                                                d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
+                                                stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+                                        </svg>
                                     </div>
-                                    <p class="text-xs text-gray-500">PNG, JPG, PDF, DOCX up to 1GB per file</p>
+                                    <div class="flex text-sm text-gray-600 justify-center">
+                                        <span class="font-extrabold text-primary hover:text-primary-dark">Pilih file</span>
+                                        <p class="pl-1 font-medium">atau tarik & lepas</p>
+                                    </div>
+                                    <p class="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Maksimal 1GB per
+                                        file</p>
                                 </div>
                                 <input id="file-input" name="files[]" type="file" class="sr-only" multiple required>
                             </div>
                             <!-- Scroll View for File List -->
-                            <div id="file-list" class="mt-2 space-y-1 max-h-[200px] overflow-y-auto px-1 custom-scrollbar">
+                            <div id="file-list" class="mt-4 space-y-2 max-h-[150px] overflow-y-auto px-1 custom-scrollbar">
                             </div>
                         </div>
                     </div>
+
 
                     <div id="progress-container" class="mt-6 hidden">
                         <div class="flex items-center justify-between mb-2">
@@ -491,11 +546,11 @@
                             const summary = document.createElement('div');
                             summary.className = 'mb-2 p-2 bg-blue-50 border border-blue-200 rounded-lg sticky top-0 z-10'; // Sticky summary
                             summary.innerHTML = `
-                                                                        <div class="flex items-center justify-between text-xs">
-                                                                            <span class="font-bold text-blue-800">📁 ${this.files.length} file dipilih</span>
-                                                                            <span class="font-semibold text-blue-600">Total: ${formatSize(totalSize)}</span>
-                                                                        </div>
-                                                                    `;
+                                                                                                                                    <div class="flex items-center justify-between text-xs">
+                                                                                                                                        <span class="font-bold text-blue-800">📁 ${this.files.length} file dipilih</span>
+                                                                                                                                        <span class="font-semibold text-blue-600">Total: ${formatSize(totalSize)}</span>
+                                                                                                                                    </div>
+                                                                                                                                `;
                             fileList.appendChild(summary);
 
                             Array.from(this.files).forEach((file, index) => {
@@ -537,40 +592,63 @@
 
                         const processQueue = async () => {
                             const overallStatus = document.getElementById('overall-status');
-                            for (let i = 0; i < totalFiles; i++) {
+                            const concurrencyLimit = 3;
+                            let activeUploads = 0;
+                            let currentIndex = 0;
+
+                            const next = async () => {
+                                if (currentIndex >= totalFiles) return;
+
+                                const i = currentIndex++;
                                 const file = queue[i];
                                 const progressId = 'prog-' + i;
+
                                 const item = document.createElement('div');
-                                item.className = 'text-xs text-gray-600 bg-gray-50 p-2 rounded border border-gray-100 mb-2';
+                                item.className = 'text-[10px] text-gray-600 bg-gray-50 p-2 rounded-xl border border-gray-100 mb-2 animate-in slide-in-from-bottom-2 duration-300';
                                 item.innerHTML = `
-                                                                            <div class="flex justify-between mb-1">
-                                                                                <span class="truncate w-1/2 font-medium">${file.name}</span>
-                                                                                <span id="${progressId}-status" class="font-bold text-primary">Menunggu...</span>
-                                                                            </div>
-                                                                            <div class="w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                                                                <div id="${progressId}-bar" class="bg-primary h-1.5 rounded-full transition-all duration-300" style="width: 0%"></div>
-                                                                            </div>
-                                                                        `;
+                                                                        <div class="flex justify-between mb-1.5 px-1">
+                                                                            <span class="truncate w-2/3 font-bold">${file.name}</span>
+                                                                            <span id="${progressId}-status" class="font-bold text-primary">0%</span>
+                                                                        </div>
+                                                                        <div class="w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                                                                            <div id="${progressId}-bar" class="bg-primary h-1 rounded-full transition-all duration-300" style="width: 0%"></div>
+                                                                        </div>
+                                                                    `;
                                 progressList.appendChild(item);
                                 item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 
+                                activeUploads++;
                                 try {
                                     await uploadSingleFile(file, i, progressId);
                                 } catch (err) {
                                     hasErrors = true;
+                                } finally {
+                                    activeUploads--;
+                                    completedCount++;
+                                    overallStatus.textContent = `${completedCount}/${totalFiles} Berhasil`;
+                                    await next();
                                 }
-                                completedCount++;
-                                overallStatus.textContent = `${completedCount}/${totalFiles} Selesai`;
+                            };
+
+                            const initialTasks = [];
+                            for (let i = 0; i < Math.min(concurrencyLimit, totalFiles); i++) {
+                                initialTasks.push(next());
                             }
 
+                            await Promise.all(initialTasks);
+
                             if (!hasErrors) {
+                                overallStatus.className = 'text-xs font-bold text-green-600';
+                                overallStatus.textContent = 'Semua Berhasil Diunggah!';
                                 setTimeout(() => {
                                     window.location.reload();
-                                }, 1000);
+                                }, 1500);
                             } else {
                                 uploadBtn.disabled = false;
                                 uploadBtn.innerText = 'Coba Lagi / Selesai';
-                                alert('Beberapa file gagal diunggah. Silakan cek status di bawah.');
+                                overallStatus.className = 'text-xs font-bold text-red-600';
+                                overallStatus.textContent = `${completedCount}/${totalFiles} Selesai (Beberapa Gagal)`;
+                                alert('Beberapa berkas gagal diunggah. Silakan periksa status di daftar progress.');
                             }
                         };
 
@@ -600,7 +678,7 @@
                                 xhr.addEventListener('load', function () {
                                     if (xhr.status >= 200 && xhr.status < 300) {
                                         progressBar.classList.replace('bg-primary', 'bg-green-500');
-                                        statusText.innerText = 'Selesai';
+                                        statusText.innerText = 'Berhasil';
                                         statusText.className = 'font-bold text-green-600';
                                         resolve();
                                     } else {
@@ -638,139 +716,172 @@
 
     <!-- VIEW MODE 3: FILES LIST -->
     @if($viewMode == 'files')
-        <div class="bg-white rounded-lg shadow">
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
             <!-- Bulk Actions Toolbar -->
-            <div class="p-4 border-b flex justify-between items-center bg-gray-50" id="bulk-actions" style="display: none;">
-                <span class="text-sm text-gray-700"><span id="selected-count">0</span> file dipilih</span>
-                <button onclick="downloadSelected()"
-                    class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-sm flex items-center">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                    </svg>
-                    Download Terpilih
-                </button>
-                <button onclick="emailLinks()"
-                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1 px-3 rounded text-sm flex items-center ml-auto md:ml-2">
-                    <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
-                        </path>
-                    </svg>
-                    Email Link
-                </button>
+            <div class="px-6 py-4 border-b flex flex-wrap items-center justify-between bg-gray-50/50 gap-4" id="bulk-actions"
+                style="display: none;">
+                <div class="flex items-center gap-3">
+                    <span class="p-2 bg-primary/10 text-primary rounded-lg">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2">
+                            </path>
+                        </svg>
+                    </span>
+                    <span class="text-sm font-bold text-gray-700"><span id="selected-count">0</span> file dipilih</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="downloadSelected()"
+                        class="inline-flex items-center px-3 py-2 bg-green-500 hover:bg-green-600 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-green-200">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                        </svg>
+                        Download ZIP
+                    </button>
+                    <button onclick="emailLinks()"
+                        class="inline-flex items-center px-3 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition-all shadow-lg shadow-blue-200">
+                        <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                            </path>
+                        </svg>
+                        Email Link
+                    </button>
+                </div>
             </div>
 
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left">
-                            <input type="checkbox" id="select-all"
-                                class="rounded border-gray-300 text-primary focus:ring-primary">
-                        </th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama File</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Size</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    @forelse($items as $file)
-                        <tr class="hover:bg-gray-50 cursor-pointer" onclick="toggleRow(this)">
-                            <td class="px-6 py-4" onclick="event.stopPropagation()">
-                                <input type="checkbox" name="selected_files[]" value="{{ $file->id }}"
-                                    data-file-name="{{ $file->name }}"
-                                    data-file-link="https://drive.google.com/file/d/{{ $file->drive_file_id }}/view?usp=sharing"
-                                    data-file-is-image="{{ str_starts_with($file->mime_type, 'image/') ? '1' : '0' }}"
-                                    class="file-checkbox rounded border-gray-300 text-primary focus:ring-primary"
-                                    onchange="updateBulkUI()">
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap"
-                                onclick="window.open('{{ route('files.view', $file) }}', '_blank'); event.stopPropagation();">
-                                <div class="flex items-center">
-                                    @php
-                                        $isImage = str_starts_with($file->mime_type, 'image/');
-                                        $thumbnailUrl = $isImage ? "https://drive.google.com/thumbnail?id={$file->drive_file_id}&sz=w100" : null;
-                                    @endphp
-
-                                    @if($thumbnailUrl)
-                                        <img src="{{ $thumbnailUrl }}" alt="{{ $file->name }}"
-                                            class="w-10 h-10 object-cover rounded mr-3"
-                                            onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-                                        <svg class="w-5 h-5 text-gray-400 mr-2" style="display: none;" fill="none" stroke="currentColor"
-                                            viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                            </path>
-                                        </svg>
-                                    @else
-                                        <svg class="w-5 h-5 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
-                                            </path>
-                                        </svg>
-                                    @endif
-                                    <span class="text-sm font-medium text-gray-900">{{ $file->name }}</span>
-                                </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ number_format($file->size / 1024, 2) }}
-                                KB</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                {{ $file->created_at->format('d M Y H:i') }}
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium" onclick="event.stopPropagation()">
-                                <div class="flex items-center gap-2">
-                                    <a href="{{ route('files.download', $file) }}" class="text-green-600 hover:text-green-900"
-                                        title="Download">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                                        </svg>
-                                    </a>
-
-                                    <!-- NEW: Send to Gmail Button -->
-                                    @php
-                                        $driveLink = "https://drive.google.com/file/d/{$file->drive_file_id}/view?usp=sharing";
-                                        $subject = "Berkas: " . $file->name;
-                                        $body = "Berikut adalah link untuk mengunduh berkas yang Anda butuhkan:%0A%0A" . $driveLink . "%0A%0ATerima kasih.";
-                                        $gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&su=" . urlencode($subject) . "&body=" . $body; 
-                                    @endphp
-                                    <a href="{{ $gmailLink }}" target="_blank" class="text-blue-600 hover:text-blue-900"
-                                        title="Kirim Link via Gmail">
-                                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1">
-                                            </path>
-                                        </svg>
-                                    </a>
-
-                                    @if(auth()->user()->isAdmin())
-                                        <form action="{{ route('files.destroy', $file) }}" method="POST" class="inline"
-                                            onsubmit="return confirm('Hapus file?');">
-                                            @csrf @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-900" title="Delete">
-                                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                                                    </path>
-                                                </svg>
-                                            </button>
-                                        </form>
-                                    @endif
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead class="bg-gray-50/50">
                         <tr>
-                            <td colspan="5" class="px-6 py-4 text-center text-gray-500">Folder ini kosong.</td>
+                            <th class="px-6 py-4 text-left">
+                                <input type="checkbox" id="select-all"
+                                    class="rounded-md border-gray-300 text-primary focus:ring-primary h-4 w-4">
+                            </th>
+                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Nama
+                                Berkas</th>
+                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">Ukuran
+                            </th>
+                            <th class="px-6 py-4 text-left text-[10px] font-bold text-gray-400 uppercase tracking-widest">
+                                Tanggal</th>
+                            <th class="px-6 py-4 text-right text-[10px] font-bold text-gray-400 uppercase tracking-widest">Aksi
+                            </th>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
-            <div class="px-6 py-4">
-                {{ $items->links() }}
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @forelse($items as $file)
+                            <tr class="hover:bg-gray-50/30 transition-colors group cursor-default">
+                                <td class="px-6 py-4">
+                                    <input type="checkbox" name="selected_files[]" value="{{ $file->id }}"
+                                        data-file-name="{{ $file->name }}"
+                                        data-file-link="https://drive.google.com/file/d/{{ $file->drive_file_id }}/view?usp=sharing"
+                                        data-file-is-image="{{ str_starts_with($file->mime_type, 'image/') ? '1' : '0' }}"
+                                        class="file-checkbox rounded-md border-gray-300 text-primary focus:ring-primary h-4 w-4"
+                                        onchange="updateBulkUI()">
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-3">
+                                        @php
+                                            $isImage = str_starts_with($file->mime_type, 'image/');
+                                            $thumbnailUrl = $isImage ? "https://drive.google.com/thumbnail?id={$file->drive_file_id}&sz=w100" : null;
+                                        @endphp
+                                        <div class="relative w-10 h-10 flex-shrink-0">
+                                            @if($thumbnailUrl)
+                                                <img src="{{ $thumbnailUrl }}" alt="{{ $file->name }}"
+                                                    class="w-10 h-10 object-cover rounded-lg border border-gray-100 shadow-sm"
+                                                    onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                <div
+                                                    class="hidden absolute inset-0 bg-gray-50 rounded-lg items-center justify-center text-gray-400 border border-gray-100">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                                        </path>
+                                                    </svg>
+                                                </div>
+                                            @else
+                                                <div
+                                                    class="w-10 h-10 bg-gray-50 rounded-lg flex items-center justify-center text-gray-400 border border-gray-100">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z">
+                                                        </path>
+                                                    </svg>
+                                                </div>
+                                            @endif
+                                        </div>
+                                        <div class="flex flex-col">
+                                            <a href="{{ route('files.view', $file) }}" target="_blank"
+                                                class="text-sm font-extrabold text-gray-700 hover:text-primary transition-colors truncate max-w-[250px]">{{ $file->name }}</a>
+                                            <span
+                                                class="text-[10px] text-gray-400 font-bold uppercase tracking-tight">{{ $file->mime_type }}</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-xs font-bold text-gray-500">
+                                    {{ number_format($file->size / 1024, 2) }} KB
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-xs font-bold text-gray-400">
+                                    {{ $file->created_at->format('d M Y') }}
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('files.download', $file) }}"
+                                            class="p-2 text-gray-400 hover:text-green-600 transition-colors" title="Download">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                            </svg>
+                                        </a>
+
+                                        @php
+                                            $driveLink = "https://drive.google.com/file/d/{$file->drive_file_id}/view?usp=sharing";
+                                            $subject = "Berkas: " . $file->name;
+                                            $body = "Berikut adalah link untuk mengunduh berkas yang Anda butuhkan:%0A%0A" . $driveLink . "%0A%0ATerima kasih.";
+                                            $gmailLink = "https://mail.google.com/mail/?view=cm&fs=1&su=" . urlencode($subject) . "&body=" . $body; 
+                                        @endphp
+                                        <a href="{{ $gmailLink }}" target="_blank"
+                                            class="p-2 text-gray-400 hover:text-blue-600 transition-colors" title="Gmail Link">
+                                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z">
+                                                </path>
+                                            </svg>
+                                        </a>
+
+                                        @if(auth()->user()->isAdmin())
+                                            <form action="{{ route('files.destroy', $file) }}" method="POST" class="inline"
+                                                onsubmit="return confirm('Hapus berkas?');">
+                                                @csrf @method('DELETE')
+                                                <button type="submit" class="p-2 text-gray-400 hover:text-red-600 transition-colors">
+                                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endif
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-400 font-medium italic">Folder ini masih
+                                    kosong.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
+
+            @if($items->hasPages())
+                <div class="px-6 py-4 border-t border-gray-100 bg-gray-50/30">
+                    {{ $items->links() }}
+                </div>
+            @endif
         </div>
+
 
         <!-- Hidden Form for Bulk Download -->
         <form id="bulk-download-form" action="{{ route('files.bulk-download') }}" method="POST" style="display: none;">
@@ -847,10 +958,10 @@
                 items.forEach(item => {
                     const iconUrl = item.isImage ? iconImg : iconDoc;
                     htmlContent += `
-                                                <li style="margin-bottom: 8px; display: flex; align-items: center;">
-                                                    <img src="${iconUrl}" width="24" height="24" style="vertical-align: middle; margin-right: 10px;">
-                                                    <a href="${item.link}" style="color: #1a0dab; text-decoration: none; font-weight: bold;">${item.name}</a>
-                                                </li>`;
+                                                                                                        <li style="margin-bottom: 8px; display: flex; align-items: center;">
+                                                                                                            <img src="${iconUrl}" width="24" height="24" style="vertical-align: middle; margin-right: 10px;">
+                                                                                                            <a href="${item.link}" style="color: #1a0dab; text-decoration: none; font-weight: bold;">${item.name}</a>
+                                                                                                        </li>`;
                     textContent += `- ${item.name}: ${item.link}\n`;
                 });
                 htmlContent += "</ul>";

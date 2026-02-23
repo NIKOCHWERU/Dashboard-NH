@@ -32,8 +32,13 @@ class FileController extends Controller
 
             $query = File::with(['uploader'])
                 ->where('client_id', $client->id)
-                ->where('description', $folderName)
-                ->latest();
+                ->where('description', $folderName);
+
+            if ($request->has('search') && !empty($request->search)) {
+                $query->where('name', 'like', '%' . $request->search . '%');
+            }
+
+            $query->latest();
 
             $items = $query->paginate(50);
 
@@ -44,7 +49,9 @@ class FileController extends Controller
                 ['label' => $folderName, 'url' => '#'],
             ];
 
-            return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'client', 'folderName'));
+            $suggestions = File::select('description')->distinct()->pluck('description');
+
+            return view('files.index', compact('viewMode', 'items', 'breadcrumbs', 'client', 'folderName', 'suggestions'));
         }
 
         // Level 2: Folders (Descriptions) List for a Client
