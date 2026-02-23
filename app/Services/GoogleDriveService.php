@@ -20,24 +20,35 @@ class GoogleDriveService
         $serviceAccountPath = storage_path('app/google-drive-service-account.json');
 
         if (file_exists($tokenPath)) {
-            // Priority: Use the Stored User Token (Admin's Token)
-            // This allows using the 100GB+ storage of the real user account
+            Log::info("GoogleDriveService: Attempting auth with token file.");
             $tokenData = json_decode(file_get_contents($tokenPath), true);
+            
+            if (empty($tokenData['refresh_token'])) {
+                Log::error("GoogleDriveService: Token file found but refresh_token is missing.");
+                throw new \Exception("File google-drive-token.json tidak valid (refresh_token kosong).");
+            }
 
             $client->setClientId(config('services.google.client_id'));
             $client->setClientSecret(config('services.google.client_secret'));
             $client->refreshToken($tokenData['refresh_token']);
         } elseif (file_exists($serviceAccountPath)) {
-            // Fallback: Service Account (Limited to 15GB usually)
+            Log::info("GoogleDriveService: Attempting auth with service account file.");
+            $jsonContent = file_get_contents($serviceAccountPath);
+            $accountData = json_decode($jsonContent, true);
+
+            if (empty($accountData)) {
+                Log::error("GoogleDriveService: Service account file is empty or invalid JSON.");
+                throw new \Exception("File google-drive-service-account.json kosong atau format JSON-nya salah.");
+            }
+
+            Log::info("GoogleDriveService: Service account loaded for: " . ($accountData['client_email'] ?? 'unknown email'));
             $client->setAuthConfig($serviceAccountPath);
         } else {
-            // CRITICAL: No credentials found
-            Log::error('GoogleDriveService: No Google Drive credentials found. Missing both google-drive-token.json and google-drive-service-account.json in storage/app/');
-            throw new \Exception("Konfigurasi kredensial Google Drive tidak ditemukan di server. Silakan hubungi admin untuk mengupload file kredensial.");
+            Log::error("GoogleDriveService: No credentials found. Path checked: $tokenPath and $serviceAccountPath");
+            throw new \Exception("Konfigurasi kredensial Google Drive tidak ditemukan di server. Silakan pastikan file .json sudah diupload ke storage/app/.");
         }
 
         $client->addScope(Drive::DRIVE);
-
         $this->service = new Drive($client);
         $this->folderId = config('services.google.drive_folder_id', env('GOOGLE_DRIVE_FOLDER_ID'));
 
