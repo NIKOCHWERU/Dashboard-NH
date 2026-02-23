@@ -5,6 +5,10 @@ use App\Http\Controllers\ClientController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\EventController;
+use App\Http\Controllers\InfoController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,12 +46,12 @@ Route::middleware(['auth'])->group(function () {
     Route::resource('files', FileController::class);
 
     // Tasks Management
-    Route::get('tasks', [App\Http\Controllers\TaskController::class, 'index'])->name('tasks.index');
-    Route::post('tasks', [App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
-    Route::patch('tasks/{task}/toggle', [App\Http\Controllers\TaskController . php, 'toggleStatus'])->name('tasks.toggle');
-    Route::post('tasks/{task}/start', [App\Http\Controllers\TaskController::class, 'startTimer'])->name('tasks.start');
-    Route::post('tasks/{task}/stop', [App\Http\Controllers\TaskController::class, 'stopTimer'])->name('tasks.stop');
-    Route::delete('tasks/{task}', [App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
+    Route::get('tasks', [TaskController::class, 'index'])->name('tasks.index');
+    Route::post('tasks', [TaskController::class, 'store'])->name('tasks.store');
+    Route::patch('tasks/{task}/toggle', [TaskController::class, 'toggleStatus'])->name('tasks.toggle');
+    Route::post('tasks/{task}/start', [TaskController::class, 'startTimer'])->name('tasks.start');
+    Route::post('tasks/{task}/stop', [TaskController::class, 'stopTimer'])->name('tasks.stop');
+    Route::delete('tasks/{task}', [TaskController::class, 'destroy'])->name('tasks.destroy');
 
     // Clients - Read access for all, write for admin only
     Route::get('clients', [ClientController::class, 'index'])->name('clients.index');
