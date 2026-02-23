@@ -76,20 +76,71 @@
                                     </button>
                                 </form>
                                 <div>
-                                    <h3 class="text-sm font-bold {{ $task->status == 'completed' ? 'text-gray-400 line-through' : 'text-gray-800' }}">
-                                        {{ $task->title }}
-                                    </h3>
+                                    <div class="flex items-center gap-2">
+                                        <h3 class="text-sm font-bold {{ $task->status == 'completed' ? 'text-gray-400 line-through' : 'text-gray-800' }}">
+                                            {{ $task->title }}
+                                        </h3>
+                                        
+                                        {{-- Real-time Timer Badge --}}
+                                        <div x-data="{ 
+                                            active: {{ $task->timer_started_at ? 'true' : 'false' }},
+                                            total: {{ $task->total_seconds }},
+                                            startedAt: {{ $task->timer_started_at ? 'new Date(\'' . $task->timer_started_at->toIso8601String() . '\').getTime()' : 'null' }},
+                                            display: '00:00:00',
+                                            updateDisplay() {
+                                                let seconds = this.total;
+                                                if (this.active && this.startedAt) {
+                                                    seconds += Math.floor((Date.now() - this.startedAt) / 1000);
+                                                }
+                                                const h = Math.floor(seconds / 3600);
+                                                const m = Math.floor((seconds % 3600) / 60);
+                                                const s = seconds % 60;
+                                                this.display = [h, m, s].map(v => v < 10 ? '0' + v : v).join(':');
+                                            }
+                                        }" x-init="updateDisplay(); if(active) setInterval(() => updateDisplay(), 1000)" 
+                                        class="flex items-center gap-2 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold tracking-tight"
+                                        :class="active ? 'bg-primary/10 text-primary animate-pulse' : 'bg-gray-100 text-gray-500'">
+                                            <svg class="w-3 h-3" :class="active ? 'animate-spin-slow' : ''" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span x-text="display"></span>
+                                        </div>
+                                    </div>
                                     @if($task->due_date)
                                         <p class="text-[10px] font-bold text-gray-400 uppercase mt-0.5">Deadline: {{ \Carbon\Carbon::parse($task->due_date)->format('d M Y') }}</p>
                                     @endif
                                 </div>
                             </div>
                             
-                            <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div class="flex items-center gap-3">
+                                {{-- Timer Controls --}}
+                                @if($task->timer_started_at)
+                                    <form action="{{ route('tasks.stop', $task) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 bg-red-50 text-red-600 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-red-100 transition-all border border-red-100">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                <rect x="6" y="6" width="12" height="12" rx="2" />
+                                            </svg>
+                                            Stop
+                                        </button>
+                                    </form>
+                                @else
+                                    <form action="{{ route('tasks.start', $task) }}" method="POST">
+                                        @csrf
+                                        <button type="submit" class="flex items-center gap-1.5 px-3 py-1.5 bg-primary/5 text-primary rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-primary/10 transition-all border border-primary/10">
+                                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                                <path d="M8 5v14l11-7z" />
+                                            </svg>
+                                            Start
+                                        </button>
+                                    </form>
+                                @endif
+
+                                {{-- Delete Button (formerly in group-hover) --}}
                                 <form action="{{ route('tasks.destroy', $task) }}" method="POST" onsubmit="return confirm('Hapus tugas ini?')">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="p-2 text-gray-400 hover:text-red-500 rounded-lg hover:bg-red-50 transition-all">
+                                    <button type="submit" class="p-2 text-gray-300 hover:text-red-500 rounded-lg hover:bg-red-50 transition-all">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                         </svg>

@@ -117,8 +117,7 @@
                             {{-- Info Image --}}
                             @if($info->image)
                                 <div class="mb-3 rounded-xl overflow-hidden bg-gray-100">
-                                    <img src="{{ asset('storage/' . $info->image) }}"
-                                        alt="{{ $info->title }}"
+                                    <img src="{{ asset('storage/' . $info->image) }}" alt="{{ $info->title }}"
                                         class="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300">
                                 </div>
                             @endif
@@ -134,10 +133,13 @@
                                             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                                     </svg>{{ $info->creator->name }}</span>
                                 @if($info->expires_at)
-                                <span class="flex items-center gap-1.5 text-amber-600">
-                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    {{ $info->expires_at->format('d M Y') }}
-                                </span>
+                                    <span class="flex items-center gap-1.5 text-amber-600">
+                                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        {{ $info->expires_at->format('d M Y') }}
+                                    </span>
                                 @endif
                             </div>
                         </div>
@@ -209,7 +211,8 @@
                                         <div class="min-w-0">
                                             <h5
                                                 class="text-xs font-bold text-black truncate group-hover:text-green-600 transition-colors">
-                                                {{ $meeting->title }}</h5>
+                                                {{ $meeting->title }}
+                                            </h5>
                                             <p class="text-[10px] text-gray-500 font-bold uppercase tracking-tight">
                                                 {{ $meeting->start->format('H:i') }} •
                                                 {{ $meeting->user ? $meeting->user->name : 'System' }}
@@ -242,7 +245,8 @@
                                 <span class="text-xs font-bold text-black">{{ $client->name }}</span>
                                 <div class="text-right">
                                     <p class="text-[10px] font-bold text-red-600 uppercase">
-                                        {{ $client->retainer_contract_end->format('d/m/y') }}</p>
+                                        {{ $client->retainer_contract_end->format('d/m/y') }}
+                                    </p>
                                 </div>
                             </div>
                         @endforeach
@@ -258,17 +262,20 @@
                     <h3 class="font-bold text-gray-800 flex items-center gap-2">
                         <svg class="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path>
+                                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4">
+                            </path>
                         </svg>
                         Daftar Tugas
                     </h3>
                     <a href="{{ route('tasks.index') }}"
-                        class="text-[10px] uppercase font-bold tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded hover:bg-primary hover:text-white transition-colors">Lihat Semua</a>
+                        class="text-[10px] uppercase font-bold tracking-widest bg-primary/10 text-primary px-2 py-0.5 rounded hover:bg-primary hover:text-white transition-colors">Lihat
+                        Semua</a>
                 </div>
                 <div class="p-6">
                     <div class="space-y-3">
                         @forelse($tasks as $task)
-                            <div class="flex items-center justify-between p-3 rounded-xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:shadow-sm transition-all group">
+                            <div
+                                class="flex items-center justify-between p-3 rounded-xl border border-gray-50 bg-gray-50/50 hover:bg-white hover:shadow-sm transition-all group">
                                 <div class="flex items-center gap-3">
                                     <div @class([
                                         'w-2 h-2 rounded-full',
@@ -277,13 +284,44 @@
                                         'bg-blue-500 shadow-[0_0_8px_rgba(59,130,246,0.4)]' => $task->priority == 'Q3',
                                     ])></div>
                                     <span class="text-xs font-bold text-gray-700">{{ $task->title }}</span>
+
+                                    {{-- Real-time Timer indicator for dashboard --}}
+                                    @if($task->timer_started_at || $task->total_seconds > 0)
+                                        <div x-data="{ 
+                                                    active: {{ $task->timer_started_at ? 'true' : 'false' }},
+                                                    total: {{ $task->total_seconds }},
+                                                    startedAt: {{ $task->timer_started_at ? 'new Date(\'' . $task->timer_started_at->toIso8601String() . '\').getTime()' : 'null' }},
+                                                    display: '00:00:00',
+                                                    updateDisplay() {
+                                                        let seconds = this.total;
+                                                        if (this.active && this.startedAt) {
+                                                            seconds += Math.floor((Date.now() - this.startedAt) / 1000);
+                                                        }
+                                                        const h = Math.floor(seconds / 3600);
+                                                        const m = Math.floor((seconds % 3600) / 60);
+                                                        const s = seconds % 60;
+                                                        this.display = [h, m, s].map(v => v < 10 ? '0' + v : v).join(':');
+                                                    }
+                                                }" x-init="updateDisplay(); if(active) setInterval(() => updateDisplay(), 1000)"
+                                            class="flex items-center gap-1.5 px-1.5 py-0.5 rounded bg-gray-100/80 text-[10px] font-mono font-bold"
+                                            :class="active ? 'text-primary' : 'text-gray-400'">
+                                            <svg class="w-2.5 h-2.5" :class="active ? 'animate-spin-slow' : ''" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                            </svg>
+                                            <span x-text="display"></span>
+                                        </div>
+                                    @endif
                                 </div>
                                 <form action="{{ route('tasks.toggle', $task) }}" method="POST">
                                     @csrf
                                     @method('PATCH')
-                                    <button type="submit" class="p-1.5 text-gray-300 hover:text-green-500 transition-colors opacity-0 group-hover:opacity-100">
+                                    <button type="submit"
+                                        class="p-1.5 text-gray-300 hover:text-green-500 transition-colors opacity-0 group-hover:opacity-100">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 13l4 4L19 7"></path>
                                         </svg>
                                     </button>
                                 </form>
@@ -581,12 +619,12 @@
                             const isPast = currentDt < today;
 
                             html += `
-                                        <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
-                                            <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
-                                                <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
-                                                ${dateStr}
-                                            </h5>
-                                            <div class="space-y-2">`;
+                                            <div class="relative pl-4 border-l-2 ${isPast ? 'border-gray-200' : 'border-blue-200'}">
+                                                <h5 class="text-sm font-bold ${isPast ? 'text-gray-400' : 'text-gray-800'} mb-2 flex items-center gap-2">
+                                                    <span class="absolute -left-[5px] top-1.5 w-2 h-2 rounded-full ${isPast ? 'bg-gray-300' : 'bg-blue-500'}"></span>
+                                                    ${dateStr}
+                                                </h5>
+                                                <div class="space-y-2">`;
 
                             dayEvents.forEach(e => {
                                 const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
@@ -607,11 +645,11 @@
                                     (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
 
                                 html += `
-                                                    <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
-                                                        <p class="font-bold text-sm mb-1">${e.title}</p>
-                                                        ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
-                                                    </div>
-                                                `;
+                                                        <div class="bg-white p-3 rounded-lg border border-gray-100 shadow-sm ${contentClass}">
+                                                            <p class="font-bold text-sm mb-1">${e.title}</p>
+                                                            ${timeStr ? `<p class="text-xs font-mono opacity-80">${timeStr}</p>` : ''}
+                                                        </div>
+                                                    `;
                             });
 
                             html += `</div></div>`;
@@ -688,9 +726,9 @@
                     let html = "";
                     if (dayEvents.length === 0) {
                         html = `<div class="text-center py-8 bg-gray-50 rounded-lg dashed-border border-2 border-gray-200 border-dashed">
-                                        <p class="text-gray-400 font-bold">Tidak ada agenda.</p>
-                                        <p class="text-xs text-gray-400 mt-1">Klik tanggal lain untuk melihat agenda.</p>
-                                    </div>`;
+                                            <p class="text-gray-400 font-bold">Tidak ada agenda.</p>
+                                            <p class="text-xs text-gray-400 mt-1">Klik tanggal lain untuk melihat agenda.</p>
+                                        </div>`;
                     } else {
                         dayEvents.forEach(e => {
                             const isHoliday = e.extendedProps && e.extendedProps.isHoliday;
@@ -715,19 +753,19 @@
                                 (e.end ? ` - ${new Date(e.end).toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })}` : '');
 
                             html += `
-                                            <div class="p-4 rounded-lg bg-white border border-gray-100 shadow-sm flex items-start gap-3 hover:shadow-md transition-all">
-                                                <div class="flex-shrink-0 w-12 text-center pt-1">
-                                                    <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">${timeStr.split(' ')[0]}</div>
+                                                <div class="p-4 rounded-lg bg-white border border-gray-100 shadow-sm flex items-start gap-3 hover:shadow-md transition-all">
+                                                    <div class="flex-shrink-0 w-12 text-center pt-1">
+                                                        <div class="text-xs font-bold text-gray-400 uppercase tracking-wider">${timeStr.split(' ')[0]}</div>
+                                                    </div>
+                                                    <div class="flex-grow pl-3 border-l-2 ${isHoliday ? 'border-red-200' : 'border-blue-100'}">
+                                                        <h4 class="font-bold text-gray-900">${e.title}</h4>
+                                                        <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
+                                                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                                            ${timeStr}
+                                                        </p>
+                                                    </div>
                                                 </div>
-                                                <div class="flex-grow pl-3 border-l-2 ${isHoliday ? 'border-red-200' : 'border-blue-100'}">
-                                                    <h4 class="font-bold text-gray-900">${e.title}</h4>
-                                                    <p class="text-xs text-gray-500 mt-1 flex items-center gap-1">
-                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                                                        ${timeStr}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        `;
+                                            `;
                         });
                     }
 

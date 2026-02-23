@@ -62,4 +62,46 @@ class TaskController extends Controller
 
         return redirect()->back()->with('success', 'Tugas berhasil dihapus.');
     }
+
+    public function startTimer(Task $task)
+    {
+        if ($task->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        // Stop any other running timers for this user first (standard Pomodoro/Focus behavior)
+        Task::where('user_id', Auth::id())
+            ->whereNotNull('timer_started_at')
+            ->get()
+            ->each(function ($runningTask) {
+                $elapsed = now()->diffInSeconds($runningTask->timer_started_at);
+                $runningTask->update([
+                    'total_seconds' => $runningTask->total_seconds + $elapsed,
+                    'timer_started_at' => null,
+                ]);
+            });
+
+        $task->update([
+            'timer_started_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Timer dimulai.');
+    }
+
+    public function stopTimer(Task $task)
+    {
+        if ($task->user_id !== Auth::id()) {
+            abort(403);
+        }
+
+        if ($task->timer_started_at) {
+            $elapsed = now()->diffInSeconds($task->timer_started_at);
+            $task->update([
+                'total_seconds' => $task->total_seconds + $elapsed,
+                'timer_started_at' => null,
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Timer dihentikan.');
+    }
 }

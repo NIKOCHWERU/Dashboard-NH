@@ -16,9 +16,14 @@ class Task extends Model
         'priority',
         'status',
         'due_date',
+        'timer_started_at',
+        'total_seconds',
     ];
 
-    protected $dates = ['due_date'];
+    protected $casts = [
+        'due_date' => 'date',
+        'timer_started_at' => 'datetime',
+    ];
 
     public function user()
     {

@@ -44,7 +44,9 @@ Route::middleware(['auth'])->group(function () {
     // Tasks Management
     Route::get('tasks', [App\Http\Controllers\TaskController::class, 'index'])->name('tasks.index');
     Route::post('tasks', [App\Http\Controllers\TaskController::class, 'store'])->name('tasks.store');
-    Route::patch('tasks/{task}/toggle', [App\Http\Controllers\TaskController::class, 'toggleStatus'])->name('tasks.toggle');
+    Route::patch('tasks/{task}/toggle', [App\Http\Controllers\TaskController . php, 'toggleStatus'])->name('tasks.toggle');
+    Route::post('tasks/{task}/start', [App\Http\Controllers\TaskController::class, 'startTimer'])->name('tasks.start');
+    Route::post('tasks/{task}/stop', [App\Http\Controllers\TaskController::class, 'stopTimer'])->name('tasks.stop');
     Route::delete('tasks/{task}', [App\Http\Controllers\TaskController::class, 'destroy'])->name('tasks.destroy');
 
     // Clients - Read access for all, write for admin only
